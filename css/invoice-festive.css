@@ -1,0 +1,102 @@
+/* ePalace festive invoice (Views/Shared/_FestiveInvoice) — admin + customer, English / தமிழ், print-ready A4 */
+[data-inv-lang="ta"] .inv-en { display: none !important; }
+[data-inv-lang]:not([data-inv-lang="ta"]) .inv-ta { display: none !important; }
+[data-inv-lang="ta"], [data-inv-lang="ta"] .finv-table { font-family: "Noto Sans Tamil", "Inter", system-ui, sans-serif; }
+
+.finv-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; max-width: 900px; margin: 0 auto 14px; }
+.finv-lang { display: inline-flex; border: 1px solid #e7c98a; border-radius: 999px; overflow: hidden; background: #fff; margin-right: auto; }
+.finv-lang button { border: 0; background: transparent; padding: 7px 16px; font-weight: 800; font-size: 13px; color: #6d0f2c; }
+.finv-lang button.active { background: linear-gradient(135deg, #ffc94d, #ff7a00); color: #2a0b3f; }
+.finv-btn { background: #2a0b3f; color: #ffc94d; font-weight: 700; border: 0; border-radius: 10px; padding: 7px 14px; }
+.finv-btn:hover { color: #fff; background: #3c1157; }
+.finv-btn.finv-wa { background: #25d366; color: #fff; }
+
+.finv { max-width: 900px; margin: 0 auto; background: #fff; border-radius: 20px; overflow: hidden; color: #1f1330;
+    box-shadow: 0 24px 60px rgba(42, 11, 63, .18); border: 1px solid #f0dcc0; font-size: 14px; }
+.finv-head { position: relative; display: flex; justify-content: space-between; gap: 20px; padding: 26px 30px; color: #fff; flex-wrap: wrap;
+    background: linear-gradient(110deg, rgba(20, 6, 31, .95) 0%, rgba(42, 11, 63, .9) 50%, rgba(109, 15, 44, .82) 100%), var(--inv-img) center / cover;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.finv-brand { display: flex; gap: 16px; align-items: center; }
+.finv-logo { width: 78px; height: 78px; border-radius: 50%; background: #fff; border: 3px solid #ffc94d; box-shadow: 0 0 22px rgba(255, 159, 28, .55); }
+.finv-name { font-family: "Baloo 2", sans-serif; font-weight: 800; font-size: 28px; line-height: 1; color: #ffc94d; letter-spacing: .02em; }
+.finv-tag { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: rgba(255, 255, 255, .75); margin-top: 4px; }
+.finv-meta { font-size: 12.5px; color: rgba(255, 255, 255, .85); margin-top: 8px; line-height: 1.6; }
+.finv-title { text-align: right; }
+.finv-word { font-family: "Baloo 2", "Baloo Thambi 2", sans-serif; font-weight: 800; font-size: 34px; line-height: 1; letter-spacing: .08em;
+    background: linear-gradient(90deg, #fff1b8, #ffc94d, #ff9f1c); -webkit-background-clip: text; background-clip: text; color: transparent; }
+[data-inv-lang="ta"] .finv-word { font-size: 28px; letter-spacing: 0; font-family: "Baloo Thambi 2", sans-serif; }
+.finv-no { display: inline-block; margin-top: 8px; background: rgba(255, 201, 77, .16); border: 1px solid rgba(255, 201, 77, .6); color: #fff; font-weight: 800;
+    padding: 4px 12px; border-radius: 999px; font-family: Consolas, monospace; font-size: 13.5px; }
+.finv-date { font-size: 12.5px; color: rgba(255, 255, 255, .85); margin-top: 6px; }
+.finv-ribbon { height: 6px; background: linear-gradient(90deg, #e11d48, #ff7a00, #ffc94d, #ff7a00, #e11d48); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+.finv-parties { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding: 22px 30px 8px; }
+.finv-party { background: #fffaf2; border: 1px solid #f3e1c4; border-radius: 14px; padding: 12px 14px; line-height: 1.6; font-size: 13px; }
+.fp-label { font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #b3541e; margin-bottom: 2px; }
+[data-inv-lang="ta"] .fp-label { letter-spacing: 0; font-size: 12px; }
+.fp-name { font-weight: 800; font-size: 15px; color: #2a0b3f; }
+.finv-pill { display: inline-block; padding: 1px 9px; border-radius: 999px; background: #ede7f6; color: #4a1d7a; font-weight: 700; font-size: 12px; }
+.finv-pill.pay-paid { background: #dcfce7; color: #166534; }
+.finv-pill.pay-unpaid { background: #fee2e2; color: #991b1b; }
+.finv-pill.pay-partial { background: #fef3c7; color: #92400e; }
+
+.finv-table { width: calc(100% - 60px); margin: 14px 30px 0; border-collapse: separate; border-spacing: 0; border-radius: 14px; overflow: hidden; border: 1px solid #f0dcc0; }
+.finv-table thead th { background: #2a0b3f; color: #ffc94d; font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; padding: 11px 12px; text-align: left;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+[data-inv-lang="ta"] .finv-table thead th { letter-spacing: 0; font-size: 12.5px; text-transform: none; }
+.finv-table td { padding: 10px 12px; border-top: 1px solid #f5e6cf; vertical-align: middle; }
+.finv-table tbody tr:nth-child(even) td { background: #fffbf5; }
+.finv-table .c-no { width: 46px; color: #9a7b5c; text-align: center; }
+.finv-table .c-qty { width: 80px; text-align: center; font-weight: 700; }
+.finv-table .c-amt { width: 130px; text-align: right; font-variant-numeric: tabular-nums; }
+.finv-emo { display: inline-block; width: 22px; text-align: center; }
+
+.finv-summary { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; padding: 20px 30px; }
+.finv-notes { font-size: 12.5px; color: #4b3a58; line-height: 1.65; }
+.fn-chip { display: inline-block; background: #fff4e0; border: 1px solid #ffd79a; border-radius: 999px; padding: 3px 12px; font-weight: 700; color: #8a4b08; }
+.fn-cod { margin-top: 10px; background: #effcf4; border: 1px solid #b6efcb; border-radius: 12px; padding: 8px 12px; color: #166534; font-weight: 600; }
+.fn-label { margin-top: 10px; font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #b3541e; }
+.fn-safety { margin-top: 10px; color: #7a5a3a; }
+.finv-totals { position: relative; background: #fffaf2; border: 1px solid #f3e1c4; border-radius: 16px; padding: 14px 16px; align-self: start; }
+.ft-row { display: flex; justify-content: space-between; padding: 5px 0; color: #4b3a58; font-variant-numeric: tabular-nums; }
+.ft-row.save span:last-child { color: #15803d; font-weight: 700; }
+.ft-row.due { font-weight: 800; border-top: 1px dashed #e7c98a; margin-top: 4px; padding-top: 8px; }
+.ft-row.due.neg span:last-child { color: #b91c1c; }
+.ft-row.due.pos span:last-child { color: #15803d; }
+.ft-grand { display: flex; justify-content: space-between; align-items: baseline; margin: 8px -16px; padding: 12px 16px; color: #fff; font-weight: 800;
+    background: linear-gradient(90deg, #6d0f2c, #2a0b3f); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.ft-grand span:last-child { font-family: "Baloo 2", sans-serif; font-size: 26px; color: #ffc94d; }
+.finv-stamp { position: absolute; right: 14px; top: -18px; transform: rotate(-8deg); border: 3px double currentColor; border-radius: 10px; padding: 3px 12px;
+    font-weight: 900; font-size: 12px; letter-spacing: .1em; background: #fff; }
+.finv-stamp.paid { color: #15803d; }
+.finv-stamp.partial { color: #b45309; }
+.finv-stamp.due { color: #b91c1c; }
+[data-inv-lang="ta"] .finv-stamp { letter-spacing: 0; }
+.finv-foot { padding: 16px 30px 22px; border-top: 2px dashed #f0dcc0; text-align: center; }
+.ff-thanks { font-family: "Baloo 2", "Baloo Thambi 2", sans-serif; font-weight: 800; font-size: 17px; color: #6d0f2c; }
+.ff-small { font-size: 11.5px; color: #9a7b5c; margin-top: 4px; }
+
+@media (max-width: 720px) {
+    .finv-head { padding: 20px; }
+    .finv-title { text-align: left; }
+    .finv-parties, .finv-summary { grid-template-columns: 1fr; padding-left: 16px; padding-right: 16px; }
+    .finv-table { width: calc(100% - 32px); margin: 12px 16px 0; font-size: 13px; }
+    .finv-table .c-amt { width: auto; }
+    .finv-table th:nth-child(4), .finv-table td:nth-child(4) { display: none; }
+}
+@media print {
+    @page { size: A4; margin: 10mm; }
+    body * { visibility: hidden; }
+    .finv, .finv * { visibility: visible; }
+    .finv { position: absolute; left: 0; top: 0; width: 100%; max-width: none; box-shadow: none; border: 0; border-radius: 0; }
+    .no-print { display: none !important; }
+}
+@media (max-width: 720px) {
+    .finv-stamp { position: static; display: inline-block; transform: rotate(-4deg); margin: 0 0 10px; }
+    .finv-tools { padding: 0 4px; }
+    .finv-lang { margin-right: 0; width: 100%; }
+    .finv-lang button { flex: 1; }
+    .finv-tools .finv-btn { flex: 1 1 auto; }
+    .finv-name { font-size: 24px; }
+    .finv-logo { width: 60px; height: 60px; }
+}

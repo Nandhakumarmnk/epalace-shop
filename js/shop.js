@@ -1,0 +1,452 @@
+// ePalace online shop — cart kept in the browser (localStorage), rendered in the drawer,
+// posted as JSON at checkout. Prices always come from window.SHOP_ITEMS (server data).
+(function () {
+    "use strict";
+    var KEY = "epalace-cart";
+    var items = {};
+    (window.SHOP_ITEMS || []).forEach(function (i) { items[i.id] = i; });
+
+    // ---- language (English / தமிழ்): server renders both, CSS shows one; JS strings use T()
+    var TA = {
+        "cart.empty": "உங்கள் கூடை காலியாக உள்ளது",
+        "cart.emptySub": "தொடங்க பட்டாசுகளைச் சேர்க்கவும்.",
+        "added": "கூடையில் சேர்க்கப்பட்டது",
+        "unit": "அலகு", "units": "அலகுகள்", "product": "பொருள்", "products": "பொருட்கள்",
+        "wa.empty": "கூடை காலியாக உள்ளது — WhatsApp catalogue திறக்கப்படுகிறது",
+        "list.empty": "கூடை காலியாக உள்ளது — விலைப்பட்டியலில் சேர்க்கவும்",
+        "addProducts": "பட்டாசுகளைச் சேர்க்கவும்"
+    };
+    function lang() { return document.documentElement.lang === "ta" ? "ta" : "en"; }
+    function T(key, en) { return lang() === "ta" && TA[key] ? TA[key] : en; }
+    function NM(item) { return lang() === "ta" && item.nameTa ? item.nameTa : item.name; }
+    function applyLang(l) {
+        document.documentElement.lang = l;
+        try { localStorage.setItem("epalace-lang", l); } catch (e) { }
+        document.cookie = "epalace-lang=" + l + ";path=/;max-age=31536000;samesite=lax";
+        document.querySelectorAll("[data-ph-ta]").forEach(function (el) {
+            if (!el.hasAttribute("data-ph-en")) el.setAttribute("data-ph-en", el.getAttribute("placeholder") || "");
+            el.setAttribute("placeholder", l === "ta" ? el.getAttribute("data-ph-ta") : el.getAttribute("data-ph-en"));
+        });
+        document.querySelectorAll("option[data-ta]").forEach(function (o) {
+            if (!o.hasAttribute("data-en")) o.setAttribute("data-en", o.textContent);
+            o.textContent = l === "ta" ? o.getAttribute("data-ta") : o.getAttribute("data-en");
+        });
+        document.querySelectorAll("[data-set-lang]").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-set-lang") === l); });
+        if (typeof render === "function" && document.readyState !== "loading") render();
+    }
+    document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-set-lang]");
+        if (b) applyLang(b.getAttribute("data-set-lang"));
+    });
+
+    function money(v) { return "₹" + (Number(v) || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+    function load() { try { return JSON.parse(localStorage.getItem(KEY) || "{}") || {}; } catch (e) { return {}; } }
+    function save(c) { try { localStorage.setItem(KEY, JSON.stringify(c)); } catch (e) { } }
+    function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+    var cart = load();
+    // drop items that no longer exist
+    Object.keys(cart).forEach(function (id) { if (!items[id]) delete cart[id]; });
+
+    if (document.body.getAttribute("data-clear-cart") === "true") { cart = {}; save(cart); }
+
+    function lines() {
+        return Object.keys(cart).map(function (id) { return { item: items[id], qty: cart[id] }; }).filter(function (l) { return l.item && l.qty > 0; });
+    }
+    function totals() {
+        var t = { units: 0, mrp: 0, total: 0, count: 0 };
+        lines().forEach(function (l) { t.units += l.qty; t.mrp += l.item.mrp * l.qty; t.total += l.item.price * l.qty; t.count++; });
+        t.saving = t.mrp - t.total;
+        return t;
+    }
+
+    function toast(msg) {
+        var el = document.getElementById("shopToast");
+        if (!el) {
+            el = document.createElement("div");
+            el.id = "shopToast";
+            el.className = "shop-toast";
+            document.body.appendChild(el);
+        }
+        el.innerHTML = '<i class="bi bi-check-circle-fill"></i> ' + esc(msg);
+        el.classList.add("show");
+        clearTimeout(el._t);
+        el._t = setTimeout(function () { el.classList.remove("show"); }, 2200);
+    }
+
+    function render() {
+        var t = totals();
+        document.querySelectorAll("[data-cart-count]").forEach(function (b) { b.textContent = String(t.units); b.classList.toggle("d-none", false); });
+        var box = document.querySelector("[data-cart-lines]");
+        if (box) {
+            var ls = lines();
+            if (!ls.length) {
+                box.innerHTML = '<div class="cart-empty"><i class="bi bi-bag d-block mb-2" style="font-size:40px;opacity:.4"></i><div class="fw-700 text-ink-2">' + esc(T("cart.empty", "Your cart is empty")) + '</div><div class="fs-13">' + esc(T("cart.emptySub", "Add crackers from the catalogue to get started.")) + '</div></div>';
+            } else {
+                box.innerHTML = ls.map(function (l) {
+                    var i = l.item;
+                    return '<div class="cart-line" data-id="' + i.id + '">' +
+                        '<span class="cl-ico" style="--h:' + i.hue + '">' + (i.photo ? '<img src="' + esc(i.photo) + '" alt="" loading="lazy" />' : (i.emoji ? '<span class="emo">' + i.emoji + '</span>' : '<i class="bi ' + i.icon + '"></i>')) + '</span>' +
+                        '<div class="flex-grow-1 min-w-0"><div class="fw-700 truncate">' + esc(NM(i)) + '</div>' +
+                        '<div class="fs-12 text-muted">' + money(i.price) + (i.discount > 0 ? ' <s>' + money(i.mrp) + '</s> <span class="text-ok fw-700">-' + i.discount + '%</span>' : '') + '</div>' +
+                        '<div class="d-flex align-items-center gap-2 mt-1"><div class="qty-ctl qty-ctl-sm"><button type="button" data-dec>−</button><input type="number" min="1" value="' + l.qty + '" data-qty /><button type="button" data-inc>+</button></div>' +
+                        '<button type="button" class="btn btn-sm btn-light" data-remove title="Remove"><i class="bi bi-trash"></i></button></div></div>' +
+                        '<div class="fw-800 money text-end" style="min-width:86px">' + money(i.price * l.qty) + '</div></div>';
+                }).join("");
+            }
+        }
+        var set = function (sel, v) { document.querySelectorAll(sel).forEach(function (e) { e.textContent = v; }); };
+        set("[data-cart-units]", t.units + " " + (t.units === 1 ? T("unit", "unit") : T("units", "units")) + " · " + t.count + " " + (t.count === 1 ? T("product", "product") : T("products", "products")));
+        set("[data-cart-mrp]", money(t.mrp));
+        set("[data-cart-saving]", money(t.saving));
+        set("[data-cart-total]", money(t.total));
+        document.querySelectorAll("[data-cart-checkout]").forEach(function (b) { b.classList.toggle("disabled", t.units === 0); });
+        document.querySelectorAll("[data-cart-summary]").forEach(function (b) { b.classList.toggle("d-none", t.units === 0); });
+        document.querySelectorAll("[data-order-bar]").forEach(function (b) { b.classList.toggle("d-none", t.units === 0); });
+        document.body.classList.toggle("has-order-bar", t.units > 0 && !!document.querySelector("[data-order-bar]"));
+
+        // catalogue: "n in cart" markers and the price-list quantities / amounts
+        document.querySelectorAll("[data-in-cart]").forEach(function (m) {
+            var q = cart[m.getAttribute("data-in-cart")] || 0;
+            m.classList.toggle("d-none", q === 0);
+            var s = m.querySelector("span"); if (s) s.textContent = String(q);
+        });
+        document.querySelectorAll("[data-list-qty]").forEach(function (inp) {
+            var id = inp.getAttribute("data-list-qty"), q = cart[id] || 0;
+            if (document.activeElement !== inp) inp.value = q > 0 ? String(q) : "";
+            inp.closest("tr").classList.toggle("picked", q > 0);
+            var amt = document.querySelector('[data-list-amount="' + id + '"]');
+            if (amt) amt.textContent = q > 0 && items[id] ? money(items[id].price * q) : "—";
+        });
+
+        // checkout page
+        var json = document.getElementById("CartJson");
+        if (json) json.value = JSON.stringify(lines().map(function (l) { return { itemId: l.item.id, qty: l.qty }; }));
+        var submit = document.querySelector("[data-place-order]");
+        if (submit) submit.disabled = t.units === 0;
+        var review = document.querySelector("[data-checkout-lines]");
+        if (review) {
+            review.innerHTML = lines().length ? lines().map(function (l) {
+                return '<tr><td><div class="fw-600">' + esc(NM(l.item)) + '</div><div class="cell-sub">' + money(l.item.price) + (l.item.discount > 0 ? ' · <s>' + money(l.item.mrp) + '</s>' : '') + '</div></td>' +
+                    '<td class="text-center fw-700">' + l.qty + '</td><td class="text-end money fw-600">' + money(l.item.price * l.qty) + '</td></tr>';
+            }).join("") : '<tr><td colspan="3" class="text-center text-muted py-4">' + esc(T("cart.empty", "Your cart is empty")) + ' — <a href="' + (window.SHOP_CHECKOUT_URL || "/Shop").replace(/Checkout$/, "") + '">' + esc(T("addProducts", "add products")) + '</a>.</td></tr>';
+        }
+    }
+
+    function add(id, qty) {
+        id = String(id); qty = Math.max(1, parseInt(qty, 10) || 1);
+        if (!items[id]) return;
+        cart[id] = (cart[id] || 0) + qty;
+        save(cart); render();
+        toast(NM(items[id]) + " × " + qty + " " + T("added", "added to cart"));
+    }
+    function setQty(id, qty) {
+        id = String(id); qty = parseInt(qty, 10) || 0;
+        if (qty <= 0) delete cart[id]; else cart[id] = Math.min(qty, 9999);
+        save(cart); render();
+    }
+
+    // Catalogue buttons
+    document.addEventListener("click", function (e) {
+        var addBtn = e.target.closest("[data-add]");
+        if (addBtn) {
+            var card = addBtn.closest("[data-item]");
+            var q = card ? card.querySelector("[data-qty]") : null;
+            add(addBtn.getAttribute("data-add"), q ? q.value : 1);
+            if (q) q.value = 1;
+            return;
+        }
+        var line = e.target.closest(".cart-line");
+        if (line) {
+            var id = line.getAttribute("data-id"), q2 = line.querySelector("[data-qty]");
+            if (e.target.closest("[data-inc]")) setQty(id, (parseInt(q2.value, 10) || 0) + 1);
+            else if (e.target.closest("[data-dec]")) setQty(id, (parseInt(q2.value, 10) || 0) - 1);
+            else if (e.target.closest("[data-remove]")) setQty(id, 0);
+            return;
+        }
+        var card2 = e.target.closest("[data-item]");
+        if (card2) {
+            var qi = card2.querySelector("[data-qty]");
+            if (e.target.closest("[data-inc]") && qi) qi.value = Math.min(9999, (parseInt(qi.value, 10) || 1) + 1);
+            if (e.target.closest("[data-dec]") && qi) qi.value = Math.max(1, (parseInt(qi.value, 10) || 1) - 1);
+        }
+        if (e.target.closest("[data-cart-clear]")) { cart = {}; save(cart); render(); }
+    });
+    document.addEventListener("change", function (e) {
+        var line = e.target.closest(".cart-line");
+        if (line && e.target.matches("[data-qty]")) setQty(line.getAttribute("data-id"), e.target.value);
+    });
+    // Price list: typing a quantity puts it straight into the cart
+    document.addEventListener("input", function (e) {
+        if (!e.target.matches("[data-list-qty]")) return;
+        var v = parseInt(e.target.value, 10) || 0;
+        setQty(e.target.getAttribute("data-list-qty"), Math.max(0, Math.min(v, 9999)));
+    });
+    document.addEventListener("focusout", function (e) { if (e.target.matches && e.target.matches("[data-list-qty]")) render(); });
+    // Price list: − / + buttons (no typing needed)
+    document.addEventListener("click", function (e) {
+        var inc = e.target.closest("[data-list-inc]"), dec = e.target.closest("[data-list-dec]");
+        if (!inc && !dec) return;
+        var id = (inc || dec).getAttribute(inc ? "data-list-inc" : "data-list-dec");
+        var q = (cart[id] || 0) + (inc ? 1 : -1);
+        setQty(id, Math.max(0, Math.min(q, 9999)));
+        var row = (inc || dec).closest("tr");
+        if (row) { row.classList.remove("bump"); void row.offsetWidth; row.classList.add("bump"); }
+    });
+
+    // WhatsApp: send the cart as a ready-to-send order message (empty cart opens the WhatsApp catalogue)
+    // Backup (static GitHub) shop: every checkout button sends the order on WhatsApp instead
+    document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-wa-order]") || (window.SHOP_STATIC && e.target.closest("[data-cart-checkout], a[href*='Checkout']"));
+        if (!b) return;
+        e.preventDefault();
+        var ls = lines(), t = totals(), wa = window.SHOP_WA || "919488127540";
+        if (!ls.length) { toast(T("wa.empty", "Your cart is empty — opening our WhatsApp catalogue")); window.open("https://wa.me/c/" + wa, "_blank", "noopener"); return; }
+        var ta = lang() === "ta";
+        var NL = "\n";
+        var msg = (ta ? "வணக்கம் " : "Hello ") + (window.SHOP_NAME || "ePALACE") + (ta ? ", நான் ஆர்டர் செய்ய விரும்புகிறேன்:" : ", I would like to order:") + NL + NL +
+            ls.map(function (l, i) { return (i + 1) + ". " + NM(l.item) + (ta && l.item.nameTa !== l.item.name ? " (" + l.item.name + ")" : "") + " × " + l.qty + " = " + money(l.item.price * l.qty); }).join(NL) +
+            NL + NL + (ta ? "மொத்தம்: " : "Total: ") + money(t.total) + " (" + t.units + " " + (ta ? "அலகுகள்" : "units") + ")" +
+            NL + NL + (ta ? ["பெயர்:", "முகவரி:", "தொலைபேசி:"] : ["Name:", "Address:", "Phone:"]).join(NL) +
+            NL + NL + (ta ? "(பெற்ற பின் பணம் — Cash on delivery)" : "(Cash on delivery)");
+        window.open("https://wa.me/" + wa + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
+    });
+
+    // Catalogue search / category / offers filter (cards and price list together)
+    var search = document.getElementById("shopSearch");
+    var offersOnly = document.getElementById("offersOnly");
+    var sort = document.getElementById("shopSort");
+    var catSel = document.getElementById("shopCat");
+    function sortEls(els, s) {
+        return els.sort(function (a, b) {
+            var pa = parseFloat(a.getAttribute("data-price")), pb = parseFloat(b.getAttribute("data-price"));
+            var da = parseFloat(a.getAttribute("data-discount")), db = parseFloat(b.getAttribute("data-discount"));
+            if (s === "price-asc") return pa - pb;
+            if (s === "price-desc") return pb - pa;
+            if (s === "discount") return db - da;
+            return a.getAttribute("data-name").localeCompare(b.getAttribute("data-name"));
+        });
+    }
+    function applyFilter() {
+        var panes = document.querySelectorAll("[data-view-pane]");
+        if (!panes.length) return;
+        var term = (search ? search.value : "").trim().toLowerCase();
+        var only = offersOnly && offersOnly.checked;
+        var cat = catSel ? catSel.value : "";
+        var s = sort ? sort.value : "";
+        var shown = 0;
+        panes.forEach(function (pane, pi) {
+            pane.querySelectorAll("[data-cat-section]").forEach(function (sec) {
+                var els = Array.prototype.slice.call(sec.querySelectorAll("[data-item]"));
+                var vis = 0;
+                els.forEach(function (c) {
+                    var ok = (!term || (c.getAttribute("data-search") || "").indexOf(term) !== -1) &&
+                             (!only || c.getAttribute("data-discount") !== "0") &&
+                             (!cat || c.getAttribute("data-cat") === cat);
+                    c.classList.toggle("d-none", !ok);
+                    if (ok) vis++;
+                });
+                sec.classList.toggle("d-none", vis === 0);
+                if (pi === 0) shown += vis;
+                if (s && els.length) {
+                    var parent = els[0].parentNode;
+                    sortEls(els, s).forEach(function (c) { parent.appendChild(c); });
+                }
+            });
+        });
+        var cnt = document.getElementById("shownCount");
+        if (cnt) cnt.textContent = String(shown);
+        var empty = document.getElementById("noProducts");
+        if (empty) empty.classList.toggle("d-none", shown > 0);
+    }
+    if (search) search.addEventListener("input", applyFilter);
+    if (offersOnly) offersOnly.addEventListener("change", applyFilter);
+    if (sort) sort.addEventListener("change", applyFilter);
+    if (catSel) catSel.addEventListener("change", applyFilter);
+    if (location.hash === "#offers" && offersOnly) { offersOnly.checked = true; }
+
+    // Cards / price-list toggle (remembered per browser)
+    function setView(v) {
+        document.querySelectorAll("[data-view-pane]").forEach(function (p) { p.classList.toggle("d-none", p.getAttribute("data-view-pane") !== v); });
+        document.querySelectorAll("[data-view]").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-view") === v); });
+        try { localStorage.setItem("epalace-shop-view", v); } catch (e) { }
+    }
+    document.addEventListener("click", function (e) {
+        var vb = e.target.closest("[data-view]");
+        if (vb) { setView(vb.getAttribute("data-view")); return; }
+        var vl = e.target.closest("[data-view-link]");
+        if (vl) { setView(vl.getAttribute("data-view-link")); }
+        var cl = e.target.closest("[data-cat-link]");
+        if (cl) {
+            e.preventDefault();
+            if (catSel) { catSel.value = ""; }
+            applyFilter();
+            var key = cl.getAttribute("data-cat-link");
+            var pane = document.querySelector("[data-view-pane]:not(.d-none)");
+            var target = pane && pane.querySelector('[data-cat-section="' + key + '"]');
+            if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+    });
+    if (document.querySelector("[data-view-pane]")) {
+        var saved = null;
+        try { saved = localStorage.getItem("epalace-shop-view"); } catch (e) { }
+        setView(location.hash === "#pricelist" ? "list" : (saved === "list" ? "list" : "grid"));
+    }
+    applyFilter();
+
+    // Hero fireworks (skipped for reduced-motion users and hidden tabs)
+    (function fireworks() {
+        var cv = document.querySelector("[data-fireworks]");
+        if (!cv || !cv.getContext) return;
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        var ctx = cv.getContext("2d"), parts = [], rockets = [], w = 0, h = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var colors = ["#ffd166", "#ff6b6b", "#f72585", "#4cc9f0", "#80ffdb", "#ffffff", "#fca311", "#b388ff"];
+        function size() { w = cv.clientWidth; h = cv.clientHeight; cv.width = w * dpr; cv.height = h * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); }
+        size(); window.addEventListener("resize", size);
+        var onScreen = true;
+        if ("IntersectionObserver" in window) new IntersectionObserver(function (en) { onScreen = en[0].isIntersecting; }).observe(cv);
+        function launch() {
+            rockets.push({ x: w * (0.1 + Math.random() * 0.8), y: h, vy: -(h / 55 + Math.random() * 3), ty: h * (0.12 + Math.random() * 0.35), c: colors[(Math.random() * colors.length) | 0] });
+        }
+        function burst(x, y, c) {
+            var n = 46 + ((Math.random() * 30) | 0), c2 = colors[(Math.random() * colors.length) | 0];
+            for (var i = 0; i < n; i++) {
+                var a = (Math.PI * 2 * i) / n, sp = 1.2 + Math.random() * 2.6;
+                parts.push({ x: x, y: y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 60 + Math.random() * 30, age: 0, c: i % 3 ? c : c2 });
+            }
+        }
+        var last = 0;
+        function frame(t) {
+            requestAnimationFrame(frame);
+            if (document.hidden || !onScreen || t - last < 16) return;
+            last = t;
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.fillStyle = "rgba(0,0,0,.22)";
+            ctx.fillRect(0, 0, w, h);
+            ctx.globalCompositeOperation = "lighter";
+            if (Math.random() < 0.035 && rockets.length < 3) launch();
+            for (var i = rockets.length - 1; i >= 0; i--) {
+                var r = rockets[i];
+                r.y += r.vy; r.vy *= 0.985;
+                ctx.fillStyle = r.c; ctx.fillRect(r.x, r.y, 2, 6);
+                if (r.y <= r.ty || r.vy > -1) { burst(r.x, r.y, r.c); rockets.splice(i, 1); }
+            }
+            for (var j = parts.length - 1; j >= 0; j--) {
+                var p = parts[j];
+                p.age++; p.x += p.vx; p.y += p.vy; p.vy += 0.035; p.vx *= 0.985; p.vy *= 0.985;
+                var alpha = Math.max(0, 1 - p.age / p.life);
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = p.c;
+                ctx.beginPath(); ctx.arc(p.x, p.y, 1.8, 0, Math.PI * 2); ctx.fill();
+                if (p.age >= p.life) parts.splice(j, 1);
+            }
+            ctx.globalAlpha = 1;
+        }
+        launch(); setTimeout(launch, 600);
+        requestAnimationFrame(frame);
+    })();
+
+    render();
+    applyLang(lang());
+    window.ShopCart = { add: add, setQty: setQty, lines: lines, totals: totals };
+})();
+
+// ---------------------------------------------------------------------------------------------
+// Festive extras: colour-paper confetti (shop opens / order placed), image fade-in, checkout guard
+(function () {
+    "use strict";
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // ---- confetti: coloured paper pieces that burst, flutter and fall
+    function confetti(opts) {
+        if (reduce) return;
+        opts = opts || {};
+        var cv = document.createElement("canvas");
+        cv.className = "confetti-canvas";
+        document.body.appendChild(cv);
+        var ctx = cv.getContext("2d"), dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var W = cv.width = innerWidth * dpr, H = cv.height = innerHeight * dpr;
+        var colors = ["#ff1f6d", "#ffd23f", "#ff8a00", "#22e07a", "#1fc8ff", "#b14dff", "#ffffff", "#ff4fd8", "#00e5c8", "#ffe66d", "#4d7cff"];
+        var shapes = ["paper", "paper", "paper", "circle", "star", "star", "ribbon", "ribbon", "triangle"];
+        var pieces = [], n = Math.round((opts.count || 160) * (innerWidth < 600 ? 0.6 : 1));
+        var origins = opts.origins || [{ x: 0.5, y: -0.05, spread: Math.PI, dir: Math.PI / 2, power: 4 }];
+        for (var i = 0; i < n; i++) {
+            var o = origins[i % origins.length];
+            var a = o.dir + (Math.random() - 0.5) * o.spread, sp = (o.power + Math.random() * o.power) * dpr;
+            pieces.push({
+                x: o.x * W, y: o.y * H, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+                w: (6 + Math.random() * 7) * dpr, h: (9 + Math.random() * 10) * dpr,
+                r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.3, flip: Math.random() * Math.PI, vf: 0.08 + Math.random() * 0.12,
+                c: colors[(Math.random() * colors.length) | 0], c2: colors[(Math.random() * colors.length) | 0], shape: shapes[(Math.random() * shapes.length) | 0], wave: Math.random() * 6
+            });
+        }
+        var start = performance.now(), life = opts.duration || 3800;
+        (function frame(t) {
+            var el = t - start;
+            ctx.clearRect(0, 0, W, H);
+            var alive = 0;
+            pieces.forEach(function (p) {
+                p.vy += 0.09 * dpr; p.vx *= 0.99; p.vy = Math.min(p.vy, 5.5 * dpr);
+                p.x += p.vx + Math.sin((el + p.flip * 500) / 260) * 0.6 * dpr; p.y += p.vy; p.r += p.vr; p.flip += p.vf;
+                if (p.y < H + 30) alive++;
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, Math.min(1, (life - el) / 700));
+                ctx.translate(p.x, p.y); ctx.rotate(p.r);
+                ctx.fillStyle = p.c;
+                if (p.shape === "circle") { ctx.beginPath(); ctx.arc(0, 0, p.w / 2.4, 0, Math.PI * 2); ctx.fill(); }
+                else if (p.shape === "star") {
+                    // golden 5-point star with a soft glow
+                    ctx.fillStyle = Math.random() < 0.5 ? "#ffd23f" : p.c; ctx.shadowColor = "rgba(255,210,63,.8)"; ctx.shadowBlur = 6 * dpr;
+                    ctx.beginPath();
+                    for (var s = 0; s < 10; s++) { var rr = s % 2 ? p.w * 0.45 : p.w * 1.05, aa = s * Math.PI / 5 - Math.PI / 2; ctx.lineTo(Math.cos(aa) * rr, Math.sin(aa) * rr); }
+                    ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0;
+                }
+                else if (p.shape === "ribbon") {
+                    // curly streamer in two colours
+                    ctx.strokeStyle = p.c; ctx.lineWidth = 2.6 * dpr; ctx.lineCap = "round"; ctx.beginPath();
+                    for (var q = 0; q <= 12; q++) { var yy = (q - 6) * 2.4 * dpr, xx = Math.sin(q * 0.9 + p.wave + el / 180) * 4 * dpr; q ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
+                    ctx.stroke(); ctx.strokeStyle = p.c2; ctx.lineWidth = 1 * dpr; ctx.stroke();
+                }
+                else if (p.shape === "triangle") { ctx.beginPath(); ctx.moveTo(0, -p.h / 2); ctx.lineTo(p.w / 2, p.h / 2); ctx.lineTo(-p.w / 2, p.h / 2); ctx.closePath(); ctx.fill(); }
+                else { ctx.scale(1, Math.cos(p.flip)); ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); }
+                ctx.restore();
+            });
+            if (el < life && alive) requestAnimationFrame(frame); else cv.remove();
+        })(start);
+    }
+    window.ShopConfetti = confetti;
+
+    var body = document.body;
+    if (body.getAttribute("data-celebrate") === "true") {
+        // order placed: two paper cannons from the bottom corners + a shower from the top
+        setTimeout(function () {
+            confetti({ count: 220, duration: 4800, origins: [
+                { x: 0.02, y: 1.02, dir: -Math.PI / 3, spread: 0.7, power: 11 },
+                { x: 0.98, y: 1.02, dir: -2 * Math.PI / 3, spread: 0.7, power: 11 }] });
+        }, 250);
+        setTimeout(function () { confetti({ count: 140, duration: 4200 }); }, 1300);
+    } else if (document.querySelector(".fest-hero")) {
+        // shop opens: a colour-paper blast over the banner
+        setTimeout(function () { confetti({ count: 150, duration: 3600, origins: [{ x: 0.5, y: -0.05, dir: Math.PI / 2, spread: Math.PI * 0.9, power: 3 }] }); }, 400);
+    }
+
+    // ---- product photos fade in once loaded (shimmer placeholder until then)
+    document.querySelectorAll("img.art-photo").forEach(function (img) {
+        if (img.complete && img.naturalWidth) img.classList.add("loaded");
+        else img.addEventListener("load", function () { img.classList.add("loaded"); }, { once: true });
+    });
+
+    // ---- checkout: one tap only, show progress
+    var form = document.querySelector('form[action*="PlaceOrder"]');
+    if (form) form.addEventListener("submit", function () {
+        var btn = form.querySelector("[data-place-order]");
+        if (!btn) return;
+        if (btn.dataset.busy) return;
+        btn.dataset.busy = "1";
+        setTimeout(function () {
+            btn.disabled = true;
+            var ta = document.documentElement.lang === "ta";
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + (ta ? "ஆர்டர் செய்யப்படுகிறது…" : "Placing your order…");
+        }, 0);
+    });
+})();
