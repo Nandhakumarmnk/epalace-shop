@@ -522,3 +522,6 @@ button.cb-off:hover { transform: scale(1.08) rotate(-4deg); }
 .pack-box .pk-head h2 { color: #fff; }
 .ps-actions .btn { white-space: nowrap; padding-left: 8px; padding-right: 8px; }
 @media (max-width: 576px) { .pack-box .pk-head img { width: 100%; height: auto; aspect-ratio: 3 / 2; } }
+.ps-all { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 5px 14px; border-radius: 999px; font-size: 13px; font-weight: 800;
+    text-decoration: none; color: var(--fest-night); background: linear-gradient(90deg, var(--fest-gold), #ffe7a3); box-shadow: 0 4px 12px rgba(0, 0, 0, .3); }
+.ps-all:hover { color: var(--fest-night); filter: brightness(1.06); }
