@@ -219,11 +219,11 @@ body.shop-body.has-order-bar { padding-bottom: 86px; }
         var(--hero-img, none);
     background-size: cover; background-position: center 35%; }
 .cat-tile { position: relative; overflow: hidden; isolation: isolate; min-height: 118px; justify-content: flex-end;
-    background: linear-gradient(180deg, hsl(var(--h) 80% 30% / .15) 0%, hsl(var(--h) 85% 22% / .92) 78%), var(--img) center / cover no-repeat, linear-gradient(145deg, var(--c1), var(--c2)); }
+    background: linear-gradient(180deg, hsl(var(--h) 80% 30% / .15) 0%, hsl(var(--h) 85% 22% / .92) 78%), var(--img, none) center / cover no-repeat, linear-gradient(145deg, var(--c1), var(--c2)); }
 .cat-tile .emo { font-size: 26px; position: absolute; top: 8px; left: 10px; }
 .cat-tile .t, .cat-tile .c { text-shadow: 0 1px 6px rgba(0, 0, 0, .6); }
 .cat-head { position: relative; overflow: hidden; min-height: 92px; color: #fff; border-left: 0; padding: 16px 18px;
-    background: linear-gradient(90deg, rgba(20, 6, 31, .92) 0%, rgba(20, 6, 31, .55) 55%, rgba(20, 6, 31, .15) 100%), var(--img) center / cover no-repeat; }
+    background: linear-gradient(90deg, rgba(20, 6, 31, .92) 0%, rgba(20, 6, 31, .55) 55%, rgba(20, 6, 31, .15) 100%), var(--img, none) center / cover no-repeat; }
 .cat-head h3 { color: #fff; font-size: 24px; }
 .cat-head .fs-12 { color: rgba(255, 255, 255, .8); }
 .cat-head .emo { font-size: 34px; filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .5)); }
@@ -297,7 +297,7 @@ body.has-order-bar .wa-float { bottom: 96px; }
 .pl-table tr.picked .pl-stepper { border-color: var(--fest-saffron); box-shadow: 0 0 0 3px rgba(255, 122, 0, .18); }
 .pl-table tr.bump td { animation: pl-bump .35s ease; }
 @keyframes pl-bump { 50% { background: #ffe9c2; } }
-.pl-cat td { background-image: linear-gradient(90deg, rgba(255, 248, 238, .96) 0%, rgba(255, 248, 238, .88) 55%, rgba(255, 248, 238, .35) 100%), var(--img); background-size: cover; background-position: center; }
+.pl-cat td { background-image: linear-gradient(90deg, rgba(255, 248, 238, .96) 0%, rgba(255, 248, 238, .88) 55%, rgba(255, 248, 238, .35) 100%), var(--img, none); background-size: cover; background-position: center; }
 .pl-prod img { width: 52px; height: 52px; border-radius: 12px; box-shadow: 0 4px 12px rgba(42, 22, 48, .18); }
 
 /* ---------- richer product photos ---------- */

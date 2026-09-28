@@ -41,6 +41,15 @@
         toTop.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
     }
 
+    // ---- category header photos load only when the section comes near the screen (saves ~3 MB on first load)
+    (function () {
+        var heads = document.querySelectorAll("[data-bg]");
+        function show(el) { var u = el.getAttribute("data-bg"); if (window.SHOP_STATIC) u = u.replace(/^\//, ""); el.style.setProperty("--img", "url('" + u + "')"); el.removeAttribute("data-bg"); }
+        if (!("IntersectionObserver" in window)) { heads.forEach(show); return; }
+        var io = new IntersectionObserver(function (en) { en.forEach(function (e) { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } }); }, { rootMargin: "600px 0px" });
+        heads.forEach(function (h) { io.observe(h); });
+    })();
+
     // ---- keep sticky elements under the (taller) header
     var header = document.querySelector(".shop-header");
     function measure() { if (header) document.documentElement.style.setProperty("--shop-hdr", header.offsetHeight + "px"); }
