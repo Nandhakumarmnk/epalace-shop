@@ -568,3 +568,243 @@
     if (search) search.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); search.blur(); var p = document.getElementById("products"); if (p) p.scrollIntoView({ behavior: "smooth" }); } });
     syncChips(); renderActive();
 })();
+
+// =================================================================================================
+// Wishlist (saved on this device) + search suggestions
+// =================================================================================================
+(function () {
+    "use strict";
+    var cart = window.ShopCart || {};
+    var items = cart.items || {};
+    function ta() { return document.documentElement.lang === "ta"; }
+    function L(en, t) { return ta() ? t : en; }
+    function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+    function money(v) { return cart.money ? cart.money(v) : "₹" + v; }
+    function nm(i) { return cart.name ? cart.name(i) : i.name; }
+    function toast(m) { if (cart.toast) cart.toast(m); }
+    function load(k, d) { try { var v = JSON.parse(localStorage.getItem(k) || "null"); return v == null ? d : v; } catch (e) { return d; } }
+    function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+
+    // ---------------------------------------------------------------- wishlist
+    var WKEY = "epalace-wish";
+    var wish = (load(WKEY, []) || []).map(String).filter(function (id, i, a) { return items[id] && a.indexOf(id) === i; });
+    function has(id) { return wish.indexOf(String(id)) !== -1; }
+    function heart(id, cls) {
+        return '<button type="button" class="' + cls + '" data-wish="' + id + '" aria-pressed="false" aria-label="' + esc(L("Save to wishlist", "விருப்பப் பட்டியலில் சேர்")) + '"><i class="bi bi-heart"></i></button>';
+    }
+    // hearts on product cards and price-list rows
+    document.querySelectorAll(".product-card[data-item] .fest-art").forEach(function (art) {
+        var id = art.closest("[data-item]").getAttribute("data-item");
+        art.insertAdjacentHTML("beforeend", heart(id, "wish-btn"));
+    });
+    document.querySelectorAll("tr[data-item] .pl-prod").forEach(function (p) {
+        var id = p.closest("[data-item]").getAttribute("data-item");
+        p.insertAdjacentHTML("beforeend", heart(id, "wish-btn wish-sm"));
+    });
+
+    function renderWish() {
+        document.querySelectorAll("[data-wish-count]").forEach(function (c) { c.textContent = String(wish.length); c.classList.toggle("d-none", wish.length === 0 && c.classList.contains("wish-count")); });
+        document.querySelectorAll(".wish-hdr").forEach(function (b) { b.classList.toggle("has", wish.length > 0); var i = b.querySelector(".bi"); if (i) i.className = "bi " + (wish.length ? "bi-heart-fill" : "bi-heart"); });
+        document.querySelectorAll("[data-wish]").forEach(function (b) {
+            var on = has(b.getAttribute("data-wish"));
+            b.classList.toggle("on", on); b.setAttribute("aria-pressed", on ? "true" : "false");
+            b.setAttribute("aria-label", on ? L("Remove from wishlist", "பட்டியலிலிருந்து நீக்கு") : L("Save to wishlist", "விருப்பப் பட்டியலில் சேர்"));
+            var i = b.querySelector(".bi"); if (i) i.className = "bi " + (on ? "bi-heart-fill" : "bi-heart");
+        });
+        var box = document.querySelector("[data-wish-lines]");
+        if (box) {
+            box.innerHTML = wish.length ? wish.map(function (id) {
+                var i = items[id];
+                return '<div class="wish-line" data-id="' + id + '"><img src="' + esc(i.photo || "") + '" alt="" loading="lazy" />' +
+                    '<div class="flex-grow-1 min-w-0"><div class="fw-700 truncate">' + esc(nm(i)) + '</div>' +
+                    '<div class="fs-12"><b class="wish-price">' + money(i.price) + '</b>' + (i.mrp > i.price ? ' <s class="text-muted">' + money(i.mrp) + '</s> <span class="text-ok fw-700">' + i.discount + '% OFF</span>' : "") + '</div></div>' +
+                    '<button type="button" class="btn btn-sm btn-fest" data-wish-add="' + id + '" aria-label="' + esc(L("Add to cart", "கூடையில் சேர்")) + '"><i class="bi bi-bag-plus"></i></button>' +
+                    '<button type="button" class="btn btn-sm btn-light" data-wish="' + id + '" aria-label="' + esc(L("Remove", "நீக்கு")) + '"><i class="bi bi-x-lg"></i></button></div>';
+            }).join("") : '<div class="wish-empty"><i class="bi bi-heart"></i><div class="fw-700">' + esc(L("Your wishlist is empty", "உங்கள் பட்டியல் காலியாக உள்ளது")) + '</div><div class="fs-13">' +
+                esc(L("Tap ♥ on any cracker to save it for later.", "பின்னர் வாங்க எந்தப் பட்டாசிலும் ♥ தட்டுங்கள்.")) + "</div></div>";
+        }
+        var acts = document.querySelector("[data-wish-actions]");
+        if (acts) acts.classList.toggle("d-none", wish.length === 0);
+        var tot = document.querySelector("[data-wish-total]");
+        if (tot) tot.textContent = money(wish.reduce(function (s, id) { return s + items[id].price; }, 0));
+    }
+    function toggle(id, btn) {
+        id = String(id);
+        if (!items[id]) return;
+        if (has(id)) { wish.splice(wish.indexOf(id), 1); toast(L("Removed from wishlist", "பட்டியலிலிருந்து நீக்கப்பட்டது")); }
+        else { wish.unshift(id); toast("♥ " + nm(items[id]) + " — " + L("saved to your wishlist", "விருப்பப் பட்டியலில் சேர்க்கப்பட்டது")); }
+        save(WKEY, wish); renderWish();
+        if (btn) { btn.classList.remove("pop"); void btn.offsetWidth; btn.classList.add("pop"); }
+    }
+    document.addEventListener("click", function (e) {
+        var w = e.target.closest("[data-wish]");
+        if (w) { e.preventDefault(); e.stopPropagation(); toggle(w.getAttribute("data-wish"), w); return; }
+        var a = e.target.closest("[data-wish-add]");
+        if (a && cart.add) { cart.add(a.getAttribute("data-wish-add"), 1); return; }
+        if (e.target.closest("[data-wish-all]") && cart.add) {
+            wish.forEach(function (id) { cart.add(id, 1); });
+            toast(L(wish.length + " items added to your cart", wish.length + " பொருட்கள் கூடையில் சேர்க்கப்பட்டன"));
+            return;
+        }
+        if (e.target.closest("[data-wish-clear]")) { wish = []; save(WKEY, wish); renderWish(); return; }
+        if (e.target.closest("[data-wish-share]")) {
+            var msg = L("My ePALACE crackers wishlist:", "என் ePALACE பட்டாசு விருப்பப் பட்டியல்:") + "\n" +
+                wish.map(function (id, n) { var i = items[id]; return (n + 1) + ". " + nm(i) + " — " + money(i.price); }).join("\n") + "\n\n" + location.origin + "/";
+            window.open("https://wa.me/?text=" + encodeURIComponent(msg), "_blank", "noopener");
+        }
+    }, true);   // capture: hearts sit on the photo, which has its own click (photo popup)
+    window.addEventListener("storage", function (e) { if (e.key === WKEY) { wish = (load(WKEY, []) || []).map(String).filter(function (id) { return items[id]; }); renderWish(); } });
+    document.addEventListener("click", function (e) { if (e.target.closest("[data-set-lang]")) setTimeout(renderWish, 0); });
+    renderWish();
+    window.ShopWish = { toggle: toggle, list: function () { return wish.slice(); } };
+
+    // ---------------------------------------------------------------- search suggestions
+    var input = document.getElementById("shopSearch");
+    var wrap = input && input.closest(".ft-search");
+    if (!input || !wrap) return;
+    function norm(s) { return String(s || "").toLowerCase().replace(/[^\p{L}\p{M}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim(); }
+    var catNames = {};
+    document.querySelectorAll("[data-cat-chip]").forEach(function (c) {
+        var k = c.getAttribute("data-cat-chip"); if (!k) return;
+        var en = c.querySelector(".cc-name .en-only"), tn = c.querySelector(".cc-name .ta-only");
+        catNames[k] = { en: en ? en.textContent : k, ta: tn ? tn.textContent : k, emo: (c.querySelector(".cc-emo") || {}).textContent || "", n: (c.querySelector(".cc-n") || {}).textContent || "" };
+    });
+    var index = Object.keys(items).map(function (id) {
+        var i = items[id], cn = catNames[i.cat] || { en: "", ta: "" };
+        return { id: id, i: i, words: norm(i.name + " " + (i.nameTa || "") + " " + cn.en + " " + cn.ta + " " + (i.cat || "").replace(/-/g, " ")).split(" "), nameN: norm(i.name), taN: norm(i.nameTa || "") };
+    });
+    function lev1(a, b) {   // true when a and b differ by at most one edit (typo tolerance)
+        if (Math.abs(a.length - b.length) > 1) return false;
+        var i = 0, j = 0, edits = 0;
+        while (i < a.length && j < b.length) {
+            if (a[i] === b[j]) { i++; j++; continue; }
+            if (++edits > 1) return false;
+            if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+        }
+        return edits + (a.length - i) + (b.length - j) <= 1;
+    }
+    function search(q) {
+        var terms = norm(q).split(" ").filter(Boolean);
+        if (!terms.length) return [];
+        return index.map(function (e) {
+            var score = 0;
+            for (var t = 0; t < terms.length; t++) {
+                var term = terms[t], best = 0;
+                e.words.forEach(function (w) {
+                    if (w === term) best = Math.max(best, 4);
+                    else if (w.indexOf(term) === 0) best = Math.max(best, 3);
+                    else if (term.length >= 3 && w.indexOf(term) > 0) best = Math.max(best, 1.5);
+                    else if (term.length >= 4 && lev1(term, w.slice(0, Math.max(term.length, Math.min(w.length, term.length + 1))))) best = Math.max(best, 1);
+                });
+                if (!best) return null;   // every word typed must match something
+                score += best;
+            }
+            if (e.nameN.indexOf(terms[0]) === 0 || e.taN.indexOf(terms[0]) === 0) score += 2;
+            return { e: e, s: score };
+        }).filter(Boolean).sort(function (a, b) { return b.s - a.s || a.e.i.price - b.e.i.price; }).slice(0, 7).map(function (x) { return x.e; });
+    }
+    function mark(text, q) {
+        var terms = norm(q).split(" ").filter(function (t) { return t.length > 0; }), low = text.toLowerCase(), hits = [];
+        terms.forEach(function (t) { var k = low.indexOf(t); if (k !== -1) hits.push([k, k + t.length]); });
+        hits.sort(function (a, b) { return a[0] - b[0]; });
+        var out = "", pos = 0;
+        hits.forEach(function (h) { if (h[0] < pos) return; out += esc(text.slice(pos, h[0])) + "<mark>" + esc(text.slice(h[0], h[1])) + "</mark>"; pos = h[1]; });
+        return out + esc(text.slice(pos));
+    }
+
+    var drop = document.createElement("div");
+    drop.className = "ss-drop"; drop.id = "shopSuggest"; drop.setAttribute("role", "listbox"); drop.hidden = true;
+    wrap.appendChild(drop);
+    input.setAttribute("role", "combobox"); input.setAttribute("aria-autocomplete", "list"); input.setAttribute("aria-controls", "shopSuggest"); input.setAttribute("aria-expanded", "false");
+    var RKEY = "epalace-recent-search", opts = [], active = -1;
+    var POPULAR = ["1000 wala", "flower pot", "sparklers", "rocket", "chakkar", "gift box"];
+
+    function open(html) {
+        drop.innerHTML = html; drop.hidden = !html; input.setAttribute("aria-expanded", html ? "true" : "false");
+        opts = Array.prototype.slice.call(drop.querySelectorAll("[data-ss]")); setActive(-1);
+    }
+    function close() { drop.hidden = true; input.setAttribute("aria-expanded", "false"); active = -1; input.removeAttribute("aria-activedescendant"); }
+    function setActive(n) {
+        active = n;
+        opts.forEach(function (o, k) { o.classList.toggle("active", k === n); o.setAttribute("aria-selected", k === n ? "true" : "false"); });
+        if (n >= 0 && opts[n]) { input.setAttribute("aria-activedescendant", opts[n].id); opts[n].scrollIntoView({ block: "nearest" }); } else input.removeAttribute("aria-activedescendant");
+    }
+    function renderSuggest() {
+        var q = input.value.trim();
+        if (!q) {
+            var recent = load(RKEY, []) || [];
+            var html = "";
+            if (recent.length) html += '<div class="ss-head">' + esc(L("Recent searches", "சமீபத்திய தேடல்கள்")) + '<button type="button" class="ss-clear-recent" data-ss-clear>' + esc(L("Clear", "நீக்கு")) + "</button></div>" +
+                recent.map(function (r, k) { return '<div class="ss-opt ss-term" role="option" id="ss-r' + k + '" data-ss="term" data-v="' + esc(r) + '"><i class="bi bi-clock-history"></i> ' + esc(r) + "</div>"; }).join("");
+            html += '<div class="ss-head">' + esc(L("Popular", "பிரபலமானவை")) + '</div><div class="ss-pop">' +
+                POPULAR.map(function (p, k) { return '<button type="button" class="ss-chip" role="option" id="ss-p' + k + '" data-ss="term" data-v="' + esc(p) + '">🔥 ' + esc(p) + "</button>"; }).join("") + "</div>";
+            open(html); return;
+        }
+        var res = search(q), qn = norm(q);
+        var cats = Object.keys(catNames).filter(function (k) { var c = catNames[k]; return norm(c.en).indexOf(qn) !== -1 || norm(c.ta).indexOf(qn) !== -1 || k.indexOf(qn.replace(/ /g, "-")) !== -1; }).slice(0, 2);
+        var html2 = cats.map(function (k, n) { var c = catNames[k]; return '<div class="ss-opt ss-cat" role="option" id="ss-c' + n + '" data-ss="cat" data-v="' + k + '"><span class="ss-emo">' + esc(c.emo) + "</span><span>" + mark(ta() ? c.ta : c.en, q) + ' <small>· ' + esc(c.n) + " " + esc(L("items", "பொருட்கள்")) + '</small></span><i class="bi bi-arrow-right ms-auto"></i></div>'; }).join("");
+        html2 += res.map(function (e, n) {
+            var i = e.i, name = nm(i);
+            return '<div class="ss-opt ss-prod" role="option" id="ss-i' + n + '" data-ss="item" data-v="' + e.id + '">' +
+                '<img src="' + esc(i.photo || "") + '" alt="" loading="lazy" /><div class="min-w-0 flex-grow-1"><div class="ss-name">' + mark(name, q) + "</div>" +
+                '<div class="ss-price"><b>' + money(i.price) + "</b>" + (i.mrp > i.price ? " <s>" + money(i.mrp) + '</s> <span>' + i.discount + "% OFF</span>" : "") + "</div></div>" +
+                '<button type="button" class="ss-add" data-ss-add="' + e.id + '" aria-label="' + esc(L("Add to cart", "கூடையில் சேர்")) + '"><i class="bi bi-plus-lg"></i></button></div>';
+        }).join("");
+        if (!html2) html2 = '<div class="ss-none"><i class="bi bi-emoji-frown"></i> ' + esc(L("No crackers match “" + q + "”. Try another word or ask our chat helper.", "“" + q + "” பொருந்தவில்லை. வேறு சொல்லை முயற்சிக்கவும் அல்லது உதவியாளரிடம் கேளுங்கள்.")) + "</div>";
+        else html2 += '<div class="ss-foot" data-ss="all" role="option" id="ss-all">' + esc(L("See all results for “" + q + "”", "“" + q + "” க்கான எல்லா முடிவுகளும்")) + " ↵</div>";
+        open(html2);
+    }
+    function remember(q) {
+        q = (q || "").trim(); if (q.length < 2) return;
+        var r = (load(RKEY, []) || []).filter(function (x) { return x.toLowerCase() !== q.toLowerCase(); });
+        r.unshift(q); save(RKEY, r.slice(0, 5));
+    }
+    function fire(el, t) { el.dispatchEvent(new Event(t, { bubbles: true })); }
+    function goTo(id) {
+        // show everything, then bring the product into view and flash it
+        remember(input.value);
+        input.value = ""; fire(input, "input"); clearTimeout(input._ss); input.blur();   // don't reopen the list
+        var cat = document.getElementById("shopCat"); if (cat && cat.value) { cat.value = ""; fire(cat, "change"); }
+        var off = document.getElementById("offersOnly"); if (off && off.checked) { off.checked = false; fire(off, "change"); }
+        if (document.body.getAttribute("data-audience")) { var ev = document.querySelector('.aud-chip[data-audience=""]'); if (ev) ev.click(); }
+        close();
+        setTimeout(function () {
+            var el = document.querySelector('[data-view-pane]:not(.d-none) [data-item="' + id + '"]');
+            if (!el) return;
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            el.classList.remove("ss-flash"); void el.offsetWidth; el.classList.add("ss-flash");
+        }, 120);
+    }
+    function choose(o) {
+        var kind = o.getAttribute("data-ss"), v = o.getAttribute("data-v");
+        if (kind === "item") goTo(v);
+        else if (kind === "cat") { remember(input.value); input.value = ""; fire(input, "input"); clearTimeout(input._ss); input.blur(); var chip = document.querySelector('[data-cat-chip="' + v + '"]'); if (chip) chip.click(); close(); }
+        else if (kind === "term") { input.value = v; fire(input, "input"); renderSuggest(); input.focus(); }
+        else if (kind === "all") { remember(input.value); close(); var p = document.getElementById("products"); if (p) p.scrollIntoView({ behavior: "smooth" }); }
+    }
+
+    input.addEventListener("input", function () { clearTimeout(input._ss); input._ss = setTimeout(renderSuggest, 90); });
+    input.addEventListener("focus", renderSuggest);
+    document.addEventListener("keydown", function (e) {
+        if (e.target !== input || drop.hidden) return;
+        if (e.key === "ArrowDown") { e.preventDefault(); setActive(Math.min(opts.length - 1, active + 1)); }
+        else if (e.key === "ArrowUp") { e.preventDefault(); setActive(Math.max(-1, active - 1)); }
+        else if (e.key === "Escape") { e.preventDefault(); close(); }
+        else if (e.key === "Enter") {
+            remember(input.value);
+            if (active >= 0 && opts[active]) { e.preventDefault(); e.stopImmediatePropagation(); choose(opts[active]); }
+            else close();
+        }
+    }, true);
+    drop.addEventListener("mousedown", function (e) { e.preventDefault(); });   // keep focus in the box while clicking
+    drop.addEventListener("click", function (e) {
+        var add = e.target.closest("[data-ss-add]");
+        if (add && cart.add) { cart.add(add.getAttribute("data-ss-add"), 1); add.classList.add("done"); add.innerHTML = '<i class="bi bi-check-lg"></i>'; return; }
+        if (e.target.closest("[data-ss-clear]")) { save(RKEY, []); renderSuggest(); return; }
+        var o = e.target.closest("[data-ss]"); if (o) choose(o);
+    });
+    // outside click closes; use the event path because the "+" button swaps its icon during the click
+    document.addEventListener("click", function (e) { var p = e.composedPath ? e.composedPath() : [e.target]; if (p.indexOf(wrap) === -1) close(); });
+    // close when focus leaves the search box and its list (tapping "+" inside the list keeps it open)
+    wrap.addEventListener("focusout", function (e) { setTimeout(function () { if (!wrap.contains(document.activeElement)) close(); }, 150); });
+})();
