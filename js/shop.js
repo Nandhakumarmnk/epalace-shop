@@ -129,15 +129,14 @@
         // checkout page
         var json = document.getElementById("CartJson");
         if (json) json.value = JSON.stringify(lines().map(function (l) { return { itemId: l.item.id, qty: l.qty }; }));
-        var submit = document.querySelector("[data-place-order]");
-        if (submit) submit.disabled = t.units === 0;
-        var review = document.querySelector("[data-checkout-lines]");
-        if (review) {
+        // checkout: the Place order buttons are enabled by the form checklist in shop-extras.js (cart + required fields)
+        if (typeof window.ShopCheckoutGate === "function") window.ShopCheckoutGate();
+        document.querySelectorAll("[data-checkout-lines]").forEach(function (review) {
             review.innerHTML = lines().length ? lines().map(function (l) {
                 return '<tr><td><div class="fw-600">' + esc(NM(l.item)) + '</div><div class="cell-sub">' + money(l.item.price) + (l.item.discount > 0 ? ' · <s>' + money(l.item.mrp) + '</s>' : '') + '</div></td>' +
                     '<td class="text-center fw-700">' + l.qty + '</td><td class="text-end money fw-600">' + money(l.item.price * l.qty) + '</td></tr>';
             }).join("") : '<tr><td colspan="3" class="text-center text-muted py-4">' + esc(T("cart.empty", "Your cart is empty")) + ' — <a href="' + (window.SHOP_CHECKOUT_URL || "/Shop").replace(/Checkout$/, "") + '">' + esc(T("addProducts", "add products")) + '</a>.</td></tr>';
-        }
+        });
     }
 
     function add(id, qty) {
@@ -452,15 +451,17 @@
 
     // ---- checkout: one tap only, show progress
     var form = document.querySelector('form[action*="PlaceOrder"]');
-    if (form) form.addEventListener("submit", function () {
-        var btn = form.querySelector("[data-place-order]");
-        if (!btn) return;
-        if (btn.dataset.busy) return;
-        btn.dataset.busy = "1";
+    if (form) form.addEventListener("submit", function (e) {
+        if (e.defaultPrevented) return;   // blocked by the checklist or client validation
+        var btns = document.querySelectorAll("[data-place-order]");
+        if (!btns.length || form.dataset.busy) { if (form.dataset.busy) e.preventDefault(); return; }
+        form.dataset.busy = "1";
         setTimeout(function () {
-            btn.disabled = true;
             var ta = document.documentElement.lang === "ta";
-            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + (ta ? "ஆர்டர் செய்யப்படுகிறது…" : "Placing your order…");
+            btns.forEach(function (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + (ta ? "ஆர்டர் செய்யப்படுகிறது…" : "Placing your order…");
+            });
         }, 0);
     });
 })();

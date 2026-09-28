@@ -33,6 +33,14 @@
     });
     document.addEventListener("submit", function (e) { if (loader && !e.defaultPrevented && !e.target.matches("[data-chat-form]")) loader.classList.remove("done"); });
 
+    // ---- back to top (appears after scrolling two screens)
+    var toTop = document.querySelector("[data-to-top]");
+    if (toTop) {
+        var onScroll = function () { toTop.classList.toggle("show", window.scrollY > window.innerHeight * 2); };
+        window.addEventListener("scroll", onScroll, { passive: true }); onScroll();
+        toTop.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: "smooth" }); });
+    }
+
     // ---- keep sticky elements under the (taller) header
     var header = document.querySelector(".shop-header");
     function measure() { if (header) document.documentElement.style.setProperty("--shop-hdr", header.offsetHeight + "px"); }
@@ -63,6 +71,8 @@
     // ---- welcome offer popup: once per visit, after the loader, only while the offer is running
     var pop = document.getElementById("offerPop");
     if (pop && window.bootstrap && (!ends || left().ms > 0) && !get("sessionStorage", "epalace-offer-seen") && !/[?&]nopopup/.test(location.search)) {
+        var gif = pop.querySelector("img.op-gif[data-src]");
+        if (gif) { gif.src = gif.getAttribute("data-src"); gif.addEventListener("load", function () { gif.classList.add("loaded"); }, { once: true }); }
         setTimeout(function () {
             if (document.querySelector(".modal.show, .offcanvas.show")) return;
             window.bootstrap.Modal.getOrCreateInstance(pop).show();
@@ -170,7 +180,7 @@
               return { html: L("🛒 You have <b>" + t.count + "</b> product(s), " + t.units + " unit(s). You save <b>" + money(t.saving) + "</b>; overall total <b>" + money(t.total) + "</b>.", "🛒 உங்கள் கூடையில் <b>" + t.count + "</b> பொருட்கள், " + t.units + " அலகுகள். சேமிப்பு <b>" + money(t.saving) + "</b>; மொத்தம் <b>" + money(t.total) + "</b>."), actions: [{ t: L("✅ Place order", "✅ ஆர்டர் செய்"), go: "checkout" }, { t: L("🛒 Open cart", "🛒 கூடை"), go: "cart" }] };
           } },
         { id: "status", words: ["status", "track", "where is my order", "not received", "cancel", "change my order", "ஆர்டர் நிலை", "ரத்து"],
-          reply: function () { return { html: L("📦 For the status of an order, changes or cancellation, our team will help you personally — tap below and send your name and phone number.", "📦 ஆர்டர் நிலை, மாற்றம் அல்லது ரத்து செய்ய எங்கள் குழு நேரடியாக உதவும் — கீழே அழுத்தி உங்கள் பெயர், தொலைபேசி எண்ணை அனுப்புங்கள்."), actions: [{ t: L("💬 Ask our team", "💬 குழுவிடம் கேளுங்கள்"), go: "human" }] }; } },
+          reply: function () { return { html: L("📦 Track your order any time with your invoice number and mobile number. For changes or cancellation, our team will help you personally.", "📦 விலைப்பட்டியல் எண், மொபைல் எண் கொண்டு எப்போது வேண்டுமானாலும் ஆர்டரைக் கண்காணிக்கலாம். மாற்றம் அல்லது ரத்து செய்ய எங்கள் குழு உதவும்."), actions: [{ t: L("🚚 Track my order", "🚚 ஆர்டரைக் கண்காணி"), go: "track" }, { t: L("💬 Ask our team", "💬 குழுவிடம் கேளுங்கள்"), go: "human" }] }; } },
         { id: "legal", words: ["legal", "supreme court", "court", "allowed", "licence", "license", "law", "explosive", "சட்ட", "நீதிமன்ற"],
           reply: function () { return { html: L("⚖️ As per the 2018 Supreme Court order, firecrackers are not sold online directly. Add items to your cart and submit them as an order / enquiry — we confirm by phone or WhatsApp within 24 hours. Our shops and godowns follow the Explosives Act.", "⚖️ 2018 உச்ச நீதிமன்ற உத்தரவின்படி பட்டாசுகள் நேரடியாக ஆன்லைனில் விற்கப்படுவதில்லை. கூடையில் சேர்த்து ஆர்டர் / விசாரணையாக அனுப்புங்கள் — 24 மணி நேரத்தில் தொலைபேசி / WhatsApp-ல் உறுதி செய்வோம். எங்கள் கடைகள், கிடங்குகள் வெடிபொருள் சட்டப்படி உள்ளன."), actions: [{ t: L("📜 Read the notice", "📜 அறிவிப்பைப் படிக்க"), go: "legal" }] }; } },
         { id: "contact", words: ["contact", "phone", "call", "number", "mobile", "address", "location", "where", "shop address", "map", "visit", "email", "whatsapp", "முகவரி", "தொலைபேசி", "எங்கே", "அழைக்க"],
@@ -297,6 +307,7 @@
             case "human": window.open(humanUrl(), "_blank", "noopener"); break;
             case "call": if (biz.phone) location.href = "tel:" + biz.phone.replace(/[^\d+]/g, ""); break;
             case "legal": scrollTo("#legal"); break;
+            case "track": location.href = window.SHOP_STATIC ? "https://wa.me/" + WA : "/Shop/Track"; break;
             case "contact": scrollTo("#contact"); break;
         }
     }
@@ -337,4 +348,223 @@
     if (human) human.addEventListener("click", function () { human.href = humanUrl(); });
     // language switch: refresh the topic chips in the new language
     document.addEventListener("click", function (e) { if (e.target.closest("[data-set-lang]")) setTimeout(renderChips, 0); });
+})();
+
+// =================================================================================================
+// Checkout: live validation, "what is missing" checklist, Place order stays disabled until complete,
+// digits-only phone / PIN, remembered details for returning customers. The server re-validates everything.
+// =================================================================================================
+(function () {
+    "use strict";
+    var form = document.querySelector("[data-checkout-form]");
+    if (!form) return;
+    var cart = window.ShopCart || {};
+    function ta() { return document.documentElement.lang === "ta"; }
+    function $(id) { return document.getElementById(id); }
+    function digits(v) { return String(v || "").replace(/\D/g, ""); }
+    function mobile(v) { var d = digits(v); if (d.length === 12 && d.indexOf("91") === 0) d = d.slice(2); else if (d.length === 11 && d.charAt(0) === "0") d = d.slice(1); return d; }
+    var FIELDS = [
+        { id: "CustomerName", en: "Full name", t: "முழு பெயர்", ok: function (v) { v = v.trim(); return v.length >= 2 && /[^\s\d]/.test(v) && !/[0-9<>{}\[\]@#$%^*=|\\\/]/.test(v); },
+          msg: ["Please enter your full name (letters only).", "முழு பெயரை உள்ளிடவும் (எழுத்துகள் மட்டும்)."] },
+        { id: "PhoneNumber", en: "Mobile number", t: "மொபைல் எண்", ok: function (v) { return /^[6-9]\d{9}$/.test(mobile(v)); },
+          msg: ["Enter a 10-digit mobile number starting with 6–9.", "6–9 இல் தொடங்கும் 10 இலக்க மொபைல் எண்ணை உள்ளிடவும்."] },
+        { id: "AlternatePhone", optional: true, ok: function (v) { return !v.trim() || (/^[6-9]\d{9}$/.test(mobile(v)) && mobile(v) !== mobile($("PhoneNumber").value)); },
+          msg: ["Enter a different 10-digit mobile number, or leave it empty.", "வேறு 10 இலக்க எண்ணை உள்ளிடவும், அல்லது காலியாக விடவும்."] },
+        { id: "Email", optional: true, ok: function (v) { return !v.trim() || /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); },
+          msg: ["Enter a valid email, or leave it empty.", "சரியான மின்னஞ்சலை உள்ளிடவும், அல்லது காலியாக விடவும்."] },
+        { id: "Address", en: "Delivery address", t: "டெலிவரி முகவரி", ok: function (v) { return v.trim().length >= 10; },
+          msg: ["Enter the full address — door no, street and area.", "முழு முகவரி — கதவு எண், தெரு, பகுதி."] },
+        { id: "City", en: "City / town", t: "ஊர்", ok: function (v) { return v.trim().length >= 2; },
+          msg: ["Enter your city or town.", "ஊரை உள்ளிடவும்."] },
+        { id: "Pincode", en: "PIN code", t: "அஞ்சல் குறியீடு", ok: function (v) { return /^[1-9]\d{5}$/.test(v.trim()); },
+          msg: ["PIN code must be 6 digits.", "அஞ்சல் குறியீடு 6 இலக்கங்கள்."] }
+    ].filter(function (f) { return !!$(f.id); });
+    var touched = {}, tried = false;
+
+    // remembered details (this device only)
+    var KEY = "epalace-customer";
+    try {
+        var saved = JSON.parse(localStorage.getItem(KEY) || "null");
+        if (saved) FIELDS.forEach(function (f) { var el = $(f.id); if (el && !el.value && saved[f.id]) el.value = saved[f.id]; });
+    } catch (e) { }
+
+    function msgEl(f) {
+        var el = $(f.id), box = el.closest(".co-field") || el.parentElement;
+        var m = box.querySelector(".co-msg");
+        if (!m) { m = document.createElement("div"); m.className = "co-msg"; box.appendChild(m); }
+        return m;
+    }
+    function gate() {
+        var missing = [], allOk = true;
+        FIELDS.forEach(function (f) {
+            var el = $(f.id), good = f.ok(el.value || "");
+            if (!good) { allOk = false; if (!f.optional || (el.value || "").trim()) missing.push(f); }
+            var show = touched[f.id] || tried;
+            el.classList.toggle("is-valid", good && (el.value || "").trim() !== "" && show);
+            el.classList.toggle("is-invalid", !good && show);
+            el.setAttribute("aria-invalid", !good && show ? "true" : "false");
+            var m = msgEl(f);
+            m.textContent = !good && show ? f.msg[ta() ? 1 : 0] : "";
+        });
+        var units = cart.totals ? cart.totals().units : 0;
+        var ready = allOk && units > 0;
+        document.querySelectorAll("[data-place-order]").forEach(function (b) {
+            if (form.dataset.busy) return;
+            b.setAttribute("aria-disabled", ready ? "false" : "true");
+            b.classList.toggle("is-ready", ready);
+            b.querySelectorAll("[data-co-ready]").forEach(function (s) { s.classList.toggle("d-none", !ready); });
+            b.querySelectorAll("[data-co-wait]").forEach(function (s) { s.classList.toggle("d-none", ready); });
+        });
+        var list = document.querySelector("[data-co-check]");
+        if (list) {
+            var items = [];
+            if (units === 0) items.push('<li class="bad"><a href="/Shop"><i class="bi bi-bag-x"></i> ' + (ta() ? "கூடை காலியாக உள்ளது — பட்டாசுகளைச் சேர்க்கவும்" : "Your cart is empty — add crackers") + "</a></li>");
+            FIELDS.filter(function (f) { return !f.optional; }).forEach(function (f) {
+                var good = f.ok($(f.id).value || "");
+                items.push('<li class="' + (good ? "good" : "bad") + '"><button type="button" data-co-jump="' + f.id + '"><i class="bi ' + (good ? "bi-check-circle-fill" : "bi-circle") + '"></i> ' + (ta() ? f.t : f.en) + "</button></li>");
+            });
+            list.innerHTML = ready ? "" : items.join("");
+        }
+        var hint = document.querySelector("[data-co-hint]");
+        if (hint) hint.textContent = ready ? (ta() ? "தயார் — ஆர்டர் செய்யுங்கள்" : "Ready — place your order")
+            : units === 0 ? (ta() ? "கூடை காலியாக உள்ளது" : "Your cart is empty")
+            : (ta() ? "நிரப்ப வேண்டியவை: " : "Still needed: ") + missing.map(function (f) { return ta() ? (f.t || f.id) : (f.en || f.id); }).join(", ");
+        return ready;
+    }
+    window.ShopCheckoutGate = gate;
+    form.setAttribute("data-js", "1");   // the live messages below replace the per-field jQuery ones
+
+    FIELDS.forEach(function (f) {
+        var el = $(f.id);
+        el.addEventListener("input", function () {
+            if (el.hasAttribute("data-digits")) {   // phones / PIN: digits only (a leading + is allowed for +91)
+                var v = el.value, clean = v.replace(/(?!^\+)[^\d]/g, "");
+                if (clean !== v) el.value = clean;
+            }
+            if (el.classList.contains("is-invalid")) touched[f.id] = true;
+            gate();
+        });
+        el.addEventListener("blur", function () { if ((el.value || "").trim() || tried) touched[f.id] = true; gate(); });
+    });
+    document.addEventListener("click", function (e) {
+        var j = e.target.closest("[data-co-jump]");
+        if (j) { var el = $(j.getAttribute("data-co-jump")); touched[el.id] = true; gate(); el.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(function () { el.focus(); }, 250); }
+    });
+    // runs before the other submit handlers (capture phase): stop incomplete orders and show what is missing
+    document.addEventListener("submit", function (e) {
+        if (e.target !== form) return;
+        tried = true;
+        if (!gate()) {
+            e.preventDefault(); e.stopImmediatePropagation();
+            var first = FIELDS.filter(function (f) { return !f.ok($(f.id).value || ""); })[0];
+            if (first) { $(first.id).scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(function () { $(first.id).focus(); }, 250); }
+            else if (cart.toast) cart.toast(ta() ? "கூடை காலியாக உள்ளது" : "Your cart is empty");
+            return;
+        }
+        var rem = form.querySelector("[data-remember]");
+        try {
+            if (rem && rem.checked) { var o = {}; FIELDS.forEach(function (f) { if (f.id !== "Notes") o[f.id] = $(f.id).value; }); localStorage.setItem(KEY, JSON.stringify(o)); }
+            else localStorage.removeItem(KEY);
+        } catch (err) { }
+    }, true);
+    document.addEventListener("click", function (e) { if (e.target.closest("[data-set-lang]")) setTimeout(gate, 0); });
+    // server returned validation errors: show them straight away
+    if (form.querySelector(".field-validation-error, .validation-summary-errors")) tried = true;
+    gate();
+})();
+
+// =================================================================================================
+// Catalogue filters: category chips, clear-search button, active-filter pills ("Clear all")
+// =================================================================================================
+(function () {
+    "use strict";
+    var chipsBox = document.querySelector("[data-cat-chips]");
+    var catSel = document.getElementById("shopCat"), search = document.getElementById("shopSearch");
+    var offers = document.getElementById("offersOnly"), sort = document.getElementById("shopSort");
+    var active = document.querySelector("[data-active-filters]"), clear = document.querySelector("[data-search-clear]");
+    if (!chipsBox || !catSel) return;
+    function ta() { return document.documentElement.lang === "ta"; }
+    function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+    function fire(el, type) { el.dispatchEvent(new Event(type, { bubbles: true })); }
+
+    function syncChips() {
+        chipsBox.querySelectorAll("[data-cat-chip]").forEach(function (c) {
+            var on = c.getAttribute("data-cat-chip") === catSel.value;
+            c.classList.toggle("active", on); c.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        var cur = chipsBox.querySelector(".cat-chip.active");
+        if (cur && cur.scrollIntoView) { var box = chipsBox.getBoundingClientRect(), r = cur.getBoundingClientRect(); if (r.left < box.left || r.right > box.right) chipsBox.scrollBy({ left: r.left - box.left - 40, behavior: "smooth" }); }
+        arrows();
+    }
+    function arrows() {
+        var wrap = chipsBox.parentElement;
+        wrap.classList.toggle("can-prev", chipsBox.scrollLeft > 4);
+        wrap.classList.toggle("can-next", chipsBox.scrollLeft + chipsBox.clientWidth < chipsBox.scrollWidth - 4);
+    }
+    function renderActive() {
+        if (clear && search) clear.classList.toggle("d-none", !search.value);
+        if (!active) return;
+        var pills = [];
+        if (search && search.value.trim()) pills.push({ k: "q", t: "🔎 “" + search.value.trim() + "”" });
+        if (catSel.value) {
+            var c = chipsBox.querySelector('[data-cat-chip="' + catSel.value + '"]'), nm = c && (c.querySelector(".cc-name " + (ta() ? ".ta-only" : ".en-only")) || c.querySelector(".cc-name"));
+            pills.push({ k: "cat", t: c ? c.querySelector(".cc-emo").textContent + " " + nm.textContent.trim() : catSel.value });
+        }
+        if (offers && offers.checked) pills.push({ k: "offers", t: "🔥 " + (ta() ? "சலுகைகள்" : "Offers") });
+        var aud = document.body.getAttribute("data-audience");
+        if (aud) { var a = document.querySelector('.aud-chip[data-audience="' + aud + '"]'); pills.push({ k: "aud", t: a ? a.firstChild.textContent.trim() + " " + (a.querySelector(".en-only, .ta-only") ? "" : "") : aud }); }
+        if (sort && sort.value) pills.push({ k: "sort", t: "↕ " + sort.options[sort.selectedIndex].textContent });
+        active.classList.toggle("d-none", pills.length === 0);
+        // only touch the DOM when something changed — rebuilding during a tap (blur → change) would swallow the click
+        var html = pills.map(function (p) { return '<button type="button" class="af-pill" data-af="' + p.k + '">' + esc(p.t) + ' <i class="bi bi-x"></i></button>'; }).join("") +
+            (pills.length > 1 ? '<button type="button" class="af-clear" data-af="all">' + (ta() ? "அனைத்தையும் நீக்கு" : "Clear all") + "</button>" : "");
+        if (active.getAttribute("data-html") !== html) { active.innerHTML = html; active.setAttribute("data-html", html); }
+    }
+    function audLabel() {
+        var aud = document.body.getAttribute("data-audience"), a = aud && document.querySelector('.aud-chip[data-audience="' + aud + '"]');
+        if (!a) return aud;
+        var span = a.querySelector(ta() ? ".ta-only" : ".en-only");
+        return (a.textContent.trim().split(" ")[0] || "") + " " + (span ? span.textContent : "");
+    }
+    // nicer audience text in the pill
+    var baseRender = renderActive;
+    renderActive = function () {
+        baseRender();
+        var p = active && active.querySelector('[data-af="aud"]'), want = esc(audLabel()) + ' <i class="bi bi-x"></i>';
+        if (p && p.innerHTML !== want) p.innerHTML = want;
+    };
+
+    chipsBox.addEventListener("click", function (e) {
+        var c = e.target.closest("[data-cat-chip]");
+        if (!c) return;
+        catSel.value = c.getAttribute("data-cat-chip");
+        fire(catSel, "change");
+        syncChips(); renderActive();
+        var p = document.getElementById("products");
+        if (p && p.getBoundingClientRect().top < 0) p.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    document.addEventListener("click", function (e) {
+        var s = e.target.closest("[data-cc-scroll]");
+        if (s) chipsBox.scrollBy({ left: parseInt(s.getAttribute("data-cc-scroll"), 10) * chipsBox.clientWidth * 0.7, behavior: "smooth" });
+        var af = e.target.closest("[data-af]");
+        if (af) {
+            var k = af.getAttribute("data-af");
+            if ((k === "q" || k === "all") && search) { search.value = ""; fire(search, "input"); }
+            if (k === "cat" || k === "all") { catSel.value = ""; fire(catSel, "change"); }
+            if ((k === "offers" || k === "all") && offers && offers.checked) { offers.checked = false; fire(offers, "change"); }
+            if ((k === "sort" || k === "all") && sort) { sort.value = ""; fire(sort, "change"); }
+            if (k === "aud" || k === "all") { var ev = document.querySelector('.aud-chip[data-audience=""]'); if (ev) ev.click(); }
+            syncChips(); setTimeout(renderActive, 0);
+        }
+        if (e.target.closest(".aud-chip")) setTimeout(renderActive, 0);
+        if (e.target.closest("[data-cat-link]")) setTimeout(function () { syncChips(); renderActive(); }, 0);   // category tiles reset the filter in shop.js
+        if (e.target.closest("[data-set-lang]")) setTimeout(renderActive, 0);
+    });
+    if (clear) clear.addEventListener("click", function () { search.value = ""; fire(search, "input"); search.focus(); });
+    [search, offers, sort].forEach(function (el) { if (el) { el.addEventListener("input", renderActive); el.addEventListener("change", renderActive); } });
+    catSel.addEventListener("change", function () { syncChips(); renderActive(); });
+    chipsBox.addEventListener("scroll", arrows, { passive: true });
+    window.addEventListener("resize", arrows);
+    if (search) search.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); search.blur(); var p = document.getElementById("products"); if (p) p.scrollIntoView({ behavior: "smooth" }); } });
+    syncChips(); renderActive();
 })();

@@ -1181,3 +1181,7 @@ html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #334155; backgro
 /* Page-header dropdowns (Export etc.) must open above the filter bars and tables below */
 .page-header { position: relative; z-index: 40; }
 .page-header .dropdown-menu { z-index: 1065; min-width: 260px; }
+
+/* Settings ▸ Shop offer popup preview */
+.popup-preview { border-radius: 14px; overflow: hidden; aspect-ratio: 16 / 9; background: #14061f; border: 1px solid var(--line); }
+.popup-preview img { width: 100%; height: 100%; object-fit: cover; }
