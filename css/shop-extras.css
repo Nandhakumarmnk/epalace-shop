@@ -425,3 +425,18 @@ body.has-order-bar .to-top { bottom: 160px; }
 body:has(.offcanvas.show) .chat-fab, body:has(.offcanvas.show) .wa-float, body:has(.offcanvas.show) .to-top,
 body:has(.modal.show) .chat-fab, body:has(.modal.show) .wa-float, body:has(.modal.show) .to-top { display: none; }
 .wish-price { color: var(--fest-maroon); }
+
+/* the 90% badge reopens the offer popup */
+button.cb-off { border: 0; cursor: pointer; transition: transform .15s; animation: cb-nudge 2.8s ease-in-out infinite; }
+button.cb-off:hover { transform: scale(1.08) rotate(-4deg); }
+@keyframes cb-nudge { 0%, 85%, 100% { transform: none; } 90% { transform: scale(1.1) rotate(-6deg); } 95% { transform: scale(1.05) rotate(4deg); } }
+@media (prefers-reduced-motion: reduce) { button.cb-off { animation: none; } }
+
+/* performance: off-screen category sections are not laid out or painted until they come near the screen */
+.cat-section { content-visibility: auto; contain-intrinsic-size: auto 1400px; }
+.shop-footer { content-visibility: auto; contain-intrinsic-size: auto 900px; }
+@media (max-width: 576px) { .cat-section { contain-intrinsic-size: auto 2600px; } }
+
+/* price-list heart sits on the thumbnail corner so the product name keeps its width */
+.pl-prod .wish-btn.wish-sm { position: absolute; top: -6px; left: -6px; margin: 0; width: 26px; height: 26px; font-size: 12px; box-shadow: 0 2px 6px rgba(0,0,0,.2); background: #fff; }
+.pl-prod .wish-btn.wish-sm.on { background: linear-gradient(135deg, #ff5a7a, #e11d48); }

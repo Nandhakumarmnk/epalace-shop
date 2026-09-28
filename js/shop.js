@@ -278,8 +278,46 @@
     if (catSel) catSel.addEventListener("change", applyFilter);
     if (location.hash === "#offers" && offersOnly) { offersOnly.checked = true; }
 
+    // Price list rows are built from the product cards the first time the list is shown (the server sends the cards only)
+    function buildPriceList() {
+        var table = document.querySelector("[data-pl-table]");
+        if (!table || table.getAttribute("data-built")) return;
+        table.setAttribute("data-built", "1");
+        var html = [];
+        document.querySelectorAll('[data-view-pane="grid"] .cat-section').forEach(function (sec) {
+            var key = sec.getAttribute("data-cat-section"), head = sec.querySelector(".cat-head");
+            var hue = head ? head.style.getPropertyValue("--h") : "20", img = sec.getAttribute("data-img-sm") || "";
+            if (window.SHOP_STATIC) img = img.replace(/^\//, "../");
+            var cards = sec.querySelectorAll("[data-item]");
+            html.push('<tbody data-cat-section="' + key + '"><tr class="pl-cat" style="--h:' + hue + ";--img:url('" + img + "')\"><td colspan=\"5\"><span class=\"emo\">" +
+                (head && head.querySelector(".emo") ? head.querySelector(".emo").textContent : "") + "</span> " + (head && head.querySelector("h3") ? head.querySelector("h3").innerHTML : key) +
+                ' <span class="fs-12 opacity-75">· ' + cards.length + "</span></td></tr>");
+            cards.forEach(function (c) {
+                var id = c.getAttribute("data-item"), nameEn = c.getAttribute("data-name") || "";
+                var nameHtml = (c.querySelector(".product-name") || {}).innerHTML || esc(nameEn);
+                var unitHtml = (c.querySelector(".unit") || {}).innerHTML || "";
+                var photo = (c.querySelector("img.art-photo") || {}).getAttribute ? c.querySelector("img.art-photo").getAttribute("src") : "";
+                var offer = (c.querySelector(".price-offer") || {}).textContent || "", mrp = c.querySelector(".price-mrp"), rib = c.querySelector(".ribbon");
+                html.push('<tr data-item="' + id + '" data-name="' + esc(nameEn) + '" data-price="' + c.getAttribute("data-price") + '" data-cat="' + key + '" data-discount="' + c.getAttribute("data-discount") + '" data-search="' + esc(c.getAttribute("data-search") || "") + '">' +
+                    '<td><div class="pl-prod"><img src="' + esc(photo) + '" alt="" loading="lazy" role="button" tabindex="0" aria-label="View photo" /><div><div class="fw-700">' + nameHtml + "</div>" +
+                    (rib ? '<span class="pl-off">' + esc(rib.textContent) + "</span>" : "") + '<div class="d-md-none fs-12 text-muted">' + unitHtml + "</div></div></div></td>" +
+                    '<td class="d-none d-md-table-cell text-muted fs-13">' + unitHtml + "</td>" +
+                    '<td class="text-end"><div class="fw-800">' + esc(offer) + "</div>" + (mrp ? '<div class="fs-12"><s class="pl-mrp">' + esc(mrp.textContent) + "</s></div>" : "") + "</td>" +
+                    '<td class="text-center"><div class="qty-ctl qty-ctl-sm pl-stepper" data-list-stepper="' + id + '"><button type="button" data-list-dec="' + id + '" aria-label="Remove one ' + esc(nameEn) + '">−</button>' +
+                    '<input type="number" min="0" max="9999" data-list-qty="' + id + '" placeholder="0" inputmode="numeric" aria-label="Quantity of ' + esc(nameEn) + '" />' +
+                    '<button type="button" data-list-inc="' + id + '" aria-label="Add one ' + esc(nameEn) + '">+</button></div></td>' +
+                    '<td class="text-end fw-700 money" data-list-amount="' + id + '">—</td></tr>');
+            });
+            html.push("</tbody>");
+        });
+        table.insertAdjacentHTML("beforeend", html.join(""));
+        render(); applyFilter();
+        document.dispatchEvent(new Event("shop:pricelist"));
+    }
+
     // Cards / price-list toggle (remembered per browser)
     function setView(v) {
+        if (v === "list") buildPriceList();
         document.querySelectorAll("[data-view-pane]").forEach(function (p) { p.classList.toggle("d-none", p.getAttribute("data-view-pane") !== v); });
         document.querySelectorAll("[data-view]").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-view") === v); });
         try { localStorage.setItem("epalace-shop-view", v); } catch (e) { }
@@ -361,7 +399,7 @@
 
     render();
     applyLang(lang());
-    window.ShopCart = { add: add, setQty: setQty, lines: lines, totals: totals, items: items, money: money, lang: lang, name: NM, filter: applyFilter, setView: setView, toast: toast };
+    window.ShopCart = { add: add, setQty: setQty, lines: lines, totals: totals, items: items, money: money, lang: lang, name: NM, filter: applyFilter, setView: setView, toast: toast, render: render, buildPriceList: buildPriceList };
 })();
 
 // ---------------------------------------------------------------------------------------------

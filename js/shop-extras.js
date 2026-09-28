@@ -44,7 +44,7 @@
     // ---- category header photos load only when the section comes near the screen (saves ~3 MB on first load)
     (function () {
         var heads = document.querySelectorAll("[data-bg]");
-        function show(el) { var u = el.getAttribute("data-bg"); if (window.SHOP_STATIC) u = u.replace(/^\//, ""); el.style.setProperty("--img", "url('" + u + "')"); el.removeAttribute("data-bg"); }
+        function show(el) { var u = el.getAttribute("data-bg"); if (window.SHOP_STATIC) u = u.replace(/^\//, "../"); /* css-variable urls resolve from css/ */ el.style.setProperty("--img", "url('" + u + "')"); el.removeAttribute("data-bg"); }
         if (!("IntersectionObserver" in window)) { heads.forEach(show); return; }
         var io = new IntersectionObserver(function (en) { en.forEach(function (e) { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } }); }, { rootMargin: "600px 0px" });
         heads.forEach(function (h) { io.observe(h); });
@@ -53,7 +53,7 @@
     // ---- keep sticky elements under the (taller) header
     var header = document.querySelector(".shop-header");
     function measure() { if (header) document.documentElement.style.setProperty("--shop-hdr", header.offsetHeight + "px"); }
-    measure(); window.addEventListener("resize", measure);
+    requestAnimationFrame(measure); window.addEventListener("resize", measure);
 
     // ---- countdown to the offer end (one week before Diwali)
     var ends = promo.ends ? new Date(promo.ends).getTime() : 0;
@@ -68,9 +68,9 @@
         document.querySelectorAll("[data-countdown]").forEach(function (box) {
             ["d", "h", "m", "s"].forEach(function (k) {
                 var el = box.querySelector('[data-cd="' + k + '"]'), v = k === "d" ? String(t.d) : pad(t[k]);
-                if (el && el.textContent !== v) { el.textContent = v; el.classList.remove("flip"); void el.offsetWidth; el.classList.add("flip"); }
+                if (el && el.textContent !== v) { var first = el.textContent === "00" && !box._ticked; el.textContent = v; if (!first) { el.classList.remove("flip"); void el.offsetWidth; el.classList.add("flip"); } }
             });
-            box.classList.toggle("over", t.ms === 0);
+            box.classList.toggle("over", t.ms === 0); box._ticked = true;
         });
         document.querySelectorAll("[data-cd-live]").forEach(function (e) { e.classList.toggle("d-none", t.ms === 0); });
         document.querySelectorAll("[data-cd-over]").forEach(function (e) { e.classList.toggle("d-none", t.ms > 0); });
@@ -88,6 +88,14 @@
             put("sessionStorage", "epalace-offer-seen", "1");
         }, 1400);
     }
+
+    // ---- the 90% badge (countdown band) reopens the offer popup at any time
+    document.addEventListener("click", function (e) {
+        if (!e.target.closest("[data-open-offer]") || !pop || !window.bootstrap) return;
+        var g = pop.querySelector("img.op-gif[data-src]");
+        if (g && !g.getAttribute("src")) { g.src = g.getAttribute("data-src"); g.addEventListener("load", function () { g.classList.add("loaded"); }, { once: true }); }
+        window.bootstrap.Modal.getOrCreateInstance(pop).show();
+    });
 
     // ---- product photo popup: tap a product picture to see it large, add from there
     var box = document.getElementById("photoBox"), boxId = null;
@@ -575,7 +583,8 @@
     chipsBox.addEventListener("scroll", arrows, { passive: true });
     window.addEventListener("resize", arrows);
     if (search) search.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); search.blur(); var p = document.getElementById("products"); if (p) p.scrollIntoView({ behavior: "smooth" }); } });
-    syncChips(); renderActive();
+    renderActive();
+    requestAnimationFrame(function () { syncChips(); });
 })();
 
 // =================================================================================================
@@ -606,10 +615,15 @@
         var id = art.closest("[data-item]").getAttribute("data-item");
         art.insertAdjacentHTML("beforeend", heart(id, "wish-btn"));
     });
-    document.querySelectorAll("tr[data-item] .pl-prod").forEach(function (p) {
-        var id = p.closest("[data-item]").getAttribute("data-item");
-        p.insertAdjacentHTML("beforeend", heart(id, "wish-btn wish-sm"));
-    });
+    function rowHearts() {
+        document.querySelectorAll("tr[data-item] .pl-prod").forEach(function (p) {
+            if (p.querySelector(".wish-btn")) return;
+            var id = p.closest("[data-item]").getAttribute("data-item");
+            p.insertAdjacentHTML("beforeend", heart(id, "wish-btn wish-sm"));
+        });
+    }
+    rowHearts();
+    document.addEventListener("shop:pricelist", function () { rowHearts(); renderWish(); });
 
     function renderWish() {
         document.querySelectorAll("[data-wish-count]").forEach(function (c) { c.textContent = String(wish.length); c.classList.toggle("d-none", wish.length === 0 && c.classList.contains("wish-count")); });
