@@ -229,8 +229,14 @@
               if (biz.phone) h.push('📞 <a href="tel:' + esc(biz.phone.replace(/[^\d+]/g, "")) + '">' + esc(biz.phone) + "</a>");
               h.push('💬 <a href="https://wa.me/' + WA + '" target="_blank" rel="noopener">WhatsApp</a>');
               if (biz.email) h.push('✉️ <a href="mailto:' + esc(biz.email) + '">' + esc(biz.email) + "</a>");
+              if (biz.instagram) h.push('📸 <a href="' + esc(biz.instagram) + '" target="_blank" rel="noopener">Instagram ' + esc(biz.igHandle) + "</a>");
               if (biz.address) h.push("📍 " + esc(biz.address));
               return { html: L("Here's how to reach us:", "எங்களைத் தொடர்பு கொள்ள:") + "<br>" + h.join("<br>"), actions: [{ t: L("🗺️ Show on map", "🗺️ வரைபடம்"), go: "contact" }] };
+          } },
+        { id: "instagram", words: ["instagram", "insta", "ig", "follow", "follow you", "social", "social media", "reels", "reel", "இன்ஸ்டா", "இன்ஸ்டாகிராம்", "பின்தொடர"],
+          reply: function () {
+              if (!biz.instagram) return { html: L("You can reach us on WhatsApp for photos and videos of any cracker.", "எந்தப் பட்டாசின் புகைப்படம், வீடியோவுக்கும் WhatsApp-ல் கேளுங்கள்."), actions: [{ t: L("💬 Open WhatsApp", "💬 WhatsApp திற"), go: "human" }] };
+              return { html: L("📸 Follow us on Instagram — <a href=\"" + esc(biz.instagram) + "\" target=\"_blank\" rel=\"noopener\"><b>" + esc(biz.igHandle) + "</b></a> — for new arrivals, offers and Diwali cracker videos!", "📸 Instagram-ல் பின்தொடருங்கள் — <a href=\"" + esc(biz.instagram) + "\" target=\"_blank\" rel=\"noopener\"><b>" + esc(biz.igHandle) + "</b></a> — புதிய வரவுகள், சலுகைகள், தீபாவளி பட்டாசு வீடியோக்கள்!"), actions: [{ t: L("📸 Open Instagram", "📸 Instagram திற"), go: "instagram" }] };
           } },
         { id: "human", words: ["admin", "agent", "human", "person", "owner", "manager", "talk", "speak", "support", "help me", "complaint", "பேச", "உதவி"],
           reply: function () { return { html: L("Sure — I'll connect you to our team on WhatsApp. Your question will be filled in; just tap send. 🙏", "நிச்சயமாக — WhatsApp-ல் எங்கள் குழுவுடன் இணைக்கிறேன். உங்கள் கேள்வி நிரப்பப்படும்; அனுப்பு அழுத்துங்கள். 🙏"), actions: [{ t: L("💬 Open WhatsApp", "💬 WhatsApp திற"), go: "human" }].concat(biz.phone ? [{ t: L("📞 Call us", "📞 அழைக்க"), go: "call" }] : []) }; } },
@@ -248,6 +254,7 @@
         { t: ["📋 Price list", "📋 விலைப்பட்டியல்"], q: "price list" },
         { t: ["💬 Talk to our team", "💬 குழுவுடன் பேச"], q: "talk to admin" }
     ];
+    if (biz.instagram) CHIPS.splice(CHIPS.length - 1, 0, { t: ["📸 Instagram", "📸 Instagram"], q: "instagram" });
 
     function norm(s) { return String(s || "").toLowerCase().replace(/[^\p{L}\p{M}\p{N}\s%]/gu, " ").replace(/\s+/g, " ").trim(); }
     function scoreIntent(q) {
@@ -345,6 +352,7 @@
             case "cart": close(); var d = document.getElementById("cartDrawer"); if (d && window.bootstrap) window.bootstrap.Offcanvas.getOrCreateInstance(d).show(); break;
             case "checkout": { var c = document.querySelector("a[data-cart-checkout]"); if (c) c.click(); break; }
             case "human": window.open(humanUrl(), "_blank", "noopener"); break;
+            case "instagram": if (biz.instagram) window.open(biz.instagram, "_blank", "noopener"); break;
             case "call": if (biz.phone) location.href = "tel:" + biz.phone.replace(/[^\d+]/g, ""); break;
             case "legal": scrollTo("#legal"); break;
             case "track": location.href = window.SHOP_STATIC ? "https://wa.me/" + WA : "/Shop/Track"; break;

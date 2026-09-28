@@ -1,3 +1,3 @@
 ﻿# ePALACE backup shop
 Static copy of https://epalace.online used automatically when the main server is offline. Orders are sent on WhatsApp.
-Generated 28 Sep 2026 23:40.
+Generated 29 Sep 2026 00:27.

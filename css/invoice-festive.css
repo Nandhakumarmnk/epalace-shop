@@ -74,6 +74,12 @@
 [data-inv-lang="ta"] .finv-stamp { letter-spacing: 0; }
 .finv-foot { padding: 16px 30px 22px; border-top: 2px dashed #f0dcc0; text-align: center; }
 .ff-thanks { font-family: "Baloo 2", "Baloo Thambi 2", sans-serif; font-weight: 800; font-size: 17px; color: #6d0f2c; }
+.ff-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 10px; }
+.ff-links a { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; font-size: 12.5px; font-weight: 700; color: #fff; text-decoration: none; }
+.ff-links .ff-ig { background: linear-gradient(45deg, #f9ce34, #ee2a7b 55%, #6228d7); }
+.ff-links .ff-wa { background: #16a34a; }
+.ff-links .ff-shop { background: #7a1030; }
+@media print { .ff-links a { color: #000; background: none !important; border: 1px solid #ccc; } }
 .ff-small { font-size: 11.5px; color: #9a7b5c; margin-top: 4px; }
 
 @media (max-width: 720px) {
