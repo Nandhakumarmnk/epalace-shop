@@ -100,3 +100,10 @@
     .finv-name { font-size: 24px; }
     .finv-logo { width: 60px; height: 60px; }
 }
+
+/* MRP (strike price) and "you saved" */
+.finv-mrp { display: block; font-size: .82em; font-weight: 500; color: #8a7a86; text-decoration: line-through; text-decoration-color: #e11d48; }
+.ft-row .finv-mrp { display: inline; font-size: 1em; }
+.ft-saved { display: flex; justify-content: space-between; align-items: baseline; margin: 0 -16px 8px; padding: 9px 16px; background: #dcfce7; color: #15803d; font-weight: 800; border-radius: 0 0 10px 10px; }
+.ft-saved span:last-child { font-size: 1.12em; }
+@media print { .ft-saved { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }

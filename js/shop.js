@@ -100,6 +100,13 @@
         set("[data-cart-mrp]", money(t.mrp));
         set("[data-cart-saving]", money(t.saving));
         set("[data-cart-total]", money(t.total));
+        set("[data-cart-products]", String(t.count));
+        // fixed totals row: flash when the total changes
+        document.querySelectorAll("[data-sum-strip]").forEach(function (s) {
+            s.classList.toggle("has-items", t.units > 0);
+            if (s._last !== undefined && s._last !== t.total) { s.classList.remove("bump"); void s.offsetWidth; s.classList.add("bump"); }
+            s._last = t.total;
+        });
         document.querySelectorAll("[data-cart-checkout]").forEach(function (b) { b.classList.toggle("disabled", t.units === 0); });
         document.querySelectorAll("[data-cart-summary]").forEach(function (b) { b.classList.toggle("d-none", t.units === 0); });
         document.querySelectorAll("[data-order-bar]").forEach(function (b) { b.classList.toggle("d-none", t.units === 0); });
@@ -217,6 +224,11 @@
     var offersOnly = document.getElementById("offersOnly");
     var sort = document.getElementById("shopSort");
     var catSel = document.getElementById("shopCat");
+    // "Shop for" chips: which categories each audience sees (business sees everything, in the price list)
+    var AUDIENCE = {
+        kids: ["sparklers", "flower-pots", "chakkar", "fountain-items", "rope-candles", "stones"],
+        family: ["gift-box", "repeating-shots", "sky-display", "flower-pots"]
+    };
     function sortEls(els, s) {
         return els.sort(function (a, b) {
             var pa = parseFloat(a.getAttribute("data-price")), pb = parseFloat(b.getAttribute("data-price"));
@@ -234,6 +246,7 @@
         var only = offersOnly && offersOnly.checked;
         var cat = catSel ? catSel.value : "";
         var s = sort ? sort.value : "";
+        var aud = AUDIENCE[document.body.getAttribute("data-audience") || ""];
         var shown = 0;
         panes.forEach(function (pane, pi) {
             pane.querySelectorAll("[data-cat-section]").forEach(function (sec) {
@@ -242,7 +255,8 @@
                 els.forEach(function (c) {
                     var ok = (!term || (c.getAttribute("data-search") || "").indexOf(term) !== -1) &&
                              (!only || c.getAttribute("data-discount") !== "0") &&
-                             (!cat || c.getAttribute("data-cat") === cat);
+                             (!cat || c.getAttribute("data-cat") === cat) &&
+                             (!aud || aud.indexOf(c.getAttribute("data-cat")) !== -1);
                     c.classList.toggle("d-none", !ok);
                     if (ok) vis++;
                 });
@@ -348,7 +362,7 @@
 
     render();
     applyLang(lang());
-    window.ShopCart = { add: add, setQty: setQty, lines: lines, totals: totals };
+    window.ShopCart = { add: add, setQty: setQty, lines: lines, totals: totals, items: items, money: money, lang: lang, name: NM, filter: applyFilter, setView: setView, toast: toast };
 })();
 
 // ---------------------------------------------------------------------------------------------
