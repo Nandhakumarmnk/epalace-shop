@@ -226,7 +226,7 @@
     // "Shop for" chips: which categories each audience sees (business sees everything, in the price list)
     var AUDIENCE = {
         kids: ["sparklers", "flower-pots", "chakkar", "fountain-items", "rope-candles", "stones"],
-        family: ["gift-box", "repeating-shots", "sky-display", "flower-pots"]
+        family: ["gift-box", "family-pack", "repeating-shots", "sky-display", "flower-pots"]
     };
     function sortEls(els, s) {
         return els.sort(function (a, b) {

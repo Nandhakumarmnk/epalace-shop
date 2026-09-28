@@ -102,6 +102,24 @@
         window.bootstrap.Modal.getOrCreateInstance(pop).show();
     });
 
+    // ---- gift box / family pack "What's inside" popup (content comes from the pack's <template>)
+    var packBox = document.getElementById("packBox");
+    document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-pack-open]");
+        if (!b || !packBox || !window.bootstrap) return;
+        var tpl = document.getElementById("pack-tpl-" + b.getAttribute("data-pack-open"));
+        if (!tpl) return;
+        var body = packBox.querySelector("[data-pack-body]");
+        body.innerHTML = "";
+        body.appendChild(tpl.content.cloneNode(true));
+        window.bootstrap.Modal.getOrCreateInstance(packBox).show();
+    });
+    // showcase banner arrows
+    document.addEventListener("click", function (e) {
+        var a = e.target.closest("[data-ps-scroll]"), t = a && document.querySelector("[data-ps-track]");
+        if (t) t.scrollBy({ left: parseInt(a.getAttribute("data-ps-scroll"), 10) * Math.max(260, t.clientWidth * 0.8), behavior: "smooth" });
+    });
+
     // ---- product photo popup: tap a product picture to see it large, add from there
     var box = document.getElementById("photoBox"), boxId = null;
     document.addEventListener("click", function (e) {
