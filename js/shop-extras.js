@@ -79,9 +79,15 @@
 
     // ---- welcome offer popup: once per visit, after the loader, only while the offer is running
     var pop = document.getElementById("offerPop");
+    function loadGif() {
+        var g = pop && pop.querySelector("img.op-gif[data-src]");
+        if (!g || g.getAttribute("src")) return;
+        g.addEventListener("load", function () { g.classList.add("loaded"); }, { once: true });
+        g.addEventListener("error", function () { g.src = "/img/logo-512.png"; g.classList.add("op-fallback"); }, { once: true });
+        g.src = g.getAttribute("data-src");
+    }
     if (pop && window.bootstrap && (!ends || left().ms > 0) && !get("sessionStorage", "epalace-offer-seen") && !/[?&]nopopup/.test(location.search)) {
-        var gif = pop.querySelector("img.op-gif[data-src]");
-        if (gif) { gif.src = gif.getAttribute("data-src"); gif.addEventListener("load", function () { gif.classList.add("loaded"); }, { once: true }); }
+        loadGif();
         setTimeout(function () {
             if (document.querySelector(".modal.show, .offcanvas.show")) return;
             window.bootstrap.Modal.getOrCreateInstance(pop).show();
@@ -92,8 +98,7 @@
     // ---- the 90% badge (countdown band) reopens the offer popup at any time
     document.addEventListener("click", function (e) {
         if (!e.target.closest("[data-open-offer]") || !pop || !window.bootstrap) return;
-        var g = pop.querySelector("img.op-gif[data-src]");
-        if (g && !g.getAttribute("src")) { g.src = g.getAttribute("data-src"); g.addEventListener("load", function () { g.classList.add("loaded"); }, { once: true }); }
+        loadGif();
         window.bootstrap.Modal.getOrCreateInstance(pop).show();
     });
 
