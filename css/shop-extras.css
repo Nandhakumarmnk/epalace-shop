@@ -580,3 +580,7 @@ button.cb-off:hover { transform: scale(1.08) rotate(-4deg); }
     .photo-box .pb-media .pb-img { max-height: 42vh; }
 }
 .fest-after { padding-top: 8px; }
+/* pack "who is it for" badge (CrackerCatalog.PackHighlight) */
+.ps-special { display: inline-block; margin: 2px 0 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; line-height: 1.35;
+    color: #9f1239; background: linear-gradient(135deg, #fff1f5, #ffe4d6); border: 1px solid #fecdd3; }
+.pack-box .pk-title .ps-special { margin: 4px 0 6px; }

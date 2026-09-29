@@ -1,314 +1,394 @@
 [
-    {
-        "key":  "hero",
-        "title":  "Fireworks Diwali Chennai India November 2013 b.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Fireworks_Diwali_Chennai_India_November_2013_b.jpg",
-        "artist":  "Sriram Jagannathan",
-        "license":  "CC BY 2.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by/2.0"
-    },
-    {
-        "key":  "sky",
-        "title":  "Fireworks Diwali night landscape Bangalore India November 2013.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Fireworks_Diwali_night_landscape_Bangalore_India_November_2013.jpg",
-        "artist":  "Subharnab Majumdar",
-        "license":  "CC BY 2.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by/2.0"
-    },
-    {
-        "key":  "sky2",
-        "title":  "Aerial firework bursting charge.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Aerial_firework_bursting_charge.jpg",
-        "artist":  "Shawn Hart",
-        "license":  "CC BY 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by/4.0"
-    },
-    {
-        "key":  "sky3",
-        "title":  "DFC 3831 Golden fireworks rise in unison above the dark water their reflections shimmering across the bay.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:DFC_3831_Golden_fireworks_rise_in_unison_above_the_dark_water_their_reflections_shimmering_across_the_bay.jpg",
-        "artist":  "PattayaPatrol",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "shots2",
-        "title":  "Sivakasi fireworks.JPG",
-        "page":  "https://commons.wikimedia.org/wiki/File:Sivakasi_fireworks.JPG",
-        "artist":  "Ben (talk)",
-        "license":  "CC BY-SA 3.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-        "key":  "guntur",
-        "title":  "Crackers at Diwali in Guntur.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Crackers_at_Diwali_in_Guntur.jpg",
-        "artist":  "Kalli navya",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "whistle",
-        "title":  "Diwali Fireworks, Gurgaon 3.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Diwali_Fireworks,_Gurgaon_3.jpg",
-        "artist":  "Slyronit",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "rocket",
-        "title":  "Rocket Trails (51055856).jpeg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Rocket_Trails_(51055856).jpeg",
-        "artist":  "S D",
-        "license":  "CC BY-SA 3.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-        "key":  "bottle",
-        "title":  "Bottle Rockets.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Bottle_Rockets.jpg",
-        "artist":  "User:Surachit",
-        "license":  "CC SA 1.0",
-        "licenseUrl":  "http://creativecommons.org/licenses/sa/1.0/"
-    },
-    {
-        "key":  "rockethand",
-        "title":  "New year fireworks rockets.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:New_year_fireworks_rockets.jpg",
-        "artist":  "Ypsilon from Finland",
-        "license":  "CC0",
-        "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
-    },
-    {
-        "key":  "chakkar",
-        "title":  "Chakri craker in Diwali.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Chakri_craker_in_Diwali.jpg",
-        "artist":  "Amar7709",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "chakri1",
-        "title":  "Chakra Fireworks at Vishu Kerala.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Chakra_Fireworks_at_Vishu_Kerala.jpg",
-        "artist":  "Ramesh NG",
-        "license":  "CC BY-SA 2.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0"
-    },
-    {
-        "key":  "chakri2",
-        "title":  "Chakri Fire Cracker Photo.JPG",
-        "page":  "https://commons.wikimedia.org/wiki/File:Chakri_Fire_Cracker_Photo.JPG",
-        "artist":  "Rasmi68",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "chakri3",
-        "title":  "Chackraa.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Chackraa.jpg",
-        "artist":  "Brindha sakthivel",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "chakri4",
-        "title":  "Deepavali Daisy Wheel.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Deepavali_Daisy_Wheel.jpg",
-        "artist":  "Cheeni",
-        "license":  "CC BY-SA 2.5",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.5"
-    },
-    {
-        "key":  "chakri5",
-        "title":  "A ground spiral firework captured in long exposure.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:A_ground_spiral_firework_captured_in_long_exposure.jpg",
-        "artist":  "Subhrajyoti07",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "flowerpot",
-        "title":  "Firecracker Flowerpot.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Firecracker_Flowerpot.jpg",
-        "artist":  "Swetha01",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "fpot1",
-        "title":  "A large flower cracker.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:A_large_flower_cracker.jpg",
-        "artist":  "Subhrajyoti07",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "fpot2",
-        "title":  "Flower pot cracker.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Flower_pot_cracker.jpg",
-        "artist":  "Roboture",
-        "license":  "CC BY-SA 3.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-        "key":  "fpot3",
-        "title":  "Firecracker (\"locally known as tubri\") photographed in West Bengal, India, on November 26, 2023.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Firecracker_(%22locally_known_as_tubri%22)_photographed_in_West_Bengal,_India,_on_November_26,_2023.jpg",
-        "artist":  "Billjones94",
-        "license":  "CC0",
-        "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
-    },
-    {
-        "key":  "fpot4",
-        "title":  "Diwali Buss Vaanam (4019217135).jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Diwali_Buss_Vaanam_(4019217135).jpg",
-        "artist":  "Ashwin Kumar from Bangalore, India",
-        "license":  "CC BY-SA 2.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0"
-    },
-    {
-        "key":  "fountain",
-        "title":  "Beautiful large flower cracker creating brilliant light and sparkles at night.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Beautiful_large_flower_cracker_creating_brilliant_light_and_sparkles_at_night.jpg",
-        "artist":  "Subhrajyoti07",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "sparklers",
-        "title":  "Sparkler cracker.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Sparkler_cracker.jpg",
-        "artist":  "Prince",
-        "license":  "CC BY 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by/4.0"
-    },
-    {
-        "key":  "electric",
-        "title":  "Electric sparkler.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Electric_sparkler.jpg",
-        "artist":  "Prince",
-        "license":  "CC BY 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by/4.0"
-    },
-    {
-        "key":  "unlit",
-        "title":  "2022-07-23 14 58 13 Unlit sparkler at The Osprey\u0027s at Belmont Bay in Woodbridge, Prince William County, Virginia.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:2022-07-23_14_58_13_Unlit_sparkler_at_The_Osprey%27s_at_Belmont_Bay_in_Woodbridge,_Prince_William_County,_Virginia.jpg",
-        "artist":  "Famartin",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "sparkle2",
-        "title":  "Sparklers at Diwali 2010.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Sparklers_at_Diwali_2010.jpg",
-        "artist":  "Ramesh NG",
-        "license":  "CC BY-SA 2.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/2.0"
-    },
-    {
-        "key":  "pencilburn",
-        "title":  "Cracker 2.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Cracker_2.jpg",
-        "artist":  "Hegde Neha",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "stone",
-        "title":  "Detail of burning sparkler.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Detail_of_burning_sparkler.jpg",
-        "artist":  "Jenu Prasad jenuprasad",
-        "license":  "CC0",
-        "licenseUrl":  "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
-    },
-    {
-        "key":  "lakshmi3",
-        "title":  "Crackers vishu 5.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Crackers_vishu_5.jpg",
-        "artist":  "Sivahari",
-        "license":  "CC BY-SA 3.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-        "key":  "squibs",
-        "title":  "Box of squibs.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Box_of_squibs.jpg",
-        "artist":  "Gildos",
-        "license":  "Public domain",
-        "licenseUrl":  null
-    },
-    {
-        "key":  "boeller",
-        "title":  "BoellerMini-Kanonenschlag.JPG",
-        "page":  "https://commons.wikimedia.org/wiki/File:BoellerMini-Kanonenschlag.JPG",
-        "artist":  "User:StromBer",
-        "license":  "CC BY-SA 3.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-        "key":  "barrel",
-        "title":  "Barrel Crackers (Kathina).JPG",
-        "page":  "https://commons.wikimedia.org/wiki/File:Barrel_Crackers_(Kathina).JPG",
-        "artist":  "Ranjithsiji",
-        "license":  "CC BY-SA 3.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-        "key":  "bomb2",
-        "title":  "বাক্সের মধ্যে চকোলেট বোমা.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:%E0%A6%AC%E0%A6%BE%E0%A6%95%E0%A7%8D%E0%A6%B8%E0%A7%87%E0%A6%B0_%E0%A6%AE%E0%A6%A7%E0%A7%8D%E0%A6%AF%E0%A7%87_%E0%A6%9A%E0%A6%95%E0%A7%8B%E0%A6%B2%E0%A7%87%E0%A6%9F_%E0%A6%AC%E0%A7%8B%E0%A6%AE%E0%A6%BE.jpg",
-        "artist":  "Pasaban",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "wala1000",
-        "title":  "1000 lar cracker.jpeg",
-        "page":  "https://commons.wikimedia.org/wiki/File:1000_lar_cracker.jpeg",
-        "artist":  "User:Evano1van",
-        "license":  "CC BY-SA 3.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-        "key":  "walaroll",
-        "title":  "Firecracker roll.jpeg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Firecracker_roll.jpeg",
-        "artist":  "Zoravar at English Wikipedia",
-        "license":  "CC BY-SA 3.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-        "key":  "walamala",
-        "title":  "1000mala.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:1000mala.jpg",
-        "artist":  "Paddyiyer at en.wikipedia",
-        "license":  "Public domain",
-        "licenseUrl":  null
-    },
-    {
-        "key":  "lakshmi2",
-        "title":  "Crackers (ତାଳ ଫୁଟୁକା).jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:Crackers_(%E0%AC%A4%E0%AC%BE%E0%AC%B3_%E0%AC%AB%E0%AD%81%E0%AC%9F%E0%AD%81%E0%AC%95%E0%AC%BE).jpg",
-        "artist":  "Rajmishra757",
-        "license":  "CC BY-SA 4.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/4.0"
-    },
-    {
-        "key":  "boxes",
-        "title":  "A lot of mats firecrackers Sri lanka.JPG",
-        "page":  "https://commons.wikimedia.org/wiki/File:A_lot_of_mats_firecrackers_Sri_lanka.JPG",
-        "artist":  "Peter van der Sluijs",
-        "license":  "CC BY-SA 3.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by-sa/3.0"
-    },
-    {
-        "key":  "giftbox",
-        "title":  "2006-08-24 - Road Trip - Day 32 - United States - Indiana - Shelton Fireworks - Multi-Shot Cakes - M 4889113423.jpg",
-        "page":  "https://commons.wikimedia.org/wiki/File:2006-08-24_-_Road_Trip_-_Day_32_-_United_States_-_Indiana_-_Shelton_Fireworks_-_Multi-Shot_Cakes_-_M_4889113423.jpg",
-        "artist":  "CGP Grey",
-        "license":  "CC BY 2.0",
-        "licenseUrl":  "https://creativecommons.org/licenses/by/2.0"
-    }
+  {
+    "key": "hero",
+    "title": "Fireworks Diwali Chennai India November 2013 b.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Fireworks_Diwali_Chennai_India_November_2013_b.jpg",
+    "artist": "Sriram Jagannathan",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+  },
+  {
+    "key": "sky",
+    "title": "Fireworks Diwali night landscape Bangalore India November 2013.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Fireworks_Diwali_night_landscape_Bangalore_India_November_2013.jpg",
+    "artist": "Subharnab Majumdar",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+  },
+  {
+    "key": "sky2",
+    "title": "Aerial firework bursting charge.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Aerial_firework_bursting_charge.jpg",
+    "artist": "Shawn Hart",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "key": "sky3",
+    "title": "DFC 3831 Golden fireworks rise in unison above the dark water their reflections shimmering across the bay.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:DFC_3831_Golden_fireworks_rise_in_unison_above_the_dark_water_their_reflections_shimmering_across_the_bay.jpg",
+    "artist": "PattayaPatrol",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "shots2",
+    "title": "Sivakasi fireworks.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Sivakasi_fireworks.JPG",
+    "artist": "Ben (talk)",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  {
+    "key": "guntur",
+    "title": "Crackers at Diwali in Guntur.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Crackers_at_Diwali_in_Guntur.jpg",
+    "artist": "Kalli navya",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "whistle",
+    "title": "Diwali Fireworks, Gurgaon 3.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Diwali_Fireworks,_Gurgaon_3.jpg",
+    "artist": "Slyronit",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "rocket",
+    "title": "Rocket Trails (51055856).jpeg",
+    "page": "https://commons.wikimedia.org/wiki/File:Rocket_Trails_(51055856).jpeg",
+    "artist": "S D",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  {
+    "key": "bottle",
+    "title": "Bottle Rockets.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Bottle_Rockets.jpg",
+    "artist": "User:Surachit",
+    "license": "CC SA 1.0",
+    "licenseUrl": "http://creativecommons.org/licenses/sa/1.0/"
+  },
+  {
+    "key": "rockethand",
+    "title": "New year fireworks rockets.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:New_year_fireworks_rockets.jpg",
+    "artist": "Ypsilon from Finland",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  {
+    "key": "chakkar",
+    "title": "Chakri craker in Diwali.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chakri_craker_in_Diwali.jpg",
+    "artist": "Amar7709",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "chakri1",
+    "title": "Chakra Fireworks at Vishu Kerala.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chakra_Fireworks_at_Vishu_Kerala.jpg",
+    "artist": "Ramesh NG",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+  },
+  {
+    "key": "chakri2",
+    "title": "Chakri Fire Cracker Photo.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Chakri_Fire_Cracker_Photo.JPG",
+    "artist": "Rasmi68",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "chakri3",
+    "title": "Chackraa.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Chackraa.jpg",
+    "artist": "Brindha sakthivel",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "chakri4",
+    "title": "Deepavali Daisy Wheel.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Deepavali_Daisy_Wheel.jpg",
+    "artist": "Cheeni",
+    "license": "CC BY-SA 2.5",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.5"
+  },
+  {
+    "key": "chakri5",
+    "title": "A ground spiral firework captured in long exposure.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:A_ground_spiral_firework_captured_in_long_exposure.jpg",
+    "artist": "Subhrajyoti07",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "flowerpot",
+    "title": "Firecracker Flowerpot.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Firecracker_Flowerpot.jpg",
+    "artist": "Swetha01",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "fpot1",
+    "title": "A large flower cracker.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:A_large_flower_cracker.jpg",
+    "artist": "Subhrajyoti07",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "fpot2",
+    "title": "Flower pot cracker.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Flower_pot_cracker.jpg",
+    "artist": "Roboture",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  {
+    "key": "fpot3",
+    "title": "Firecracker (\"locally known as tubri\") photographed in West Bengal, India, on November 26, 2023.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Firecracker_(%22locally_known_as_tubri%22)_photographed_in_West_Bengal,_India,_on_November_26,_2023.jpg",
+    "artist": "Billjones94",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  {
+    "key": "fpot4",
+    "title": "Diwali Buss Vaanam (4019217135).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Diwali_Buss_Vaanam_(4019217135).jpg",
+    "artist": "Ashwin Kumar from Bangalore, India",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+  },
+  {
+    "key": "fountain",
+    "title": "Beautiful large flower cracker creating brilliant light and sparkles at night.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Beautiful_large_flower_cracker_creating_brilliant_light_and_sparkles_at_night.jpg",
+    "artist": "Subhrajyoti07",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "sparklers",
+    "title": "Sparkler cracker.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Sparkler_cracker.jpg",
+    "artist": "Prince",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "key": "electric",
+    "title": "Electric sparkler.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Electric_sparkler.jpg",
+    "artist": "Prince",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "key": "unlit",
+    "title": "2022-07-23 14 58 13 Unlit sparkler at The Osprey's at Belmont Bay in Woodbridge, Prince William County, Virginia.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:2022-07-23_14_58_13_Unlit_sparkler_at_The_Osprey%27s_at_Belmont_Bay_in_Woodbridge,_Prince_William_County,_Virginia.jpg",
+    "artist": "Famartin",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "sparkle2",
+    "title": "Sparklers at Diwali 2010.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Sparklers_at_Diwali_2010.jpg",
+    "artist": "Ramesh NG",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0"
+  },
+  {
+    "key": "pencilburn",
+    "title": "Cracker 2.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Cracker_2.jpg",
+    "artist": "Hegde Neha",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "stone",
+    "title": "Detail of burning sparkler.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Detail_of_burning_sparkler.jpg",
+    "artist": "Jenu Prasad jenuprasad",
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+  },
+  {
+    "key": "lakshmi3",
+    "title": "Crackers vishu 5.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Crackers_vishu_5.jpg",
+    "artist": "Sivahari",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  {
+    "key": "squibs",
+    "title": "Box of squibs.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Box_of_squibs.jpg",
+    "artist": "Gildos",
+    "license": "Public domain",
+    "licenseUrl": null
+  },
+  {
+    "key": "boeller",
+    "title": "BoellerMini-Kanonenschlag.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:BoellerMini-Kanonenschlag.JPG",
+    "artist": "User:StromBer",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  {
+    "key": "barrel",
+    "title": "Barrel Crackers (Kathina).JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:Barrel_Crackers_(Kathina).JPG",
+    "artist": "Ranjithsiji",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  {
+    "key": "bomb2",
+    "title": "বাক্সের মধ্যে চকোলেট বোমা.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:%E0%A6%AC%E0%A6%BE%E0%A6%95%E0%A7%8D%E0%A6%B8%E0%A7%87%E0%A6%B0_%E0%A6%AE%E0%A6%A7%E0%A7%8D%E0%A6%AF%E0%A7%87_%E0%A6%9A%E0%A6%95%E0%A7%8B%E0%A6%B2%E0%A7%87%E0%A6%9F_%E0%A6%AC%E0%A7%8B%E0%A6%AE%E0%A6%BE.jpg",
+    "artist": "Pasaban",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "wala1000",
+    "title": "1000 lar cracker.jpeg",
+    "page": "https://commons.wikimedia.org/wiki/File:1000_lar_cracker.jpeg",
+    "artist": "User:Evano1van",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  {
+    "key": "walaroll",
+    "title": "Firecracker roll.jpeg",
+    "page": "https://commons.wikimedia.org/wiki/File:Firecracker_roll.jpeg",
+    "artist": "Zoravar at English Wikipedia",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  {
+    "key": "walamala",
+    "title": "1000mala.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:1000mala.jpg",
+    "artist": "Paddyiyer at en.wikipedia",
+    "license": "Public domain",
+    "licenseUrl": null
+  },
+  {
+    "key": "lakshmi2",
+    "title": "Crackers (ତାଳ ଫୁଟୁକା).jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:Crackers_(%E0%AC%A4%E0%AC%BE%E0%AC%B3_%E0%AC%AB%E0%AD%81%E0%AC%9F%E0%AD%81%E0%AC%95%E0%AC%BE).jpg",
+    "artist": "Rajmishra757",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "boxes",
+    "title": "A lot of mats firecrackers Sri lanka.JPG",
+    "page": "https://commons.wikimedia.org/wiki/File:A_lot_of_mats_firecrackers_Sri_lanka.JPG",
+    "artist": "Peter van der Sluijs",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  {
+    "key": "giftbox",
+    "title": "2006-08-24 - Road Trip - Day 32 - United States - Indiana - Shelton Fireworks - Multi-Shot Cakes - M 4889113423.jpg",
+    "page": "https://commons.wikimedia.org/wiki/File:2006-08-24_-_Road_Trip_-_Day_32_-_United_States_-_Indiana_-_Shelton_Fireworks_-_Multi-Shot_Cakes_-_M_4889113423.jpg",
+    "artist": "CGP Grey",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0"
+  },
+  {
+    "key": "fx-mumbai",
+    "title": "Diwali celebrations in mumbai.webm (video, used for the \"See it lit\" animations)",
+    "page": "https://commons.wikimedia.org/wiki/File:Diwali_celebrations_in_mumbai.webm",
+    "artist": "Amit Haware",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+  },
+  {
+    "key": "fx-iitb",
+    "title": "Diwali at IITB.webm (video, used for the \"See it lit\" animations)",
+    "page": "https://commons.wikimedia.org/wiki/File:Diwali_at_IITB.webm",
+    "artist": "Jaseem Umar",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+  },
+  {
+    "key": "fx-fountain",
+    "title": "Fire-cracker -New-Year-2025.webm (video, used for the \"See it lit\" animations)",
+    "page": "https://commons.wikimedia.org/wiki/File:Fire-cracker_-New-Year-2025.webm",
+    "artist": "Smatteo499",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "key": "fx-sparkler",
+    "title": "Sparkler 359-fps Slow-Motion.webm (video, used for the \"See it lit\" animations)",
+    "page": "https://commons.wikimedia.org/wiki/File:Sparkler_359-fps_Slow-Motion.webm",
+    "artist": "#Reaper",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0"
+  },
+  {
+    "key": "fx-tokyo",
+    "title": "Sparklers - tokyo - 2020 8 11.webm (video, used for the \"See it lit\" animations)",
+    "page": "https://commons.wikimedia.org/wiki/File:Sparklers_-_tokyo_-_2020_8_11.webm",
+    "artist": "Nesnad",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "fx-ganapathy",
+    "title": "Firecrackers during Sri Ganapathy festival, RR Nagar (2024).webm (video, used for the \"See it lit\" animations)",
+    "page": "https://commons.wikimedia.org/wiki/File:Firecrackers_during_Sri_Ganapathy_festival,_RR_Nagar_(2024).webm",
+    "artist": "Gpkp",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0"
+  },
+  {
+    "key": "fx-sibu",
+    "title": "Firecrackers for Chinese New Year in Sibu, Sarawak, Malaysia.webm (video, used for the \"See it lit\" animations)",
+    "page": "https://commons.wikimedia.org/wiki/File:Firecrackers_for_Chinese_New_Year_in_Sibu,_Sarawak,_Malaysia.webm",
+    "artist": "Mx. Granger",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0"
+  },
+  {
+    "key": "fx-shells",
+    "title": "Nagaoka Festival Fireworks 2015 One-shaku Fireworks 100 Shots.webm (video, used for the \"See it lit\" animations)",
+    "page": "https://commons.wikimedia.org/wiki/File:Nagaoka_Festival_Fireworks_2015_One-shaku_Fireworks_100_Shots.webm",
+    "artist": "113icecream Japanese Fireworks",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+  },
+  {
+    "key": "fx-zhongshan",
+    "title": "Close-up fireworks during Lunar New Year celebration in Zhongshan, China, 2026.webm (video, used for the \"See it lit\" animations)",
+    "page": "https://commons.wikimedia.org/wiki/File:Close-up_fireworks_during_Lunar_New_Year_celebration_in_Zhongshan,_China,_2026.webm",
+    "artist": "JaydenChao",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0"
+  },
+  {
+    "key": "fx-starmine",
+    "title": "Nagaoka Festival Fireworks 2015 Extra Large Wide Starmine.webm (video, used for the \"See it lit\" animations)",
+    "page": "https://commons.wikimedia.org/wiki/File:Nagaoka_Festival_Fireworks_2015_Extra_Large_Wide_Starmine.webm",
+    "artist": "113icecream Japanese Fireworks",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0"
+  }
 ]
