@@ -136,6 +136,14 @@
         pi.src = img.getAttribute("src"); pi.alt = it.name;
         if (big !== img.getAttribute("src")) { var pre = new Image(); pre.onload = function () { if (boxId === id) pi.src = big; }; pre.src = big; }
         box.querySelector("[data-pb-name]").textContent = cart.name ? cart.name(it) : it.name;
+        // effect GIF next to the product picture (from the card, also when opened from the price list)
+        var card = document.querySelector('.fest-card[data-item="' + id + '"] .fest-art[data-fx]'), fx = card && card.getAttribute("data-fx");
+        var fxBox = box.querySelector("[data-pb-fx]"), media = box.querySelector("[data-pb-media]");
+        if (fxBox) {
+            if (fx && window.SHOP_STATIC) fx = fx.replace(/^\//, "");
+            fxBox.classList.toggle("d-none", !fx); if (media) media.classList.toggle("has-fx", !!fx);
+            if (fx) box.querySelector("[data-pb-fx-img]").src = fx;
+        }
         box.querySelector("[data-pb-price]").innerHTML = money(it.price) + (it.discount > 0 ? ' <s>' + money(it.mrp) + '</s> <span class="pb-off">' + it.discount + '% OFF</span>' : "");
         window.bootstrap.Modal.getOrCreateInstance(box).show();
     });
@@ -143,6 +151,23 @@
         if (!e.target.closest("[data-pb-add]") || !boxId || !cart.add) return;
         cart.add(boxId, 1);
         window.bootstrap.Modal.getInstance(box).hide();
+    });
+    // desktop: hovering a product picture plays its "see it lit" GIF over it
+    if (window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        document.addEventListener("mouseover", function (e) {
+            var art = e.target.closest && e.target.closest(".fest-art.is-shot[data-fx]");
+            if (!art || art.classList.contains("fx-on")) return;
+            var g = art.querySelector(".art-fx");
+            if (!g) { g = document.createElement("img"); g.className = "art-fx"; g.alt = ""; g.decoding = "async"; art.appendChild(g); }
+            var src = art.getAttribute("data-fx"); if (window.SHOP_STATIC) src = src.replace(/^\//, "");
+            if (g.getAttribute("src") !== src) g.src = src;
+            art.classList.add("fx-on");
+            var off = function (ev) { if (!art.contains(ev.relatedTarget)) { art.classList.remove("fx-on"); art.removeEventListener("mouseout", off); } };
+            art.addEventListener("mouseout", off);
+        });
+    }
+    document.querySelectorAll(".fest-art.is-shot[data-fx]").forEach(function (a) {
+        if (!a.querySelector(".fx-chip")) a.insertAdjacentHTML("beforeend", '<span class="fx-chip" aria-hidden="true"><i class="bi bi-play-circle-fill"></i> GIF</span>');
     });
     document.querySelectorAll(".fest-art.has-photo, .pl-prod img").forEach(function (i) { i.setAttribute("role", "button"); i.setAttribute("tabindex", "0"); i.setAttribute("aria-label", "View photo"); });
     document.addEventListener("keydown", function (e) {
@@ -204,7 +229,7 @@
         { id: "pay", words: ["cash on delivery", "pay on delivery", "pay", "payment", "cash", "cod", "upi", "gpay", "card", "advance", "பணம்", "செலுத்த"],
           reply: function () { return { html: L("💵 <b>Cash on delivery</b> — you pay only after you receive the crackers in hand. For any other payment method, our team will tell you when they confirm the order.", "💵 <b>பெற்ற பின் பணம்</b> — பட்டாசுகள் கையில் கிடைத்த பிறகே பணம் செலுத்துங்கள். வேறு முறைகளை ஆர்டர் உறுதி செய்யும்போது எங்கள் குழு தெரிவிக்கும்.") }; } },
         { id: "delivery", words: ["deliver", "delivery", "ship", "shipping", "courier", "transport", "parcel", "lorry", "when will", "டெலிவரி", "அனுப்ப", "பார்சல்"],
-          reply: function () { return { html: L("🚚 <b>Door delivery</b> is available. Parcels go only through registered, legal transport services. After you order we contact you within 24 hours to confirm the order and the delivery.", "🚚 <b>வீட்டுக்கே டெலிவரி</b> உண்டு. பதிவு செய்யப்பட்ட சட்டப்பூர்வ போக்குவரத்து மூலம் மட்டுமே பார்சல் அனுப்பப்படும். ஆர்டர் செய்த 24 மணி நேரத்தில் உறுதி செய்ய உங்களைத் தொடர்பு கொள்வோம்.") }; } },
+          reply: function () { return { html: L("🚚 <b>All India delivery</b> is available. Parcels go only through registered, legal transport services. After you order we contact you within 24 hours to confirm the order and the delivery.", "🚚 <b>இந்தியா முழுவதும் டெலிவரி</b> உண்டு. பதிவு செய்யப்பட்ட சட்டப்பூர்வ போக்குவரத்து மூலம் மட்டுமே பார்சல் அனுப்பப்படும். ஆர்டர் செய்த 24 மணி நேரத்தில் உறுதி செய்ய உங்களைத் தொடர்பு கொள்வோம்.") }; } },
         { id: "kids", words: ["kid", "kids", "child", "children", "baby", "school", "small", "safe cracker", "no sound", "less sound", "குழந்தை", "சிறுவர்", "பிள்ளை"],
           reply: function () { return { html: L("🧒 Kids love sparklers, flower pots, ground chakkars and fountains — colourful and gentle. Always light them with an adult nearby, and keep a bucket of water ready.", "🧒 குழந்தைகளுக்கு மத்தாப்பு, புஸ்வாணம், தரைச் சக்கரம், ஃபவுண்டன் பிடிக்கும் — வண்ணமயமானவை, மென்மையானவை. பெரியவர் அருகில் இருக்கும்போது மட்டும் வெடிக்கவும்; ஒரு வாளி தண்ணீர் வைத்திருக்கவும்."), products: pick(function (i) { return KIDS.indexOf(i.cat) !== -1; }, 4), actions: [{ t: L("🧒 Show kids' picks", "🧒 குழந்தைகளுக்கானவை"), go: "kids" }] }; } },
         { id: "safety", words: ["safety", "safe", "burn", "fire", "careful", "precaution", "பாதுகாப்பு", "தீ"],
@@ -825,7 +850,7 @@
         setTimeout(function () {
             var el = document.querySelector('[data-view-pane]:not(.d-none) [data-item="' + id + '"]');
             if (!el) return;
-            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            if (cart.jump) cart.jump(el, "center"); else el.scrollIntoView({ block: "center" });
             el.classList.remove("ss-flash"); void el.offsetWidth; el.classList.add("ss-flash");
         }, 120);
     }

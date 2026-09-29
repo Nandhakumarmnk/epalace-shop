@@ -315,6 +315,25 @@
         document.dispatchEvent(new Event("shop:pricelist"));
     }
 
+    // Jump to a category / item accurately: the category sections use content-visibility:auto, so sections above the
+    // target change height while they render and one smooth scroll lands in the wrong place (it could end in the footer).
+    // Scroll, let the layout settle, and correct until the target sits where it should.
+    function jump(el, block) {
+        if (!el) return;
+        block = block || "start";
+        var tries = 0;
+        (function go() {
+            el.scrollIntoView({ block: block, behavior: "instant" });
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+                    var r = el.getBoundingClientRect();
+                    var want = block === "center" ? Math.max(0, (window.innerHeight - r.height) / 2) : (parseFloat(getComputedStyle(el).scrollMarginTop) || 0);
+                    if (Math.abs(r.top - want) > 6 && ++tries < 10) go();
+                });
+            });
+        })();
+    }
+
     // Cards / price-list toggle (remembered per browser)
     function setView(v) {
         if (v === "list") buildPriceList();
@@ -335,13 +354,14 @@
             var key = cl.getAttribute("data-cat-link");
             var pane = document.querySelector("[data-view-pane]:not(.d-none)");
             var target = pane && pane.querySelector('[data-cat-section="' + key + '"]');
-            if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+            jump(target, "start");
         }
     });
     if (document.querySelector("[data-view-pane]")) {
         var saved = null;
         try { saved = localStorage.getItem("epalace-shop-view"); } catch (e) { }
-        setView(location.hash === "#pricelist" ? "list" : (saved === "list" ? "list" : "grid"));
+        // quick order list first (like the Sivakasi price lists); the card view stays one tap away and is remembered
+        setView(location.hash === "#pricelist" ? "list" : (saved === "grid" ? "grid" : "list"));
     }
     applyFilter();
 
@@ -399,7 +419,7 @@
 
     render();
     applyLang(lang());
-    window.ShopCart = { add: add, setQty: setQty, lines: lines, totals: totals, items: items, money: money, lang: lang, name: NM, filter: applyFilter, setView: setView, toast: toast, render: render, buildPriceList: buildPriceList };
+    window.ShopCart = { add: add, setQty: setQty, lines: lines, totals: totals, items: items, money: money, lang: lang, name: NM, filter: applyFilter, setView: setView, jump: jump, toast: toast, render: render, buildPriceList: buildPriceList };
 })();
 
 // ---------------------------------------------------------------------------------------------
