@@ -271,6 +271,9 @@
         if (cnt) cnt.textContent = String(shown);
         var empty = document.getElementById("noProducts");
         if (empty) empty.classList.toggle("d-none", shown > 0);
+        // the gift box / family pack showcase steps aside while the customer searches or filters
+        var ps = document.getElementById("gift-packs");
+        if (ps) ps.classList.toggle("d-none", !!(term || only || cat || aud));
     }
     if (search) search.addEventListener("input", applyFilter);
     if (offersOnly) offersOnly.addEventListener("change", applyFilter);

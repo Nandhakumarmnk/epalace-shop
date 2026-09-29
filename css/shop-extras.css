@@ -584,3 +584,15 @@ button.cb-off:hover { transform: scale(1.08) rotate(-4deg); }
 .ps-special { display: inline-block; margin: 2px 0 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 800; line-height: 1.35;
     color: #9f1239; background: linear-gradient(135deg, #fff1f5, #ffe4d6); border: 1px solid #fecdd3; }
 .pack-box .pk-title .ps-special { margin: 4px 0 6px; }
+/* showcase inside the products area (under the search + chips) */
+.fest-main .pack-show { margin: 4px 0 18px; padding: 0; max-width: none; }
+
+/* header menu never wraps ("Track / order", "Visit / us"); tighter on smaller desktops */
+.shop-nav { flex-wrap: nowrap; min-width: 0; }
+.shop-nav a { white-space: nowrap; }
+@media (max-width: 1399.98px) { .shop-nav { gap: 2px; } .shop-nav a { padding: 8px 9px; font-size: 13px; } }
+@media (max-width: 1199.98px) { .shop-nav a.nav-opt { display: none; } .shop-nav .nav-lbl { display: none; } .shop-nav a.nav-wa, .shop-nav a.nav-ig { padding: 8px 10px; font-size: 16px; } }
+@media (max-width: 991.98px) { .shop-nav a { padding: 8px 7px; font-size: 12.5px; } }
+
+/* "Shop for" chips: emoji + label on one line, hint underneath */
+.aud-chip .aud-t { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
