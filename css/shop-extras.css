@@ -213,7 +213,7 @@ body.has-order-bar .chat-panel { bottom: 162px; height: min(600px, calc(100vh - 
 /* =====================================================================================
    Filters: toolbar, category chips, active-filter pills, photo category tiles
    ===================================================================================== */
-.fest-toolbar { position: static; display: grid; grid-template-columns: auto minmax(220px, 1fr) auto; gap: 12px 16px; align-items: center; background: transparent; backdrop-filter: none; padding: 0; margin-bottom: 12px; }
+.fest-toolbar { position: static; display: flex; justify-content: flex-end; gap: 12px 16px; align-items: center; background: transparent; backdrop-filter: none; padding: 0; margin-bottom: 12px; }
 .ft-head { min-width: 0; }
 .ft-count { font-size: 13px; color: var(--muted); }
 .ft-count b { color: var(--fest-maroon); font-size: 15px; }
@@ -273,12 +273,13 @@ body.has-order-bar .chat-panel { bottom: 162px; height: min(600px, calc(100vh - 
 .cat-tile .c { display: inline-block; margin-top: 4px; padding: 1px 8px; border-radius: 999px; background: rgba(0, 0, 0, .28); opacity: 1; font-weight: 700; }
 
 @media (max-width: 992px) {
-    .fest-toolbar { grid-template-columns: 1fr auto; }
+    .fest-toolbar { justify-content: flex-end; }
     .ft-search { grid-column: 1 / -1; grid-row: 2; }
     .ft-tools { grid-row: 1; grid-column: 2; }
 }
 @media (max-width: 576px) {
-    .fest-toolbar { grid-template-columns: 1fr; gap: 10px; }
+    .fest-toolbar { gap: 10px; }
+    .fest-toolbar .ft-tools { width: 100%; }
     .ft-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
     .fest-title { font-size: 24px; }
     .ft-search { grid-row: auto; }
