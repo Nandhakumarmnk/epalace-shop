@@ -652,72 +652,27 @@ button.cb-off:hover { transform: scale(1.08) rotate(-4deg); }
 }
 @media (prefers-reduced-motion: reduce) { .hero-v2::after, .hv-title .gold, .hv-emo { animation: none; } }
 
-/* ---------- kid-friendly banner: bright candy colours, bubbly white cards, floating emoji ---------- */
-.hero-kids { background:
-        radial-gradient(circle at 12% 18%, rgba(255, 255, 255, .22) 0 2px, transparent 3px) 0 0 / 46px 46px,
-        radial-gradient(circle at 70% 60%, rgba(255, 236, 140, .35) 0 2px, transparent 3px) 0 0 / 64px 64px,
-        radial-gradient(ellipse at 85% 10%, rgba(255, 214, 102, .55), transparent 45%),
-        radial-gradient(ellipse at 0% 100%, rgba(56, 189, 248, .45), transparent 50%),
-        linear-gradient(135deg, #5b2bd9 0%, #b026d3 38%, #ff4f8b 70%, #ff9a3c 100%); }
-.hero-kids::after { height: 6px; background: repeating-linear-gradient(90deg, #ffd23f 0 28px, #3bceac 28px 56px, #0ead69 56px 84px, #ee4266 84px 112px, #540d6e 112px 140px); animation: none; }
-.hk-float { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-.hk-float span { position: absolute; font-size: 30px; opacity: .55; animation: hk-bob 5s ease-in-out infinite; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .18)); }
-.hk-float span:nth-child(1) { left: 3%; top: 12%; }
-.hk-float span:nth-child(2) { left: 46%; top: 6%; animation-delay: -1s; font-size: 26px; }
-.hk-float span:nth-child(3) { left: 62%; top: 72%; animation-delay: -2s; }
-.hk-float span:nth-child(4) { left: 92%; top: 82%; animation-delay: -3s; font-size: 24px; }
-.hk-float span:nth-child(5) { left: 88%; top: 6%; animation-delay: -1.5s; }
-.hk-float span:nth-child(6) { left: 2%; top: 86%; animation-delay: -2.5s; font-size: 26px; }
-.hk-float span:nth-child(7) { left: 55%; top: 40%; animation-delay: -.5s; font-size: 20px; }
-.hk-float span:nth-child(8) { left: 30%; top: 92%; animation-delay: -3.5s; font-size: 24px; }
-@keyframes hk-bob { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-14px) rotate(8deg); } }
-.hero-kids .inner { z-index: 1; }
-.hk-top { display: flex; flex-wrap: wrap; gap: 8px; }
-.hk-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; font-weight: 800; font-size: 13.5px; box-shadow: 0 4px 0 rgba(0, 0, 0, .15); }
-.hk-pill b { font-family: var(--fest-font); font-size: 15px; }
-.hk-diwali { background: #fff; color: #b0127a; }
-.hk-yellow { background: #ffd23f; color: #5b1a00; }
-.hk-blue { background: #3bceac; color: #053b30; }
-.hero-kids .hv-title { color: #fff; text-shadow: 0 3px 0 #7a1fa2, 0 6px 0 rgba(0, 0, 0, .18); }
-.hero-kids .hv-title .gold { background: none; color: #ffd23f; -webkit-text-fill-color: #ffd23f; animation: none; }
-.hk-offer-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 18px; margin: 8px 0 16px; }
-.hk-offer { display: inline-flex; align-items: center; gap: 10px; padding: 6px 18px 6px 12px; border: 0; border-radius: 24px; cursor: pointer;
-    background: #fff; box-shadow: 0 6px 0 #ffb300, 0 14px 26px rgba(0, 0, 0, .2); transform: rotate(-2deg); transition: transform .2s; }
-.hk-offer:hover { transform: rotate(0) scale(1.04); }
-.hk-offer .mo-pct { font-family: var(--fest-font); font-weight: 800; font-size: clamp(50px, 7vw, 76px); line-height: .9; letter-spacing: -.03em;
-    background: linear-gradient(180deg, #ff4f8b, #e11d48 60%, #b0127a); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.hk-offer .mo-txt { text-align: left; }
-.hk-offer .mo-txt b { display: block; font-family: var(--fest-font); font-size: 30px; line-height: 1; color: #5b2bd9; letter-spacing: .06em; }
-.hk-offer .mo-txt small { display: block; font-size: 12px; color: #6b5a74; font-weight: 700; }
-.hk-count { min-width: 0; }
-.hk-count-t { color: #fff; font-weight: 800; font-size: 14.5px; margin-bottom: 6px; text-shadow: 0 1px 4px rgba(0, 0, 0, .25); }
-.hk-count-t small { font-weight: 600; opacity: .9; }
-.hk-cd { gap: 8px; }
-.hk-cd .cd-u { min-width: 62px; padding: 6px 8px; border-radius: 16px; background: #fff; border: 0; box-shadow: 0 4px 0 rgba(0, 0, 0, .15); text-align: center; }
-.hk-cd .cd-u b { display: block; font-family: var(--fest-font); font-size: 26px; line-height: 1; color: #5b2bd9; }
-.hk-cd .cd-u:nth-child(2) b { color: #e11d48; } .hk-cd .cd-u:nth-child(3) b { color: #0ead69; } .hk-cd .cd-u:nth-child(4) b { color: #ff7a00; }
-.hk-cd .cd-u span { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #6b5a74; margin-top: 2px; }
-.hero-kids .hv-points li { background: #fff; border: 0; border-radius: 20px; box-shadow: 0 5px 0 rgba(0, 0, 0, .14); backdrop-filter: none; }
-.hero-kids .hv-points li:hover { transform: translateY(-4px) rotate(-1deg); background: #fff; }
-.hero-kids .hv-points i { flex: 0 0 auto; width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; font-size: 22px; font-style: normal; background: #fff3c4; }
-.hero-kids .hv-points li:nth-child(2) i { background: #d9fbe9; }
-.hero-kids .hv-points li:nth-child(3) i { background: #e6e0ff; }
-.hero-kids .hv-points b { color: #2a1630; }
-.hero-kids .hv-points span { color: #6b5a74; }
-.hero-kids .hv-packs-lbl { color: #fff; text-shadow: 0 1px 4px rgba(0, 0, 0, .25); }
-.hero-kids .hv-packs .pp-name { background: #fff; color: #b0127a; box-shadow: 0 3px 0 rgba(0, 0, 0, .14); }
-.hero-kids .hv-packs .pp-name:nth-child(3n) { background: #ffd23f; color: #5b1a00; }
-.hero-kids .hv-packs .pp-name:nth-child(3n+1) { background: #3bceac; color: #053b30; }
-.hero-kids .hero-cta .btn { box-shadow: 0 5px 0 rgba(0, 0, 0, .2); }
-.hero-kids .hero-art .hero-logo { box-shadow: 0 0 0 10px rgba(255, 255, 255, .55), 0 0 0 20px rgba(255, 210, 63, .45), 0 30px 60px rgba(0, 0, 0, .3); }
+/* ---------- banner extras: stat pills, 90% button and countdown (dark theme) ---------- */
+.hk-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.hk-top .fest-eyebrow { font-weight: 800; }
+.hk-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 999px; font-weight: 700; font-size: 13.5px; color: #fff;
+    background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .2); backdrop-filter: blur(6px); }
+.hk-pill b { font-family: var(--fest-font); font-size: 15px; color: var(--fest-gold); }
+.hk-offer-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 22px; margin: 6px 0 18px; }
+.hk-offer { display: inline-flex; align-items: center; gap: 12px; padding: 0; border: 0; background: none; cursor: pointer; text-align: left; }
+.hk-offer .mo-pct { font-family: var(--fest-font); font-weight: 800; font-size: clamp(56px, 8vw, 88px); line-height: .9; letter-spacing: -.03em;
+    background: linear-gradient(180deg, #fff6c9, var(--fest-gold) 45%, var(--fest-gold-2)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 6px 18px rgba(255, 122, 0, .55)); }
+.hk-offer .mo-txt b { display: block; font-family: var(--fest-font); font-size: 34px; line-height: 1; color: #fff; letter-spacing: .06em; }
+.hk-offer .mo-txt small { display: block; font-size: 12.5px; color: rgba(255, 255, 255, .78); font-weight: 600; }
+.hk-count-t { color: var(--fest-gold); font-weight: 800; font-size: 14px; margin-bottom: 6px; }
+.hk-count-t small { color: rgba(255, 255, 255, .75); font-weight: 600; }
+.hk-cd .cd-u { min-width: 60px; backdrop-filter: blur(6px); }
+.hk-cd .cd-u span { color: rgba(255, 255, 255, .7); }
 @media (max-width: 576px) {
     .hk-pill { font-size: 12px; padding: 5px 11px; }
-    .hk-offer-row { gap: 12px; }
     .hk-count { width: 100%; }
     .hk-cd .cd-u { flex: 1; min-width: 0; }
-    .hk-float span { font-size: 22px; opacity: .4; }
 }
-@media (prefers-reduced-motion: reduce) { .hk-float span { animation: none; } }
 
-/* welcome popup: logo on a bright header (no GIF) */
-.offer-pop .op-art { aspect-ratio: 16 / 6; background: linear-gradient(135deg, #5b2bd9 0%, #b026d3 40%, #ff4f8b 72%, #ff9a3c 100%); }
+/* welcome popup: logo header (no GIF) */
+.offer-pop .op-art { aspect-ratio: 16 / 6; }
