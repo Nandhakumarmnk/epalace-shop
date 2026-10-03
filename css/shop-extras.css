@@ -597,3 +597,57 @@ button.cb-off:hover { transform: scale(1.08) rotate(-4deg); }
 
 /* "Shop for" chips: emoji + label on one line, hint underneath */
 .aud-chip .aud-t { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+
+/* =====================================================================================
+   Festival banner v2 (top of the shop): glowing headline, 90% badge, three reason cards, pack chips
+   ===================================================================================== */
+.hero-v2 { padding: 34px 20px 38px; isolation: isolate; }
+.hero-v2::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 4px; z-index: 1;
+    background: linear-gradient(90deg, var(--fest-saffron), var(--fest-gold), #f72585, var(--fest-gold), var(--fest-saffron)); background-size: 200% 100%; animation: hv-line 6s linear infinite; }
+@keyframes hv-line { to { background-position: 200% 0; } }
+.hero-v2 .inner { grid-template-columns: minmax(0, 1.35fr) minmax(0, .65fr); gap: 28px; }
+.hero-v2 .fest-eyebrow { font-weight: 800; }
+.hv-title { margin: 14px 0 6px; color: #fff; font-family: var(--fest-font); font-weight: 800; font-size: clamp(28px, 4.2vw, 48px); line-height: 1.08; letter-spacing: -.01em;
+    text-shadow: 0 4px 24px rgba(0, 0, 0, .45); }
+.hv-title .gold { background: linear-gradient(90deg, #fff1b8, var(--fest-gold), var(--fest-gold-2), #fff1b8); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent;
+    animation: hv-shine 4s linear infinite; }
+@keyframes hv-shine { to { background-position: 200% 0; } }
+.hv-emo { display: inline-block; animation: hv-pop 2.4s ease-in-out infinite; }
+@keyframes hv-pop { 0%, 100% { transform: rotate(0) scale(1); } 50% { transform: rotate(-10deg) scale(1.15); } }
+.hv-offer { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; margin: 6px 0 18px; }
+.hv-offer .mo-pct { font-family: var(--fest-font); font-weight: 800; font-size: clamp(56px, 8vw, 88px); line-height: .9; letter-spacing: -.03em;
+    background: linear-gradient(180deg, #fff6c9, var(--fest-gold) 45%, var(--fest-gold-2)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 6px 18px rgba(255, 122, 0, .55)); }
+.hv-offer .mo-txt b { display: block; font-family: var(--fest-font); font-size: 34px; line-height: 1; color: #fff; letter-spacing: .06em; }
+.hv-offer .mo-txt small { display: block; font-size: 12.5px; color: rgba(255, 255, 255, .78); font-weight: 600; }
+.hv-tag { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px; font-weight: 800; font-size: 13.5px; color: var(--fest-night);
+    background: linear-gradient(135deg, var(--fest-gold), #ffe7a3); box-shadow: 0 6px 18px rgba(255, 159, 28, .4); }
+.hv-points { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; max-width: 720px; }
+.hv-points li { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 16px; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 201, 77, .3);
+    backdrop-filter: blur(8px); transition: transform .2s, background .2s; }
+.hv-points li:hover { transform: translateY(-3px); background: rgba(255, 255, 255, .13); }
+.hv-points .bi { flex: 0 0 auto; width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; font-size: 18px; color: #fff;
+    background: linear-gradient(135deg, var(--fest-saffron), var(--fest-red)); box-shadow: 0 6px 16px rgba(225, 29, 72, .4); }
+.hv-points li:nth-child(2) .bi { background: linear-gradient(135deg, #22c55e, #15803d); box-shadow: 0 6px 16px rgba(21, 128, 61, .4); }
+.hv-points li:nth-child(3) .bi { background: linear-gradient(135deg, #7b2ff7, #c2185b); box-shadow: 0 6px 16px rgba(123, 47, 247, .4); }
+.hv-points b { display: block; color: #fff; font-size: 14.5px; line-height: 1.2; }
+.hv-points span { display: block; color: rgba(255, 255, 255, .72); font-size: 12px; line-height: 1.3; margin-top: 2px; }
+.hv-packs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; max-width: 720px; text-decoration: none; margin-bottom: 4px; }
+.hv-packs-lbl { font-weight: 800; color: var(--fest-gold); margin-right: 2px; }
+.hv-packs .pp-name { padding: 3px 11px; border-radius: 999px; font-size: 13px; font-weight: 700; color: var(--fest-night); background: linear-gradient(90deg, var(--fest-gold), #ffe7a3); transition: transform .15s; }
+.hv-packs:hover .pp-name { transform: translateY(-1px); filter: brightness(1.06); }
+.hero-v2 .hero-cta { margin-top: 18px; }
+.hero-v2 .hero-cta .btn { min-width: 190px; border-radius: 999px; }
+.hero-v2 .hero-art { min-height: 300px; }
+@media (max-width: 992px) { .hero-v2 .inner { grid-template-columns: 1fr; } }
+@media (max-width: 576px) {
+    .hero-v2 { padding: 22px 16px 26px; }
+    .hv-title { font-size: 26px; margin-top: 10px; }
+    .hv-offer { margin-bottom: 14px; }
+    .hv-offer .mo-txt b { font-size: 26px; }
+    .hv-points { grid-template-columns: 1fr; gap: 8px; }
+    .hv-points li { padding: 9px 11px; }
+    .hv-points .bi { width: 34px; height: 34px; font-size: 16px; }
+    .hv-packs .pp-name { font-size: 12px; }
+    .hero-v2 .hero-cta .btn { flex: 1 1 100%; min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) { .hero-v2::after, .hv-title .gold, .hv-emo { animation: none; } }

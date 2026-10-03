@@ -499,8 +499,8 @@
                 { x: 0.98, y: 1.02, dir: -2 * Math.PI / 3, spread: 0.7, power: 11 }] });
         }, 250);
         setTimeout(function () { confetti({ count: 140, duration: 4200 }); }, 1300);
-    } else if (document.querySelector("#products")) {
-        // shop opens: a colour-paper blast from the top
+    } else if (document.querySelector(".fest-hero")) {
+        // shop opens: a colour-paper blast over the banner
         setTimeout(function () { confetti({ count: 150, duration: 3600, origins: [{ x: 0.5, y: -0.05, dir: Math.PI / 2, spread: Math.PI * 0.9, power: 3 }] }); }, 400);
     }
 
