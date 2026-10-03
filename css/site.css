@@ -478,6 +478,10 @@ code, .text-mono { font-family: var(--font-mono); font-size: .92em; }
 .avatar.tone-info { background: var(--info-soft); color: var(--info); }
 .avatar.tone-violet { background: var(--violet-soft); color: var(--violet); }
 .avatar.tone-slate { background: var(--slate-soft); color: var(--slate); }
+/* customer / user photo inside an avatar (falls back to the initials when there is none) */
+.avatar.has-photo { background: var(--surface-2); overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); }
+.avatar > img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; display: block; }
+.avatar.photo-picker-preview { width: 96px; height: 96px; font-size: 30px; }
 
 /* ---------------------------------------------------------------------
    8. Badges / pills (soft, industrial)
