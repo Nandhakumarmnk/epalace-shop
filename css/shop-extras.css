@@ -711,3 +711,156 @@ button.cb-off:hover { transform: scale(1.08) rotate(-4deg); }
 
 /* "What's inside" for gift boxes: the supplier's contents sheet */
 .pk-poster { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 6px 18px rgba(20, 6, 31, .18); }
+
+/* =====================================================================================
+   QA fixes (Oct 2026)
+   ===================================================================================== */
+/* phone menu: hamburger in the header + dark festive offcanvas with the links the desktop nav shows */
+.menu-hdr { flex: 0 0 auto; width: 38px; height: 38px; margin-right: -2px; border: 1px solid rgba(255, 201, 77, .45); border-radius: 12px; background: rgba(255, 255, 255, .08); color: #fff; font-size: 22px; line-height: 1; display: grid; place-items: center; }
+.menu-hdr:hover, .menu-hdr[aria-expanded="true"] { color: var(--fest-gold); background: rgba(255, 201, 77, .14); }
+.menu-hdr:focus-visible, .shop-menu a:focus-visible { outline: 3px solid var(--fest-gold); outline-offset: 2px; }
+.shop-menu { --bs-offcanvas-width: min(300px, 86vw); background: linear-gradient(180deg, #1a0b2e, #3b0a2c); color: #fff; border-right: 1px solid rgba(255, 201, 77, .3); }
+.shop-menu .offcanvas-header { border-bottom: 1px solid rgba(255, 201, 77, .25); }
+.shop-menu .sm-title { display: flex; align-items: center; gap: 10px; font-family: var(--fest-font); font-weight: 800; font-size: 20px; color: var(--fest-gold); }
+.shop-menu .sm-title img { border-radius: 50%; box-shadow: 0 0 0 2px rgba(255, 201, 77, .6); background: #fff; }
+.sm-links { display: flex; flex-direction: column; gap: 4px; padding: 12px; }
+.sm-links a { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 10px 14px; border-radius: 12px; color: rgba(255, 255, 255, .92); font-weight: 700; font-size: 16px; text-decoration: none; }
+.sm-links a .bi { font-size: 19px; color: var(--fest-gold); width: 22px; text-align: center; }
+.sm-links a:hover, .sm-links a:active { background: rgba(255, 201, 77, .14); color: var(--fest-gold); }
+.sm-links a small { color: rgba(255, 255, 255, .55); font-weight: 600; font-size: 12.5px; }
+.sm-links a.sm-wa .bi { color: #7dffb2; }
+.sm-links a.sm-ig .bi { color: #ff9ecb; }
+.sm-sep { height: 1px; margin: 6px 4px; background: rgba(255, 255, 255, .12); }
+@media (max-width: 400px) {
+    .shop-header .inner { gap: 6px; padding-left: 10px; padding-right: 10px; }
+    .shop-header .ms-2 { margin-left: 0 !important; }
+    .shop-brand .name { font-size: 16px; }
+    .menu-hdr { width: 36px; height: 34px; font-size: 20px; }
+}
+@media (max-width: 350px) { .shop-brand .name { display: none !important; } }
+
+/* desktop nav in Tamil: the labels are ~40% longer, so below 1400px drop "Safety" (it is in the footer and the phone
+   menu), show WhatsApp / Instagram / phone as icons — the EN | தமிழ் switch never sits on top of the links */
+.shop-nav { flex: 0 1 auto; }
+@media (max-width: 1399.98px) {
+    html[lang="ta"] .shop-nav a.nav-opt, html[lang="ta"] .shop-nav .nav-lbl, html[lang="ta"] .shop-nav .nav-num { display: none; }
+    html[lang="ta"] .shop-nav a.nav-wa, html[lang="ta"] .shop-nav a.nav-ig, html[lang="ta"] .shop-nav a.nav-tel { padding: 8px 9px; font-size: 16px; }
+    html[lang="ta"] .shop-nav a { font-size: 12.5px; padding: 8px 7px; }
+}
+@media (max-width: 1199.98px) { .shop-nav .nav-num { display: none; } .shop-nav a.nav-tel { padding: 8px 10px; font-size: 16px; } }
+@media (max-width: 991.98px) {
+    html[lang="ta"] .shop-nav a { font-size: 12px; padding: 8px 5px; gap: 4px; }
+    html[lang="ta"] .shop-brand .sub { display: none !important; }
+}
+
+/* price / discount / name sort: one list across all categories (shop.js) */
+.sorted-section { margin-bottom: 18px; }
+/* price list: "What's inside" for gift boxes / family packs */
+.pack-inside.pl-inside { margin: 4px 0 0; font-size: 11.5px; padding: 3px 9px; }
+
+/* chat: the dialog takes focus on phones (no outline around the whole sheet) */
+.chat-panel:focus { outline: none; }
+
+/* order tracking on phones: the six steps as a 3 × 2 grid with whole words, and room under the floating buttons */
+.track-main { padding-bottom: 96px; }
+@media (max-width: 576px) {
+    .track-main .order-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 16px; overflow: visible; }
+    .track-main .order-steps .step { min-width: 0; padding: 0 3px; }
+    .track-main .order-steps .step:nth-child(3n) .step-line { display: none; }
+    .track-main .order-steps .step-label { font-size: 11.5px; overflow-wrap: normal; word-break: normal; hyphens: none; }
+    html[lang="ta"] .track-main .order-steps .step-label { font-size: 10.5px; line-height: 1.3; }
+    .track-main .dl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .track-main .info-tile .it-value { overflow-wrap: break-word; }
+}
+
+/* 360px phones */
+@media (max-width: 576px) {
+    /* toolbar: Offers + view toggle on one line, the sort box full width under them (readable "Sort: category") */
+    .fest-toolbar .ft-tools { flex-wrap: wrap; }
+    .ft-tools .ft-select { order: 3; flex: 1 1 100%; }
+    .ft-tools .view-toggle { margin-left: auto; }
+    /* order bar: total on top, units under it — the sub line may use two lines instead of "15 units · 3 p…" */
+    .order-bar .ob-sub { white-space: normal; overflow: visible; line-height: 1.2; font-size: 11.5px; }
+    /* price list − / +: at least 36 × 36 tap targets */
+    .qty-ctl.pl-stepper button { width: 36px; height: 36px; min-width: 36px; }
+    .qty-ctl.pl-stepper input { height: 36px; }
+    /* with the order bar up, the floating WhatsApp button is hidden (the bar has one), so the chat bubble moves to
+       that bottom-left spot — clear of the price-list quantity column on the right */
+    body.has-order-bar .chat-fab { bottom: 92px; left: 10px; right: auto; }
+    .chat-fab img { width: 36px; height: 36px; }
+    .pricelist { margin-bottom: 64px; }
+}
+@media (max-width: 420px) {
+    .qty-ctl.pl-stepper button { width: 36px; height: 36px; font-size: 17px; }
+    .qty-ctl.pl-stepper input { height: 36px; min-width: 28px; }
+    .pl-table td:first-child, .pl-table th:first-child { width: 44%; }
+    .pl-table td:nth-child(3), .pl-table th:nth-child(3) { width: 20%; }
+    .pl-table td:nth-child(4), .pl-table th:nth-child(4) { width: 36%; }
+}
+/* hero logo is a <picture> (webp + png): let the <img> stay the grid item */
+.hero-art picture { display: contents; }
+@media (max-width: 400px) { .track-main .dl-grid { grid-template-columns: 1fr; } }
+/* price-list "What's inside": wraps as text inside the product column instead of spilling into the price column */
+.pack-inside.pl-inside { display: inline-block; max-width: 100%; white-space: normal; text-align: left; line-height: 1.35; border-radius: 12px; }
+.pack-inside.pl-inside .bi { margin-right: 3px; }
+/* very narrow phones: the header cart button is always on screen, so the order bar drops its own cart button
+   to give the total and "units · products" room (two short lines instead of four) */
+@media (max-width: 400px) {
+    .order-bar .ob-cart { display: none; }
+    html[lang="ta"] .order-bar .ob-order { padding: 8px 10px; font-size: 14px; }
+}
+
+/* =====================================================================================
+   FAQ page, "Call us" button (Oct 2026)
+   ===================================================================================== */
+/* header nav: FAQ shows as an icon where WhatsApp / Instagram do */
+@media (max-width: 1199.98px) { .shop-nav a.nav-faq { padding: 8px 10px; font-size: 16px; } }
+@media (max-width: 1399.98px) { html[lang="ta"] .shop-nav a.nav-faq { padding: 8px 9px; font-size: 16px; } }
+.sm-links a.sm-tel .bi { color: #ffd27a; }
+
+/* floating "Call us" (phones / small tablets; from 768px the header shows the number). It sits on the left,
+   stacked above the WhatsApp button; with the order bar up on phones the WhatsApp button hides and the chat
+   bubble takes the bottom-left spot, so the call button stacks above the chat bubble instead. */
+.call-float { position: fixed; left: 20px; bottom: 84px; z-index: 1035; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center;
+    background: linear-gradient(135deg, var(--fest-saffron), var(--fest-red)); color: #fff; font-size: 21px; text-decoration: none;
+    box-shadow: 0 10px 26px rgba(225, 29, 72, .4), 0 0 0 2px rgba(255, 255, 255, .85); transition: transform .15s ease; }
+.call-float:hover, .call-float:focus { color: #fff; transform: scale(1.06); }
+.call-float:focus-visible { outline: 3px solid var(--fest-gold); outline-offset: 3px; }
+body.has-order-bar .call-float { bottom: 162px; }
+@media (max-width: 576px) {
+    .call-float { left: 14px; bottom: 74px; width: 48px; height: 48px; font-size: 20px; }
+    body.has-order-bar .call-float { left: 10px; bottom: 148px; width: 46px; height: 46px; }
+}
+/* checkout bar, drawers and popups: step aside like the other floating buttons */
+@media (max-width: 991.98px) { body:has(.co-bar) .call-float { display: none; } }
+body:has(.offcanvas.show) .call-float, body:has(.modal.show) .call-float { display: none; }
+@media (max-width: 576px) { body:has(.chat-panel.show) .call-float { display: none; } }
+
+/* FAQ page */
+.faq-main { padding-bottom: 96px; }
+.faq-crumbs { font-size: 13px; color: var(--muted); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+.faq-crumbs a { color: var(--fest-maroon); font-weight: 700; text-decoration: none; }
+.faq-crumbs .bi { font-size: 11px; }
+.faq-steps { list-style: none; padding: 0; margin: 12px 0 18px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.faq-steps li { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: #fff; border: 1px solid rgba(255, 122, 0, .25); font-weight: 700; font-size: 13.5px; color: var(--fest-ink); line-height: 1.3; }
+.faq-steps .fs-ico { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; color: #fff; background: linear-gradient(135deg, var(--fest-saffron), var(--fest-red)); }
+.faq-acc { --bs-accordion-border-radius: 16px; --bs-accordion-inner-border-radius: 15px; --bs-accordion-btn-focus-box-shadow: 0 0 0 3px rgba(255, 122, 0, .35);
+    --bs-accordion-active-bg: #fff4e3; --bs-accordion-active-color: var(--fest-ink); --bs-accordion-border-color: rgba(42, 22, 48, .1); }
+.faq-item { scroll-margin-top: calc(var(--shop-hdr, 66px) + 12px); }
+.faq-acc .accordion-button { gap: 12px; font-weight: 800; font-size: 15.5px; color: var(--fest-ink); padding: 14px 16px; line-height: 1.35; }
+.faq-acc .fq-ico { flex: 0 0 auto; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: #fff4e3; color: var(--fest-saffron); font-size: 17px; }
+.faq-acc .accordion-button:not(.collapsed) .fq-ico { background: linear-gradient(135deg, var(--fest-saffron), var(--fest-red)); color: #fff; }
+.faq-acc .fq-text { flex: 1; min-width: 0; }
+.faq-acc .accordion-body { padding: 4px 18px 16px 62px; }
+.faq-acc .accordion-body p { font-size: 14.5px; line-height: 1.7; color: var(--ink-2); margin-bottom: 8px; }
+.faq-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.faq-links .btn-light { border: 1px solid rgba(255, 122, 0, .35); color: var(--fest-maroon); font-weight: 700; }
+.faq-help { margin-top: 18px; }
+.faq-help h2 { font-family: var(--fest-font); font-weight: 800; font-size: 20px; color: var(--fest-ink); }
+.faq-help h2 .bi { color: var(--fest-saffron); }
+@media (max-width: 576px) {
+    .faq-steps { grid-template-columns: 1fr; gap: 6px; }
+    .faq-acc .accordion-button { font-size: 14.5px; padding: 12px; gap: 10px; }
+    .faq-acc .accordion-body { padding: 2px 14px 14px; }
+    .faq-help .faq-links .btn { flex: 1 1 100%; }
+}

@@ -14,7 +14,15 @@
         "unit": "அலகு", "units": "அலகுகள்", "product": "பொருள்", "products": "பொருட்கள்",
         "wa.empty": "கூடை காலியாக உள்ளது — WhatsApp catalogue திறக்கப்படுகிறது",
         "list.empty": "கூடை காலியாக உள்ளது — விலைப்பட்டியலில் சேர்க்கவும்",
-        "addProducts": "பட்டாசுகளைச் சேர்க்கவும்"
+        "addProducts": "பட்டாசுகளைச் சேர்க்கவும்",
+        "maxQty": "ஒரு பொருளுக்கு அதிகபட்சம் 9,999 — ஏற்கனவே கூடையில் உள்ளது",
+        "qty": "எண்ணிக்கை", "dec": "ஒன்று குறை", "inc": "ஒன்று கூட்டு", "remove": "கூடையிலிருந்து நீக்கு",
+        "dl.free": "இலவசம்", "dl.call": "அழைப்பில் உறுதி",
+        "dl.callNote": "இந்த மாநிலத்துக்கான டெலிவரியை அழைப்பில் உறுதி செய்வோம்.",
+        "dl.freeNote": "இலவச டெலிவரி — உங்கள் ஆர்டர் இலவச டெலிவரி வரம்பைத் தாண்டியது.",
+        "re.added": "முந்தைய ஆர்டரின் பொருட்கள் கூடையில் சேர்க்கப்பட்டன. இன்றைய விலைகள் காட்டப்படுகின்றன.",
+        "re.skipped": "இவை இப்போது கிடைக்கவில்லை, சேர்க்கப்படவில்லை: ",
+        "re.none": "இந்த ஆர்டரின் பொருட்கள் எதுவும் இப்போது கிடைக்கவில்லை."
     };
     function lang() { return document.documentElement.lang === "ta" ? "ta" : "en"; }
     function T(key, en) { return lang() === "ta" && TA[key] ? TA[key] : en; }
@@ -30,6 +38,10 @@
         document.querySelectorAll("option[data-ta]").forEach(function (o) {
             if (!o.hasAttribute("data-en")) o.setAttribute("data-en", o.textContent);
             o.textContent = l === "ta" ? o.getAttribute("data-ta") : o.getAttribute("data-en");
+        });
+        document.querySelectorAll("optgroup[data-ta]").forEach(function (g) {   // group headings live in the label attribute
+            if (!g.hasAttribute("data-en")) g.setAttribute("data-en", g.label);
+            g.label = l === "ta" ? g.getAttribute("data-ta") : g.getAttribute("data-en");
         });
         document.querySelectorAll("[data-set-lang]").forEach(function (b) { b.classList.toggle("active", b.getAttribute("data-set-lang") === l); });
         if (typeof render === "function" && document.readyState !== "loading") render();
@@ -74,12 +86,27 @@
         el._t = setTimeout(function () { el.classList.remove("show"); }, 2200);
     }
 
+    // The drawer lines are rebuilt on every change; put the keyboard focus back on the same control
+    // (or the drawer itself when the line went away) so Esc still closes the drawer and Tab carries on.
+    var focusAfter = null;
+    function restoreFocus(box) {
+        var f = focusAfter; focusAfter = null;
+        if (!f) return;
+        var line = box.querySelector('.cart-line[data-id="' + f.id + '"]');
+        var el = line && line.querySelector(f.sel);
+        if (!el && line) el = line.querySelector("[data-qty]");
+        if (!el) { var any = box.querySelector(".cart-line [data-qty]"); el = any || box.closest(".offcanvas"); }
+        if (el && el.focus) el.focus({ preventScroll: true });
+    }
+
     function render() {
         var t = totals();
         document.querySelectorAll("[data-cart-count]").forEach(function (b) { b.textContent = String(t.units); b.classList.toggle("d-none", false); });
         var box = document.querySelector("[data-cart-lines]");
         if (box) {
             var ls = lines();
+            var ae = document.activeElement, aeLine = ae && box.contains(ae) && ae.closest(".cart-line");
+            if (!focusAfter && aeLine) focusAfter = { id: aeLine.getAttribute("data-id"), sel: ae.matches("[data-inc]") ? "[data-inc]" : ae.matches("[data-dec]") ? "[data-dec]" : ae.matches("[data-remove]") ? "[data-remove]" : "[data-qty]" };
             if (!ls.length) {
                 box.innerHTML = '<div class="cart-empty"><i class="bi bi-bag d-block mb-2" style="font-size:40px;opacity:.4"></i><div class="fw-700 text-ink-2">' + esc(T("cart.empty", "Your cart is empty")) + '</div><div class="fs-13">' + esc(T("cart.emptySub", "Add crackers from the catalogue to get started.")) + '</div></div>';
             } else {
@@ -89,11 +116,14 @@
                         '<span class="cl-ico" style="--h:' + i.hue + '">' + (i.photo ? '<img src="' + esc(i.photo) + '" alt="" loading="lazy" />' : (i.emoji ? '<span class="emo">' + i.emoji + '</span>' : '<i class="bi ' + i.icon + '"></i>')) + '</span>' +
                         '<div class="flex-grow-1 min-w-0"><div class="fw-700 truncate">' + esc(NM(i)) + '</div>' +
                         '<div class="fs-12 text-muted">' + money(i.price) + (i.discount > 0 ? ' <s>' + money(i.mrp) + '</s> <span class="text-ok fw-700">-' + i.discount + '%</span>' : '') + '</div>' +
-                        '<div class="d-flex align-items-center gap-2 mt-1"><div class="qty-ctl qty-ctl-sm"><button type="button" data-dec>−</button><input type="number" min="1" value="' + l.qty + '" data-qty /><button type="button" data-inc>+</button></div>' +
-                        '<button type="button" class="btn btn-sm btn-light" data-remove title="Remove"><i class="bi bi-trash"></i></button></div></div>' +
+                        '<div class="d-flex align-items-center gap-2 mt-1"><div class="qty-ctl qty-ctl-sm"><button type="button" data-dec aria-label="' + esc(T("dec", "Remove one") + " · " + NM(i)) + '">−</button>' +
+                        '<input type="number" min="1" max="9999" value="' + l.qty + '" data-qty inputmode="numeric" aria-label="' + esc(T("qty", "Quantity") + " · " + NM(i)) + '" />' +
+                        '<button type="button" data-inc aria-label="' + esc(T("inc", "Add one") + " · " + NM(i)) + '">+</button></div>' +
+                        '<button type="button" class="btn btn-sm btn-light" data-remove title="' + esc(T("remove", "Remove from cart")) + '" aria-label="' + esc(T("remove", "Remove from cart") + " · " + NM(i)) + '"><i class="bi bi-trash"></i></button></div></div>' +
                         '<div class="fw-800 money text-end" style="min-width:86px">' + money(i.price * l.qty) + '</div></div>';
                 }).join("");
             }
+            restoreFocus(box);
         }
         var set = function (sel, v) { document.querySelectorAll(sel).forEach(function (e) { e.textContent = v; }); };
         set("[data-cart-units]", t.units + " " + (t.units === 1 ? T("unit", "unit") : T("units", "units")) + " · " + t.count + " " + (t.count === 1 ? T("product", "product") : T("products", "products")));
@@ -126,7 +156,8 @@
             if (amt) amt.textContent = q > 0 && items[id] ? money(items[id].price * q) : "—";
         });
 
-        // checkout page
+        // checkout page: delivery estimate for the chosen state (the server recomputes it when the order is placed)
+        renderDelivery(t);
         var json = document.getElementById("CartJson");
         if (json) json.value = JSON.stringify(lines().map(function (l) { return { itemId: l.item.id, qty: l.qty }; }));
         // checkout: the Place order buttons are enabled by the form checklist in shop-extras.js (cart + required fields)
@@ -139,12 +170,69 @@
         });
     }
 
+    // ---- Delivery estimate (checkout): flat ₹ per state from Settings, rendered into the form as data-delivery =
+    // {"rates":{"Tamil Nadu":150,…},"freeAbove":5000|null}. A state without a rate = "We'll confirm delivery on call" (no charge added).
+    var DELIVERY = null;
+    (function () {
+        var f = document.querySelector("[data-delivery]");
+        if (!f) return;
+        try { DELIVERY = JSON.parse(f.getAttribute("data-delivery") || "{}") || {}; } catch (e) { DELIVERY = {}; }
+        DELIVERY.rates = DELIVERY.rates || {};
+    })();
+    function deliveryQuote(state, goods) {
+        if (!DELIVERY || !state || !Object.prototype.hasOwnProperty.call(DELIVERY.rates, state)) return { charge: null, free: false };
+        var rate = Number(DELIVERY.rates[state]) || 0;
+        if (rate > 0 && DELIVERY.freeAbove > 0 && goods >= DELIVERY.freeAbove) return { charge: 0, free: true };
+        return { charge: rate, free: rate === 0 };
+    }
+    function renderDelivery(t) {
+        var sel = document.querySelector("[data-co-state]");
+        var set = function (s, v) { document.querySelectorAll(s).forEach(function (e) { e.textContent = v; }); };
+        if (!sel || !DELIVERY) { set("[data-co-grand]", money(t.total)); return; }
+        var q = deliveryQuote(sel.value, t.total);
+        var opt = sel.options[sel.selectedIndex];
+        set("[data-co-delivery-state]", opt ? "· " + opt.textContent : "");
+        set("[data-co-delivery]", q.charge === null ? T("dl.call", "Confirmed on call") : q.charge === 0 ? T("dl.free", "Free") : money(q.charge));
+        set("[data-co-grand]", money(t.total + (q.charge || 0)));
+        var note = document.querySelector("[data-co-delivery-note]");
+        if (!note) return;
+        var text = "", ok = false;
+        if (q.charge === null) text = T("dl.callNote", "We'll confirm delivery on call for this state.");
+        else if (q.free && DELIVERY.freeAbove > 0 && t.units > 0) { text = T("dl.freeNote", "Free delivery — your order is above the free-delivery amount."); ok = true; }
+        else if (q.charge > 0 && DELIVERY.freeAbove > 0 && t.units > 0) text = lang() === "ta"
+            ? money(DELIVERY.freeAbove) + "-க்கு மேல் இலவச டெலிவரி — இன்னும் " + money(DELIVERY.freeAbove - t.total) + " சேர்க்கவும்."
+            : "Free delivery above " + money(DELIVERY.freeAbove) + " — add " + money(DELIVERY.freeAbove - t.total) + " more.";
+        note.textContent = text;
+        note.classList.toggle("ok", ok);
+        note.classList.toggle("d-none", !text);
+    }
+    (function () {
+        var sel = document.querySelector("[data-co-state]");
+        if (!sel) return;
+        // a fresh checkout takes the state used last time on this device (a re-shown form keeps what was posted)
+        if (sel.hasAttribute("data-restore-state")) {
+            try {
+                var last = localStorage.getItem("epalace-state");
+                if (last && Array.prototype.some.call(sel.options, function (o) { return o.value === last; })) sel.value = last;
+            } catch (e) { }
+        }
+        sel.addEventListener("change", function () {
+            try { localStorage.setItem("epalace-state", sel.value); } catch (e) { }
+            render();
+        });
+    })();
+
+    // one cart line holds 1–9999 units (the server clamps to the same range)
+    var MAX_QTY = 9999;
     function add(id, qty) {
-        id = String(id); qty = Math.max(1, parseInt(qty, 10) || 1);
+        id = String(id); qty = Math.min(MAX_QTY, Math.max(1, parseInt(qty, 10) || 1));
         if (!items[id]) return;
-        cart[id] = (cart[id] || 0) + qty;
+        var before = cart[id] || 0;
+        cart[id] = Math.min(MAX_QTY, before + qty);
+        qty = cart[id] - before;
         save(cart); render();
-        toast(NM(items[id]) + " × " + qty + " " + T("added", "added to cart"));
+        if (qty > 0) toast(NM(items[id]) + " × " + qty + " " + T("added", "added to cart"));
+        else toast(T("maxQty", "Maximum 9,999 per product is already in your cart"));
     }
     function setQty(id, qty) {
         id = String(id); qty = parseInt(qty, 10) || 0;
@@ -165,9 +253,9 @@
         var line = e.target.closest(".cart-line");
         if (line) {
             var id = line.getAttribute("data-id"), q2 = line.querySelector("[data-qty]");
-            if (e.target.closest("[data-inc]")) setQty(id, (parseInt(q2.value, 10) || 0) + 1);
-            else if (e.target.closest("[data-dec]")) setQty(id, (parseInt(q2.value, 10) || 0) - 1);
-            else if (e.target.closest("[data-remove]")) setQty(id, 0);
+            if (e.target.closest("[data-inc]")) { focusAfter = { id: id, sel: "[data-inc]" }; setQty(id, (parseInt(q2.value, 10) || 0) + 1); }
+            else if (e.target.closest("[data-dec]")) { focusAfter = { id: id, sel: "[data-dec]" }; setQty(id, (parseInt(q2.value, 10) || 0) - 1); }
+            else if (e.target.closest("[data-remove]")) { focusAfter = { id: id, sel: "[data-remove]" }; setQty(id, 0); }
             return;
         }
         var card2 = e.target.closest("[data-item]");
@@ -180,7 +268,12 @@
     });
     document.addEventListener("change", function (e) {
         var line = e.target.closest(".cart-line");
-        if (line && e.target.matches("[data-qty]")) setQty(line.getAttribute("data-id"), e.target.value);
+        if (line && e.target.matches("[data-qty]")) { setQty(line.getAttribute("data-id"), e.target.value); return; }
+        // card quantity boxes: keep what was typed within 1–9999
+        if (e.target.matches("[data-item] [data-qty]")) {
+            var v = parseInt(e.target.value, 10);
+            e.target.value = String(Math.min(MAX_QTY, Math.max(1, isNaN(v) ? 1 : v)));
+        }
     });
     // Price list: typing a quantity puts it straight into the cart
     document.addEventListener("input", function (e) {
@@ -218,6 +311,39 @@
         window.open("https://wa.me/" + wa + "?text=" + encodeURIComponent(msg), "_blank", "noopener");
     });
 
+    // Reorder (Track page, after the order was verified with its number + mobile): data-reorder =
+    // {"lines":[{itemId,qty}],"skipped":["name",…]} from the server, already limited to today's active items.
+    // The lines are added to this device's cart at today's prices (items/SHOP_ITEMS) and Checkout opens;
+    // anything not sold any more is named there (sessionStorage, read once by the checkout page).
+    document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-reorder]");
+        if (!b) return;
+        e.preventDefault();
+        var data;
+        try { data = JSON.parse(b.getAttribute("data-reorder") || "{}") || {}; } catch (err) { data = {}; }
+        var skipped = (data.skipped || []).slice(), added = 0;
+        (data.lines || []).forEach(function (l) {
+            var id = String(l.itemId), qty = Math.min(MAX_QTY, Math.max(1, parseInt(l.qty, 10) || 1));
+            if (!items[id]) { skipped.push(l.name || "#" + id); return; }   // switched off since the page was opened
+            cart[id] = Math.min(MAX_QTY, (cart[id] || 0) + qty);
+            added++;
+        });
+        save(cart); render();
+        try { sessionStorage.setItem("epalace-reorder", JSON.stringify({ added: added, skipped: skipped })); } catch (err) { }
+        if (!added) { toast(T("re.none", "None of the products in this order is available now.")); return; }
+        location.href = b.getAttribute("href") || window.SHOP_CHECKOUT_URL || "/Shop/Checkout";
+    });
+    (function () {
+        var note = document.querySelector("[data-reorder-note]");
+        if (!note) return;
+        var info = null;
+        try { info = JSON.parse(sessionStorage.getItem("epalace-reorder") || "null"); sessionStorage.removeItem("epalace-reorder"); } catch (e) { }
+        if (!info || !info.added) return;
+        note.textContent = T("re.added", "The products from your earlier order are in your cart, at today's prices.") +
+            (info.skipped && info.skipped.length ? " " + T("re.skipped", "Not available any more, so left out: ") + info.skipped.join(", ") : "");
+        note.classList.remove("d-none");
+    })();
+
     // Catalogue search / category / offers filter (cards and price list together)
     var search = document.getElementById("shopSearch");
     var offersOnly = document.getElementById("offersOnly");
@@ -226,16 +352,36 @@
     // "Shop for" chips: which categories each audience sees (business sees everything, in the price list)
     var AUDIENCE = {
         kids: ["sparklers", "flower-pots", "chakkar", "fountain-items", "rope-candles", "stones"],
-        family: ["gift-box", "family-pack", "repeating-shots", "sky-display", "flower-pots"]
+        family: ["family-pack", "gift-box"]   // exactly what the chip says: family packs and ready gift boxes
     };
+    // Sorting: "Sort: category" is the page as the server sent it (category by category). A price / discount / name sort
+    // is one list across every category (what shoppers expect from "Price: low → high"), so the items move into a
+    // single list and the category headers step aside; choosing "category" again puts every item back where it was.
+    var ord = 0;
+    function remember(pane) {
+        pane.querySelectorAll("[data-item]").forEach(function (el) { if (el._home) return; el._home = el.parentNode; el._ord = ord++; });
+    }
+    function sortedBox(pane, create) {
+        var box = pane.querySelector("[data-sorted]");
+        if (box || !create) return box;
+        var table = pane.querySelector("table");
+        if (table) { box = document.createElement("tbody"); table.appendChild(box); }
+        else {
+            var wrap = document.createElement("section");
+            wrap.className = "sorted-section";
+            box = document.createElement("div"); box.className = "product-grid";
+            wrap.appendChild(box); pane.insertBefore(wrap, pane.firstChild);
+        }
+        box.setAttribute("data-sorted", "");
+        return box;
+    }
     function sortEls(els, s) {
         return els.sort(function (a, b) {
             var pa = parseFloat(a.getAttribute("data-price")), pb = parseFloat(b.getAttribute("data-price"));
             var da = parseFloat(a.getAttribute("data-discount")), db = parseFloat(b.getAttribute("data-discount"));
-            if (s === "price-asc") return pa - pb;
-            if (s === "price-desc") return pb - pa;
-            if (s === "discount") return db - da;
-            return a.getAttribute("data-name").localeCompare(b.getAttribute("data-name"));
+            var r = s === "price-asc" ? pa - pb : s === "price-desc" ? pb - pa : s === "discount" ? db - da || pa - pb
+                : a.getAttribute("data-name").localeCompare(b.getAttribute("data-name"));
+            return r || a._ord - b._ord;   // ties keep the catalogue order
         });
     }
     function applyFilter() {
@@ -248,23 +394,22 @@
         var aud = AUDIENCE[document.body.getAttribute("data-audience") || ""];
         var shown = 0;
         panes.forEach(function (pane, pi) {
+            remember(pane);
+            var all = Array.prototype.slice.call(pane.querySelectorAll("[data-item]"));
+            var box = sortedBox(pane, !!s && all.length > 0);
+            if (s) { sortEls(all, s).forEach(function (c) { box.appendChild(c); }); }
+            else if (box && box.children.length) { all.sort(function (a, b) { return a._ord - b._ord; }).forEach(function (c) { c._home.appendChild(c); }); }
+            if (box) (box.closest(".sorted-section") || box).classList.toggle("d-none", !s);
+            all.forEach(function (c) {
+                var ok = (!term || (c.getAttribute("data-search") || "").indexOf(term) !== -1) &&
+                         (!only || c.getAttribute("data-discount") !== "0") &&
+                         (!cat || c.getAttribute("data-cat") === cat) &&
+                         (!aud || aud.indexOf(c.getAttribute("data-cat")) !== -1);
+                c.classList.toggle("d-none", !ok);
+                if (ok && pi === 0) shown++;
+            });
             pane.querySelectorAll("[data-cat-section]").forEach(function (sec) {
-                var els = Array.prototype.slice.call(sec.querySelectorAll("[data-item]"));
-                var vis = 0;
-                els.forEach(function (c) {
-                    var ok = (!term || (c.getAttribute("data-search") || "").indexOf(term) !== -1) &&
-                             (!only || c.getAttribute("data-discount") !== "0") &&
-                             (!cat || c.getAttribute("data-cat") === cat) &&
-                             (!aud || aud.indexOf(c.getAttribute("data-cat")) !== -1);
-                    c.classList.toggle("d-none", !ok);
-                    if (ok) vis++;
-                });
-                sec.classList.toggle("d-none", vis === 0);
-                if (pi === 0) shown += vis;
-                if (s && els.length) {
-                    var parent = els[0].parentNode;
-                    sortEls(els, s).forEach(function (c) { parent.appendChild(c); });
-                }
+                sec.classList.toggle("d-none", !sec.querySelector("[data-item]:not(.d-none)"));
             });
         });
         var cnt = document.getElementById("shownCount");
@@ -291,7 +436,11 @@
             var key = sec.getAttribute("data-cat-section"), head = sec.querySelector(".cat-head");
             var hue = head ? head.style.getPropertyValue("--h") : "20", img = sec.getAttribute("data-img-sm") || "";
             if (window.SHOP_STATIC) img = img.replace(/^\//, "../");
-            var cards = sec.querySelectorAll("[data-item]");
+            // the section's own cards, in catalogue order (while a price sort is on they sit in the sorted list)
+            var grid = sec.querySelector("[data-product-grid]");
+            var cards = Array.prototype.slice.call(document.querySelectorAll('[data-view-pane="grid"] [data-item]'))
+                .filter(function (c) { return (c._home || c.parentNode) === grid; })
+                .sort(function (a, b) { return (a._ord || 0) - (b._ord || 0); });
             html.push('<tbody data-cat-section="' + key + '"><tr class="pl-cat" style="--h:' + hue + ";--img:url('" + img + "')\"><td colspan=\"5\"><span class=\"emo\">" +
                 (head && head.querySelector(".emo") ? head.querySelector(".emo").textContent : "") + "</span> " + (head && head.querySelector("h3") ? head.querySelector("h3").innerHTML : key) +
                 ' <span class="fs-12 opacity-75">· ' + cards.length + "</span></td></tr>");
@@ -301,9 +450,12 @@
                 var unitHtml = (c.querySelector(".unit") || {}).innerHTML || "";
                 var photo = (c.querySelector("img.art-photo") || {}).getAttribute ? c.querySelector("img.art-photo").getAttribute("src") : "";
                 var offer = (c.querySelector(".price-offer") || {}).textContent || "", mrp = c.querySelector(".price-mrp"), rib = c.querySelector(".ribbon");
+                // gift boxes / family packs: the same "What's inside" button as the card (opens the #packBox popup)
+                var inside = c.querySelector(".pack-inside[data-pack-open]");
                 html.push('<tr data-item="' + id + '" data-name="' + esc(nameEn) + '" data-price="' + c.getAttribute("data-price") + '" data-cat="' + key + '" data-discount="' + c.getAttribute("data-discount") + '" data-search="' + esc(c.getAttribute("data-search") || "") + '">' +
                     '<td><div class="pl-prod"><img src="' + esc(photo) + '" alt="" loading="lazy" role="button" tabindex="0" aria-label="View photo" /><div><div class="fw-700">' + nameHtml + "</div>" +
-                    (rib ? '<span class="pl-off">' + esc(rib.textContent) + "</span>" : "") + '<div class="d-md-none fs-12 text-muted">' + unitHtml + "</div></div></div></td>" +
+                    (rib ? '<span class="pl-off">' + esc(rib.textContent) + "</span>" : "") + '<div class="d-md-none fs-12 text-muted">' + unitHtml + "</div>" +
+                    (inside ? inside.outerHTML.replace('class="pack-inside"', 'class="pack-inside pl-inside"') : "") + "</div></div></td>" +
                     '<td class="d-none d-md-table-cell text-muted fs-13">' + unitHtml + "</td>" +
                     '<td class="text-end"><div class="fw-800">' + esc(offer) + "</div>" + (mrp ? '<div class="fs-12"><s class="pl-mrp">' + esc(mrp.textContent) + "</s></div>" : "") + "</td>" +
                     '<td class="text-center"><div class="qty-ctl qty-ctl-sm pl-stepper" data-list-stepper="' + id + '"><button type="button" data-list-dec="' + id + '" aria-label="Remove one ' + esc(nameEn) + '">−</button>' +
@@ -353,6 +505,8 @@
         if (cl) {
             e.preventDefault();
             if (catSel) { catSel.value = ""; }
+            // a global price sort hides the category sections: go back to the category order to land on the tile's section
+            if (sort && sort.value) { sort.value = ""; sort.dispatchEvent(new Event("change", { bubbles: true })); }
             applyFilter();
             var key = cl.getAttribute("data-cat-link");
             var pane = document.querySelector("[data-view-pane]:not(.d-none)");

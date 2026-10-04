@@ -83,7 +83,7 @@
         var g = pop && pop.querySelector("img.op-gif[data-src]");
         if (!g || g.getAttribute("src")) return;
         g.addEventListener("load", function () { g.classList.add("loaded"); }, { once: true });
-        g.addEventListener("error", function () { g.src = "/img/logo-512.png"; g.classList.add("op-fallback"); }, { once: true });
+        g.addEventListener("error", function () { g.src = "/img/logo-240.png"; g.classList.add("op-fallback"); }, { once: true });
         g.src = g.getAttribute("data-src");
     }
     if (pop && window.bootstrap && (!ends || left().ms > 0) && !get("sessionStorage", "epalace-offer-seen") && !/[?&]nopopup/.test(location.search)) {
@@ -108,7 +108,7 @@
         window.bootstrap.Modal.getOrCreateInstance(pop).hide();
     });
 
-    // ---- the 90% badge (countdown band) reopens the offer popup at any time
+    // ---- the "up to N%" badge (countdown band) reopens the offer popup at any time
     document.addEventListener("click", function (e) {
         if (!e.target.closest("[data-open-offer]") || !pop || !window.bootstrap) return;
         loadGif();
@@ -117,16 +117,24 @@
 
     // ---- gift box / family pack "What's inside" popup (content comes from the pack's <template>)
     var packBox = document.getElementById("packBox");
-    document.addEventListener("click", function (e) {
-        var b = e.target.closest("[data-pack-open]");
-        if (!b || !packBox || !window.bootstrap) return;
-        var tpl = document.getElementById("pack-tpl-" + b.getAttribute("data-pack-open"));
-        if (!tpl) return;
+    function openPack(id) {
+        var tpl = document.getElementById("pack-tpl-" + id);
+        if (!tpl || !packBox || !window.bootstrap) return false;
         var body = packBox.querySelector("[data-pack-body]");
         body.innerHTML = "";
         body.appendChild(tpl.content.cloneNode(true));
         window.bootstrap.Modal.getOrCreateInstance(packBox).show();
+        return true;
+    }
+    document.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-pack-open]");
+        if (b) openPack(b.getAttribute("data-pack-open"));
     });
+    // /Shop#pack-123 (e.g. from the chat helper on another page) opens that pack's contents
+    (function () {
+        var m = /^#pack-(\d+)$/.exec(location.hash);
+        if (m && packBox) setTimeout(function () { openPack(m[1]); }, 500);
+    })();
     // showcase banner arrows
     document.addEventListener("click", function (e) {
         var a = e.target.closest("[data-ps-scroll]"), t = a && a.closest(".pack-show").querySelector("[data-ps-track]");
@@ -188,18 +196,56 @@
     });
 
     // ---- "shop for" chips
-    function setAudience(a) {
+    // An audience and a category chip would fight each other (Kids + Gift boxes = nothing), so choosing one resets the other.
+    // keepView: leave the cards / price-list view alone (used when a category chip clears the audience)
+    function setAudience(a, keepView) {
         document.body.setAttribute("data-audience", a);
         document.querySelectorAll("[data-audience]").forEach(function (b) { if (b !== document.body) { b.classList.toggle("active", b.getAttribute("data-audience") === a); b.setAttribute("aria-pressed", b.getAttribute("data-audience") === a ? "true" : "false"); } });
         document.querySelectorAll("[data-aud-note]").forEach(function (n) { n.classList.toggle("d-none", n.getAttribute("data-aud-note") !== a); });
-        if (cart.setView && document.querySelector("[data-view-pane]")) cart.setView(a === "business" ? "list" : (a ? "grid" : (get("localStorage", "epalace-shop-view") || "grid")));
+        var catSel = document.getElementById("shopCat");
+        if (a && catSel && catSel.value) { catSel.value = ""; catSel.dispatchEvent(new Event("change", { bubbles: true })); }
+        if (!keepView && cart.setView && document.querySelector("[data-view-pane]")) cart.setView(a === "business" ? "list" : (a ? "grid" : (get("localStorage", "epalace-shop-view") || "grid")));
         if (cart.filter) cart.filter();
     }
+    window.ShopAudience = setAudience;
     document.addEventListener("click", function (e) {
         var chip = e.target.closest(".aud-chip[data-audience]");
         if (chip) { setAudience(chip.getAttribute("data-audience")); var p = document.getElementById("products"); if (p) p.scrollIntoView({ behavior: "smooth", block: "start" }); }
         if (e.target.closest("[data-bulk-enquiry]")) openWa(bulkText());
     });
+
+    // ---- phone menu (offcanvas): keep aria-expanded in step; links close the menu first, and same-page anchors
+    //      scroll once it has closed (scrolling while the offcanvas still locks the page would go nowhere)
+    var menu = document.getElementById("shopMenu");
+    if (menu) {
+        var menuBtn = document.querySelector('[data-bs-target="#shopMenu"]');
+        menu.addEventListener("shown.bs.offcanvas", function () {
+            if (menuBtn) menuBtn.setAttribute("aria-expanded", "true");
+            var first = menu.querySelector(".sm-links a"); if (first) first.focus();
+        });
+        menu.addEventListener("hidden.bs.offcanvas", function () { if (menuBtn) menuBtn.setAttribute("aria-expanded", "false"); });
+        menu.addEventListener("click", function (e) {
+            var a = e.target.closest("a[data-menu-link]");
+            if (!a || !window.bootstrap) return;
+            var oc = window.bootstrap.Offcanvas.getOrCreateInstance(menu);
+            // same page: the link's own path, or the shop home ("/" and "/Shop" are the same catalogue page)
+            var here = a.pathname === location.pathname || (!!document.querySelector("[data-view-pane]") && /^\/(Shop\/?(Index)?)?$/i.test(a.pathname));
+            var target = here && a.hash ? document.getElementById(a.hash.slice(1)) : null;
+            if (!target) { oc.hide(); return; }   // another page: let the link navigate
+            e.preventDefault();
+            menu.addEventListener("hidden.bs.offcanvas", function () {
+                if (cart.jump) cart.jump(target, "start"); else target.scrollIntoView({ block: "start" });
+                try { history.replaceState(null, "", a.hash); } catch (err) { }
+            }, { once: true });
+            oc.hide();
+        });
+    }
+
+    // arriving with #safety / #products / #contact (e.g. from the menu on another page): the catalogue sections render
+    // lazily (content-visibility), so the browser's own jump can stop short — settle it once the page has loaded
+    if (/^#(safety|products|contact|offers)$/.test(location.hash) && cart.jump) {
+        window.addEventListener("load", function () { var t = document.getElementById(location.hash.slice(1)); if (t) setTimeout(function () { cart.jump(t, "start"); }, 50); });
+    }
 
     function openWa(text) { window.open("https://wa.me/" + WA + (text ? "?text=" + encodeURIComponent(text) : ""), "_blank", "noopener"); }
     function bulkText() {
@@ -223,19 +269,21 @@
     var lastQuestion = "";
 
     var KIDS = ["sparklers", "flower-pots", "chakkar", "fountain-items", "rope-candles", "stones"];
+    var CATS = window.SHOP_CATS || {};   // category key → { en, ta } names
+    function isPack(i) { return i.cat === "family-pack" || i.cat === "gift-box"; }
     function daysLeft() { return ends ? left().d : null; }
     function offerLine() {
         var d = daysLeft();
         if (ends && left().ms === 0) return L("The early-booking offer has closed, but you can still order for Diwali — our team will confirm the rates.", "முன்பதிவு சலுகை முடிந்துவிட்டது; தீபாவளிக்கு இன்னும் ஆர்டர் செய்யலாம் — விலையை எங்கள் குழு உறுதி செய்யும்.");
-        return L("🎉 Up to <b>" + (promo.off || 90) + "% OFF</b> on the festival range, at wholesale rates. The offer ends on <b>" + esc(promo.endsLabel || "") + "</b>" + (d !== null ? " — <b>" + d + " day" + (d === 1 ? "" : "s") + "</b> left" : "") + ". Diwali is on " + esc(promo.diwali || "") + ".",
-            "🎉 பண்டிகை வகைகளுக்கு மொத்த விலையில் <b>" + (promo.off || 90) + "% வரை தள்ளுபடி</b>. சலுகை <b>" + esc(promo.endsLabelTa || promo.endsLabel || "") + "</b> அன்று முடிகிறது" + (d !== null ? " — இன்னும் <b>" + d + " நாள்</b>" : "") + ". தீபாவளி: " + esc(promo.diwaliTa || promo.diwali || "") + ".");
+        return L("🎉 Up to <b>" + (promo.off || 85) + "% OFF</b> on the festival range, at wholesale rates. The offer ends on <b>" + esc(promo.endsLabel || "") + "</b>" + (d !== null ? " — <b>" + d + " day" + (d === 1 ? "" : "s") + "</b> left" : "") + ". Diwali is on " + esc(promo.diwali || "") + ".",
+            "🎉 பண்டிகை வகைகளுக்கு மொத்த விலையில் <b>" + (promo.off || 85) + "% வரை தள்ளுபடி</b>. சலுகை <b>" + esc(promo.endsLabelTa || promo.endsLabel || "") + "</b> அன்று முடிகிறது" + (d !== null ? " — இன்னும் <b>" + d + " நாள்</b>" : "") + ". தீபாவளி: " + esc(promo.diwaliTa || promo.diwali || "") + ".");
     }
 
     // Each intent: words that trigger it (English, Tamil, Tanglish) and the reply it gives
     var INTENTS = [
         { id: "greet", words: ["hi", "hello", "hey", "hai", "vanakkam", "வணக்கம்", "good morning", "good evening"],
           reply: function () { return { html: L("Hello! 👋 I'm the ePALACE helper. Ask me about offers, prices, delivery or anything about ordering.", "வணக்கம்! 👋 நான் ePALACE உதவியாளர். சலுகை, விலை, டெலிவரி அல்லது ஆர்டர் பற்றி கேளுங்கள்.") }; } },
-        { id: "offer", words: ["offer", "discount", "sale", "90", "deal", "cheap", "countdown", "last date", "ends", "தள்ளுபடி", "சலுகை", "offer eppo"],
+        { id: "offer", words: ["offer", "discount", "sale", String(promo.off || 85), "% off", "deal", "cheap", "countdown", "last date", "ends", "தள்ளுபடி", "சலுகை", "offer eppo"],
           reply: function () { return { html: offerLine(), actions: [{ t: L("🛍️ Show offers", "🛍️ சலுகைகள்"), go: "offers" }, { t: L("📋 Price list", "📋 விலைப்பட்டியல்"), go: "list" }] }; } },
         { id: "how", words: ["how to order", "how do i order", "order", "buy", "purchase", "book", "enquiry", "ஆர்டர்", "வாங்க", "எப்படி"],
           reply: function () { return { html: L("Ordering is easy:<ol><li>Tap <b>Add</b> on the crackers you like (or type quantities in the price list).</li><li>Watch <b>Products · Overall total</b> at the top.</li><li>Tap <b>Place order</b>, give your name, phone and address — or send it on WhatsApp.</li><li>We call or WhatsApp you within 24 hours to confirm.</li></ol>", "ஆர்டர் செய்வது எளிது:<ol><li>பிடித்த பட்டாசில் <b>சேர்</b> அழுத்துங்கள் (அல்லது விலைப்பட்டியலில் எண்ணிக்கை உள்ளிடுங்கள்).</li><li>மேலே <b>பொருட்கள் · மொத்தம்</b> பாருங்கள்.</li><li><b>ஆர்டர் செய்</b> அழுத்தி பெயர், தொலைபேசி, முகவரி கொடுங்கள் — அல்லது WhatsApp-ல் அனுப்புங்கள்.</li><li>24 மணி நேரத்தில் அழைத்து / WhatsApp-ல் உறுதி செய்வோம்.</li></ol>"), actions: [{ t: L("🛒 Open my cart", "🛒 என் கூடை"), go: "cart" }] }; } },
@@ -257,7 +305,20 @@
               if (!t.units) return { html: L("Your cart is empty. Add a few crackers and I'll add up the total for you.", "உங்கள் கூடை காலியாக உள்ளது. சில பட்டாசுகளைச் சேர்த்தால் மொத்தத்தைச் சொல்கிறேன்.") };
               return { html: L("🛒 You have <b>" + t.count + "</b> product(s), " + t.units + " unit(s). Overall total <b>" + money(t.total) + "</b>.", "🛒 உங்கள் கூடையில் <b>" + t.count + "</b> பொருட்கள், " + t.units + " அலகுகள். மொத்தம் <b>" + money(t.total) + "</b>."), actions: [{ t: L("✅ Place order", "✅ ஆர்டர் செய்"), go: "checkout" }, { t: L("🛒 Open cart", "🛒 கூடை"), go: "cart" }] };
           } },
-        { id: "status", words: ["status", "track", "where is my order", "not received", "cancel", "change my order", "ஆர்டர் நிலை", "ரத்து"],
+        { id: "refund", words: ["refund", "cancel", "cancellation", "cancel my order", "money back", "replacement", "damaged", "ரத்து", "திருப்பி", "பணம் திரும்ப"],
+          reply: function () { return { html: L("↩️ <b>Cancellation &amp; refunds:</b> you pay only on delivery, so nothing is charged in advance. To cancel or change an order before it is dispatched, message or call us with your invoice number. Damaged or missing items — tell us on the day of delivery with a photo and we will make it right.", "↩️ <b>ரத்து &amp; பணம் திரும்ப:</b> டெலிவரியின்போது மட்டுமே பணம் — முன்பணம் எதுவும் இல்லை. அனுப்புவதற்கு முன் ஆர்டரை ரத்து / மாற்ற, விலைப்பட்டியல் எண்ணுடன் எங்களுக்கு செய்தி அனுப்புங்கள் அல்லது அழையுங்கள். சேதமான / குறைந்த பொருட்கள் — டெலிவரி ஆன அன்றே புகைப்படத்துடன் தெரிவியுங்கள்; சரி செய்து தருவோம்."),
+              actions: [{ t: L("📜 Cancellation policy", "📜 ரத்து கொள்கை"), go: "policies" }, { t: L("💬 Ask our team", "💬 குழுவிடம் கேளுங்கள்"), go: "human" }] }; } },
+        { id: "inside", words: ["inside", "contents", "content", "what is in", "whats in", "items in", "pack contents", "box contents", "உள்ளே", "என்னென்ன", "பொருட்கள் என்ன"],
+          reply: function (q) {
+              // gift boxes / family packs: the one asked about (or all of them) with a button that opens its contents list
+              var packs = findProducts(q).filter(isPack);
+              if (!packs.length) packs = pick(isPack, 6);
+              if (!packs.length) return { html: L("Our gift boxes and family packs are listed in the shop with a full contents list.", "எங்கள் பரிசுப் பெட்டிகள், குடும்ப பேக்குகள் முழு பொருள் பட்டியலுடன் கடையில் உள்ளன."), actions: [{ t: L("🎁 Family packs", "🎁 குடும்ப பேக்"), go: "family" }] };
+              return { html: packs.length === 1 ? L("📦 Tap below to see everything inside <b>" + esc(packs[0].name) + "</b>:", "📦 <b>" + esc(cart.name ? cart.name(packs[0]) : packs[0].name) + "</b> உள்ளே என்ன என்று பார்க்க கீழே தட்டுங்கள்:")
+                  : L("📦 Pick a pack to see its full contents list:", "📦 முழு பொருள் பட்டியலைப் பார்க்க ஒரு பேக்கைத் தேர்ந்தெடுங்கள்:"),
+                  products: packs.slice(0, 3), actions: packs.slice(0, 6).map(function (p) { return { t: "📦 " + (cart.name ? cart.name(p) : p.name), go: "pack:" + p.id }; }) };
+          } },
+        { id: "status", words: ["status", "track", "where is my order", "not received", "change my order", "ஆர்டர் நிலை"],
           reply: function () { return { html: L("📦 Track your order any time with your invoice number and mobile number. For changes or cancellation, our team will help you personally.", "📦 விலைப்பட்டியல் எண், மொபைல் எண் கொண்டு எப்போது வேண்டுமானாலும் ஆர்டரைக் கண்காணிக்கலாம். மாற்றம் அல்லது ரத்து செய்ய எங்கள் குழு உதவும்."), actions: [{ t: L("🚚 Track my order", "🚚 ஆர்டரைக் கண்காணி"), go: "track" }, { t: L("💬 Ask our team", "💬 குழுவிடம் கேளுங்கள்"), go: "human" }] }; } },
         { id: "legal", words: ["legal", "supreme court", "court", "allowed", "licence", "license", "law", "explosive", "சட்ட", "நீதிமன்ற"],
           reply: function () { return { html: L("⚖️ As per the 2018 Supreme Court order, firecrackers are not sold online directly. Add items to your cart and submit them as an order / enquiry — we confirm by phone or WhatsApp within 24 hours. Our shops and godowns follow the Explosives Act.", "⚖️ 2018 உச்ச நீதிமன்ற உத்தரவின்படி பட்டாசுகள் நேரடியாக ஆன்லைனில் விற்கப்படுவதில்லை. கூடையில் சேர்த்து ஆர்டர் / விசாரணையாக அனுப்புங்கள் — 24 மணி நேரத்தில் தொலைபேசி / WhatsApp-ல் உறுதி செய்வோம். எங்கள் கடைகள், கிடங்குகள் வெடிபொருள் சட்டப்படி உள்ளன."), actions: [{ t: L("📜 Read the notice", "📜 அறிவிப்பைப் படிக்க"), go: "legal" }] }; } },
@@ -277,7 +338,10 @@
               return { html: L("📸 Follow us on Instagram — <a href=\"" + esc(biz.instagram) + "\" target=\"_blank\" rel=\"noopener\"><b>" + esc(biz.igHandle) + "</b></a> — for new arrivals, offers and Diwali cracker videos!", "📸 Instagram-ல் பின்தொடருங்கள் — <a href=\"" + esc(biz.instagram) + "\" target=\"_blank\" rel=\"noopener\"><b>" + esc(biz.igHandle) + "</b></a> — புதிய வரவுகள், சலுகைகள், தீபாவளி பட்டாசு வீடியோக்கள்!"), actions: [{ t: L("📸 Open Instagram", "📸 Instagram திற"), go: "instagram" }] };
           } },
         { id: "human", words: ["admin", "agent", "human", "person", "owner", "manager", "talk", "speak", "support", "help me", "complaint", "பேச", "உதவி"],
-          reply: function () { return { html: L("Sure — I'll connect you to our team on WhatsApp. Your question will be filled in; just tap send. 🙏", "நிச்சயமாக — WhatsApp-ல் எங்கள் குழுவுடன் இணைக்கிறேன். உங்கள் கேள்வி நிரப்பப்படும்; அனுப்பு அழுத்துங்கள். 🙏"), actions: [{ t: L("💬 Open WhatsApp", "💬 WhatsApp திற"), go: "human" }].concat(biz.phone ? [{ t: L("📞 Call us", "📞 அழைக்க"), go: "call" }] : []) }; } },
+          reply: function () { return { html: lastQuestion ? L("Sure — I'll connect you to our team on WhatsApp. Your question will be filled in; just tap send. 🙏", "நிச்சயமாக — WhatsApp-ல் எங்கள் குழுவுடன் இணைக்கிறேன். உங்கள் கேள்வி நிரப்பப்படும்; அனுப்பு அழுத்துங்கள். 🙏")
+              : L("Sure — tap below to chat with our team on WhatsApp. 🙏", "நிச்சயமாக — WhatsApp-ல் எங்கள் குழுவுடன் பேச கீழே தட்டுங்கள். 🙏"), actions: [{ t: L("💬 Open WhatsApp", "💬 WhatsApp திற"), go: "human" }].concat(biz.phone ? [{ t: L("📞 Call us", "📞 அழைக்க"), go: "call" }] : []) }; } },
+        { id: "faq", words: ["faq", "faqs", "questions", "common questions", "minimum order", "minimum", "கேள்வி பதில்", "கேள்விகள்", "குறைந்தபட்ச"],
+          reply: function () { return { html: L("❓ Our <b>FAQ</b> answers the common questions — ordering, delivery charges and times, minimum order, gift boxes, discounts, safety, cancellation and damaged items.", "❓ <b>கேள்வி-பதில்</b> பக்கத்தில் பொதுவான கேள்விகளுக்குப் பதில் உள்ளது — ஆர்டர், டெலிவரி கட்டணம், நேரம், குறைந்தபட்ச ஆர்டர், பரிசுப் பெட்டிகள், தள்ளுபடி, பாதுகாப்பு, ரத்து, சேதமான பொருட்கள்."), actions: [{ t: L("❓ Open the FAQ", "❓ கேள்வி-பதில் திற"), go: "faq" }, { t: L("💬 Ask our team", "💬 குழுவிடம் கேளுங்கள்"), go: "human" }] }; } },
         { id: "thanks", words: ["thanks", "thank you", "thx", "ok", "okay", "super", "nandri", "நன்றி"],
           reply: function () { return { html: L("You're welcome! 🪔 Wishing you a safe and happy Diwali.", "மிக்க மகிழ்ச்சி! 🪔 பாதுகாப்பான, இனிய தீபாவளி வாழ்த்துகள்.") }; } }
     ];
@@ -313,12 +377,14 @@
         var all = cart.items ? Object.keys(cart.items).map(function (k) { return cart.items[k]; }) : [];
         return all.filter(fn).sort(function (a, b) { return b.discount - a.discount || a.price - b.price; }).slice(0, n);
     }
-    var STOP = ["price", "rate", "cost", "of", "the", "a", "an", "for", "how", "much", "is", "are", "what", "show", "me", "any", "do", "you", "have", "want", "need", "i", "my", "our", "your", "can", "please", "get", "with", "and", "in", "on", "to", "it", "available", "tell", "about", "list", "total", "order", "buy", "விலை", "என்ன", "எவ்வளவு"];
+    var STOP = ["price", "rate", "cost", "of", "the", "a", "an", "for", "how", "much", "is", "are", "what", "show", "me", "any", "do", "you", "have", "want", "need", "i", "my", "our", "your", "can", "please", "get", "with", "and", "in", "on", "to", "it", "available", "tell", "about", "list", "total", "order", "buy", "inside", "contents", "content", "whats", "items", "விலை", "என்ன", "எவ்வளவு", "உள்ளே", "என்னென்ன"];
     function findProducts(q) {
         var terms = q.split(" ").filter(function (w) { return w.length > 1 && STOP.indexOf(w) === -1; });
         if (!terms.length || !cart.items) return [];
         var scored = Object.keys(cart.items).map(function (k) {
-            var i = cart.items[k], words = norm(i.name + " " + (i.nameTa || "") + " " + (i.code || "") + " " + (i.cat || "").replace(/-/g, " ")).split(" ");
+            var i = cart.items[k], cn = CATS[i.cat] || {};
+            // English + Tamil item and category names, so "பரிசுப் பெட்டி" finds the gift boxes too
+            var words = norm(i.name + " " + (i.nameTa || "") + " " + (i.code || "") + " " + (i.cat || "").replace(/-/g, " ") + " " + (cn.en || "") + " " + (cn.ta || "")).split(" ");
             // a term matches a whole word or the start of one ("pot" → "pots", "1000" → "1000 wala"), never the middle ("my" ≠ "army")
             var s = 0; terms.forEach(function (t) { if (words.some(function (w) { return w === t || (t.length >= 3 && w.indexOf(t) === 0); })) s++; });
             return { i: i, s: s };
@@ -337,9 +403,9 @@
         if (products.length && (!intent || priceAsk || ["list", "offer", "how", "greet"].indexOf(intent.id) !== -1 && q.split(" ").length > 1)) {
             return { html: L("Here's what I found" + (products.length === 5 ? " (top 5)" : "") + ":", "நான் கண்டவை" + (products.length === 5 ? " (முதல் 5)" : "") + ":"), products: products };
         }
-        if (intent) return intent.reply();
-        return { html: L("I'm not sure about that one yet 🤔 — our team can answer it. Tap below and your question is sent to them on WhatsApp.", "அதற்கு எனக்குத் தெரியவில்லை 🤔 — எங்கள் குழு பதில் தரும். கீழே அழுத்தினால் உங்கள் கேள்வி WhatsApp-ல் அவர்களுக்குச் செல்லும்."),
-            actions: [{ t: L("💬 Ask our team", "💬 குழுவிடம் கேளுங்கள்"), go: "human" }].concat(biz.phone ? [{ t: L("📞 Call us", "📞 அழைக்க"), go: "call" }] : []) };
+        if (intent) return intent.reply(q);
+        return { html: L("I'm not sure about that one yet 🤔 — the answer may be in our FAQ, or our team can answer it. Tap below and your question is sent to them on WhatsApp.", "அதற்கு எனக்குத் தெரியவில்லை 🤔 — பதில் எங்கள் கேள்வி-பதில் பக்கத்தில் இருக்கலாம், அல்லது எங்கள் குழு பதில் தரும். கீழே அழுத்தினால் உங்கள் கேள்வி WhatsApp-ல் அவர்களுக்குச் செல்லும்."),
+            actions: [{ t: L("💬 Ask our team", "💬 குழுவிடம் கேளுங்கள்"), go: "human" }, { t: L("❓ FAQ", "❓ கேள்வி-பதில்"), go: "faq" }].concat(biz.phone ? [{ t: L("📞 Call us", "📞 அழைக்க"), go: "call" }] : []) };
     }
 
     function productCards(list) {
@@ -366,10 +432,11 @@
         say({ html: L("Vanakkam! 🙏 I'm the <b>ePALACE Helper</b>. I can tell you about offers, prices, delivery and payment — or find any cracker for you. Type a question or tap a topic below.", "வணக்கம்! 🙏 நான் <b>ePALACE உதவியாளர்</b>. சலுகை, விலை, டெலிவரி, பணம் பற்றிச் சொல்வேன் — எந்தப் பட்டாசையும் தேடித் தருவேன். கேள்வியை எழுதுங்கள் அல்லது கீழே ஒரு தலைப்பைத் தட்டுங்கள்.") });
         say({ html: offerLine() });
     }
+    // query is set for the topic chips: their label is not a question for the team, so only typed questions are kept
     function ask(text, query) {
         text = String(text || "").trim();
         if (!text) return;
-        lastQuestion = text;
+        if (!query) lastQuestion = text;
         say({ me: true, text: text });
         var typing = document.createElement("div");
         typing.className = "cb-msg bot typing"; typing.innerHTML = "<i></i><i></i><i></i>";
@@ -377,7 +444,8 @@
         setTimeout(function () { typing.remove(); say(answer(query || text)); }, 450 + Math.min(600, text.length * 12));
     }
     function humanUrl() {
-        var msg = L("Hello " + (biz.name || "ePALACE") + ", I have a question", "வணக்கம் " + (biz.name || "ePALACE") + ", எனக்கு ஒரு கேள்வி") + (lastQuestion ? ": " + lastQuestion : ".");
+        var msg = lastQuestion ? L("Hello " + (biz.name || "ePALACE") + ", I have a question: ", "வணக்கம் " + (biz.name || "ePALACE") + ", எனக்கு ஒரு கேள்வி: ") + lastQuestion
+            : L("Hello " + (biz.name || "ePALACE") + " 🙏 I would like some help with crackers / my order.", "வணக்கம் " + (biz.name || "ePALACE") + " 🙏 பட்டாசு / என் ஆர்டர் பற்றி உதவி வேண்டும்.");
         return "https://wa.me/" + WA + "?text=" + encodeURIComponent(msg);
     }
     function go(where) {
@@ -395,6 +463,16 @@
             case "legal": scrollTo("#legal"); break;
             case "track": location.href = window.SHOP_STATIC ? "https://wa.me/" + WA : "/Shop/Track"; break;
             case "contact": scrollTo("#contact"); break;
+            case "policies": location.href = window.SHOP_STATIC ? "https://wa.me/" + WA : "/Shop/Policies#cancel"; break;
+            case "faq": location.href = window.SHOP_STATIC ? "https://wa.me/" + WA : "/Shop/Faq"; break;
+            default:
+                if (where.indexOf("pack:") === 0) {
+                    // the pack popup sits under the chat sheet on phones: close the chat first
+                    var pid = where.slice(5);
+                    close();
+                    if (!document.getElementById("pack-tpl-" + pid)) { location.href = (window.SHOP_STATIC ? "index.html" : "/Shop") + "#pack-" + pid; break; }
+                    setTimeout(function () { openPack(pid); }, 230);
+                }
         }
     }
 
@@ -410,7 +488,9 @@
             else welcome();
         }
         renderChips();
+        // desktop: straight into the question box; phones: focus the dialog itself (no keyboard popping up over the answers)
         if (window.matchMedia("(min-width: 577px)").matches) input.focus();
+        else panel.focus({ preventScroll: true });
     }
     function close() {
         panel.classList.remove("show");
@@ -467,6 +547,31 @@
     ].filter(function (f) { return !!$(f.id); });
     var touched = {}, tried = false;
 
+    // Server-side errors come back as "English. / தமிழ்." in the hidden field spans (the CSS hides them once this script
+    // runs). Show each one once, in the current language, in the same place as the live messages — until that field is edited.
+    var BILINGUAL = /^([\s\S]*\S)\s+\/\s+([^\x00-\x7f][\s\S]*)$/;   // "English. / தமிழ்." (split at the last " / " before Tamil)
+    function pickLang(text) {
+        var m = BILINGUAL.exec(String(text || "").trim());
+        return m ? (ta() ? m[2] : m[1]) : String(text || "").trim();
+    }
+    var serverMsg = {};
+    FIELDS.forEach(function (f) {
+        var box = $(f.id).closest(".co-field"), s = box && box.querySelector(".field-validation-error");
+        if (s && s.textContent.trim()) serverMsg[f.id] = s.textContent.trim();
+    });
+    // the summary ("Your cart is empty…", "could not save…"): one language at a time, switching with the toggle
+    document.querySelectorAll(".validation-summary-errors li").forEach(function (li) {
+        var m = BILINGUAL.exec(li.textContent.trim());
+        if (!m) return;
+        li.innerHTML = '<span class="en-only"></span><span class="ta-only" lang="ta"></span>';
+        li.firstChild.textContent = m[1]; li.lastChild.textContent = m[2];
+    });
+    // the server answered this POST at /Shop/PlaceOrder: show /Shop/Checkout in the address bar so a refresh
+    // reloads the form (details come back from this device) instead of re-posting the order
+    if (/\/PlaceOrder$/i.test(location.pathname) && window.history && history.replaceState) {
+        try { history.replaceState(null, "", form.getAttribute("data-checkout-url") || "/Shop/Checkout"); } catch (e) { }
+    }
+
     // remembered details (this device only)
     var KEY = "epalace-customer";
     try {
@@ -490,7 +595,8 @@
             el.classList.toggle("is-invalid", !good && show);
             el.setAttribute("aria-invalid", !good && show ? "true" : "false");
             var m = msgEl(f);
-            m.textContent = !good && show ? f.msg[ta() ? 1 : 0] : "";
+            m.textContent = !good && show ? f.msg[ta() ? 1 : 0] : serverMsg[f.id] ? pickLang(serverMsg[f.id]) : "";
+            if (serverMsg[f.id]) { el.classList.add("is-invalid"); el.classList.remove("is-valid"); el.setAttribute("aria-invalid", "true"); }
         });
         var units = cart.totals ? cart.totals().units : 0;
         var ready = allOk && units > 0;
@@ -523,6 +629,7 @@
     FIELDS.forEach(function (f) {
         var el = $(f.id);
         el.addEventListener("input", function () {
+            delete serverMsg[f.id];   // edited: the live check takes over from the server message
             if (el.hasAttribute("data-digits")) {   // phones / PIN: digits only (a leading + is allowed for +91)
                 var v = el.value, clean = v.replace(/(?!^\+)[^\d]/g, "");
                 if (clean !== v) el.value = clean;
@@ -623,6 +730,8 @@
     chipsBox.addEventListener("click", function (e) {
         var c = e.target.closest("[data-cat-chip]");
         if (!c) return;
+        // a category replaces the "shop for" audience (the two filters together usually show nothing)
+        if (c.getAttribute("data-cat-chip") && document.body.getAttribute("data-audience") && window.ShopAudience) window.ShopAudience("", true);
         catSel.value = c.getAttribute("data-cat-chip");
         fire(catSel, "change");
         syncChips(); renderActive();
@@ -640,6 +749,14 @@
             if ((k === "offers" || k === "all") && offers && offers.checked) { offers.checked = false; fire(offers, "change"); }
             if ((k === "sort" || k === "all") && sort) { sort.value = ""; fire(sort, "change"); }
             if (k === "aud" || k === "all") { var ev = document.querySelector('.aud-chip[data-audience=""]'); if (ev) ev.click(); }
+            syncChips(); setTimeout(renderActive, 0);
+        }
+        // empty state "Show all crackers": clear every filter at once
+        if (e.target.closest("[data-reset-filters]")) {
+            if (search && search.value) { search.value = ""; fire(search, "input"); }
+            if (offers && offers.checked) { offers.checked = false; fire(offers, "change"); }
+            if (document.body.getAttribute("data-audience") && window.ShopAudience) window.ShopAudience("", true);
+            catSel.value = ""; fire(catSel, "change");
             syncChips(); setTimeout(renderActive, 0);
         }
         if (e.target.closest(".aud-chip")) setTimeout(renderActive, 0);
@@ -899,4 +1016,33 @@
     document.addEventListener("click", function (e) { var p = e.composedPath ? e.composedPath() : [e.target]; if (p.indexOf(wrap) === -1) close(); });
     // close when focus leaves the search box and its list (tapping "+" inside the list keeps it open)
     wrap.addEventListener("focusout", function (e) { setTimeout(function () { if (!wrap.contains(document.activeElement)) close(); }, 150); });
+})();
+
+// =================================================================================================
+// Bilingual aria-labels (data-en-label / data-ta-label, e.g. the "Call us" button) follow the language switch;
+// FAQ page: a link to /Shop/Faq#question-id opens that answer and scrolls to it.
+// =================================================================================================
+(function () {
+    "use strict";
+    function labels() {
+        var ta = document.documentElement.lang === "ta";
+        document.querySelectorAll("[data-en-label][data-ta-label]").forEach(function (el) {
+            el.setAttribute("aria-label", el.getAttribute(ta ? "data-ta-label" : "data-en-label"));
+        });
+    }
+    labels();
+    if (window.MutationObserver) new MutationObserver(labels).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+
+    var faq = document.querySelector("[data-faq]");
+    if (!faq) return;
+    function openFromHash() {
+        var id = decodeURIComponent((location.hash || "").slice(1));
+        if (!/^[a-z0-9-]+$/.test(id)) return;
+        var item = document.getElementById(id), panel = document.getElementById("a-" + id);
+        if (!item || !panel || !faq.contains(item)) return;
+        if (window.bootstrap && window.bootstrap.Collapse) window.bootstrap.Collapse.getOrCreateInstance(panel, { toggle: false }).show();
+        setTimeout(function () { item.scrollIntoView({ behavior: "smooth", block: "start" }); }, 60);
+    }
+    openFromHash();
+    window.addEventListener("hashchange", openFromHash);
 })();
