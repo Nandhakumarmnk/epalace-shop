@@ -116,7 +116,7 @@
     });
     // showcase banner arrows
     document.addEventListener("click", function (e) {
-        var a = e.target.closest("[data-ps-scroll]"), t = a && document.querySelector("[data-ps-track]");
+        var a = e.target.closest("[data-ps-scroll]"), t = a && a.closest(".pack-show").querySelector("[data-ps-track]");
         if (t) t.scrollBy({ left: parseInt(a.getAttribute("data-ps-scroll"), 10) * Math.max(260, t.clientWidth * 0.8), behavior: "smooth" });
     });
 

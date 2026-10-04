@@ -674,5 +674,37 @@ button.cb-off:hover { transform: scale(1.08) rotate(-4deg); }
     .hk-cd .cd-u { flex: 1; min-width: 0; }
 }
 
-/* welcome popup: logo header (no GIF) */
-.offer-pop .op-art { aspect-ratio: 16 / 6; }
+
+/* ---------- separate showcase cards: Family Packs (warm rose / gold) and Gift Boxes (royal blue / gold) ---------- */
+.pack-shows { display: grid; gap: 18px; margin: 4px 0 18px; }
+.fest-main .pack-shows .pack-show { margin: 0; }
+.pack-show .ps-inner::after { content: ""; position: absolute; top: 0; right: 64px; width: 26px; height: 100%; pointer-events: none; opacity: .5;
+    background: linear-gradient(90deg, transparent, rgba(255, 201, 77, .55) 30%, rgba(255, 236, 170, .8) 50%, rgba(255, 201, 77, .55) 70%, transparent); }
+.ps-family .ps-inner { background: radial-gradient(circle at 6% 0%, rgba(255, 201, 77, .32), transparent 40%), radial-gradient(circle at 96% 100%, rgba(255, 79, 139, .45), transparent 48%),
+    linear-gradient(135deg, #5a0b30, #3b0a2a 45%, #22061f); }
+.ps-gift .ps-inner { background: radial-gradient(circle at 6% 0%, rgba(255, 201, 77, .3), transparent 40%), radial-gradient(circle at 96% 100%, rgba(56, 189, 248, .35), transparent 48%),
+    linear-gradient(135deg, #0b2f5a, #14215a 45%, #1e0b3f); box-shadow: 0 0 0 2px rgba(255, 201, 77, .55), 0 18px 40px rgba(11, 47, 90, .35); }
+.ps-head { align-items: center; }
+.ps-title-row { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; min-width: 0; }
+.ps-badge { flex: 0 0 auto; width: 64px; height: 64px; border-radius: 20px; display: grid; place-items: center; font-size: 34px;
+    background: linear-gradient(135deg, var(--fest-gold), var(--fest-gold-2)); box-shadow: 0 0 0 4px rgba(255, 255, 255, .15), 0 10px 24px rgba(0, 0, 0, .35); transform: rotate(-6deg); }
+.ps-gift .ps-badge { background: linear-gradient(135deg, #ffe08a, #ff9f1c); }
+.ps-head h2 { font-size: 30px; margin: 0 0 6px; }
+.ps-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ps-count, .ps-from { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 999px; font-size: 12.5px; font-weight: 800; color: #fff;
+    background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .25); }
+.ps-from { color: var(--fest-gold); border-color: rgba(255, 201, 77, .5); }
+.ps-chips .ps-all { margin-top: 0; }
+.ps-family .ps-card { box-shadow: 0 0 0 2px rgba(255, 122, 160, .55), 0 10px 24px rgba(0, 0, 0, .35); }
+.ps-gift .ps-card { box-shadow: 0 0 0 2px rgba(125, 211, 252, .55), 0 10px 24px rgba(0, 0, 0, .35); }
+.ps-gift .ps-meta { color: #1d4ed8; }
+.ps-family .ps-meta { color: #be185d; }
+@media (max-width: 576px) {
+    .pack-shows { gap: 14px; }
+    .ps-badge { width: 50px; height: 50px; font-size: 26px; border-radius: 16px; }
+    .ps-head h2 { font-size: 23px; margin-bottom: 4px; }
+    .pack-show .ps-inner::after { right: 28px; width: 18px; }
+}
+.ps-count, .ps-from { gap: 4px; }
+.pack-show .ps-head, .pack-show .ps-track { z-index: 1; }
+@media (min-width: 1100px) { .pack-shows .ps-track { grid-auto-columns: calc((100% - (var(--n, 4) - 1) * 14px) / var(--n, 4)); } }
