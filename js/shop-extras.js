@@ -95,6 +95,19 @@
         }, 1400);
     }
 
+    // ---- "Shop the offer": close the popup, then scroll to the crackers (data-bs-dismiss on a link would cancel the jump)
+    document.addEventListener("click", function (e) {
+        var go = e.target.closest("[data-offer-go]");
+        if (!go || !pop || !window.bootstrap) return;
+        e.preventDefault();
+        var target = document.getElementById("products");
+        pop.addEventListener("hidden.bs.modal", function () {
+            if (target && window.ShopCart && window.ShopCart.jump) window.ShopCart.jump(target, "start");
+            else if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, { once: true });
+        window.bootstrap.Modal.getOrCreateInstance(pop).hide();
+    });
+
     // ---- the 90% badge (countdown band) reopens the offer popup at any time
     document.addEventListener("click", function (e) {
         if (!e.target.closest("[data-open-offer]") || !pop || !window.bootstrap) return;

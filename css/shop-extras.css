@@ -708,3 +708,6 @@ button.cb-off:hover { transform: scale(1.08) rotate(-4deg); }
 .ps-count, .ps-from { gap: 4px; }
 .pack-show .ps-head, .pack-show .ps-track { z-index: 1; }
 @media (min-width: 1100px) { .pack-shows .ps-track { grid-auto-columns: calc((100% - (var(--n, 4) - 1) * 14px) / var(--n, 4)); } }
+
+/* "What's inside" for gift boxes: the supplier's contents sheet */
+.pk-poster { display: block; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 6px 18px rgba(20, 6, 31, .18); }
