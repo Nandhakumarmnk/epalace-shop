@@ -13,6 +13,7 @@
         "added": "கூடையில் சேர்க்கப்பட்டது",
         "unit": "அலகு", "units": "அலகுகள்", "product": "பொருள்", "products": "பொருட்கள்",
         "wa.empty": "கூடை காலியாக உள்ளது — WhatsApp catalogue திறக்கப்படுகிறது",
+        "wa.catalog": "எங்கள் WhatsApp catalogue திறக்கப்படுகிறது — அங்கே பொருட்களை கூடையில் சேர்த்து Send அழுத்தவும்",
         "list.empty": "கூடை காலியாக உள்ளது — விலைப்பட்டியலில் சேர்க்கவும்",
         "addProducts": "பட்டாசுகளைச் சேர்க்கவும்",
         "maxQty": "ஒரு பொருளுக்கு அதிகபட்சம் 9,999 — ஏற்கனவே கூடையில் உள்ளது",
@@ -299,12 +300,14 @@
     });
 
     // WhatsApp: send the cart as a ready-to-send order message (empty cart opens the WhatsApp catalogue)
-    // Backup (static GitHub) shop: every checkout button sends the order on WhatsApp instead
+    // Backup (static GitHub) shop: every order button opens our WhatsApp Business catalogue instead — the customer
+    // adds the items there and sends a WhatsApp cart ("N items · estimated total · View sent cart"), not a typed list
     document.addEventListener("click", function (e) {
         var b = e.target.closest("[data-wa-order]") || (window.SHOP_STATIC && e.target.closest("[data-cart-checkout], a[href*='Checkout']"));
         if (!b) return;
         e.preventDefault();
         var ls = lines(), t = totals(), wa = window.SHOP_WA || "919488127540";
+        if (window.SHOP_STATIC) { toast(T("wa.catalog", "Opening our WhatsApp catalogue — add your items to the cart there and tap Send")); window.open("https://wa.me/c/" + wa, "_blank", "noopener"); return; }
         if (!ls.length) { toast(T("wa.empty", "Your cart is empty — opening our WhatsApp catalogue")); window.open("https://wa.me/c/" + wa, "_blank", "noopener"); return; }
         var ta = lang() === "ta";
         var NL = "\n";
