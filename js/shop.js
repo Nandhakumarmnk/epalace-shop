@@ -14,6 +14,10 @@
         "unit": "அலகு", "units": "அலகுகள்", "product": "பொருள்", "products": "பொருட்கள்",
         "wa.empty": "கூடை காலியாக உள்ளது — WhatsApp catalogue திறக்கப்படுகிறது",
         "wa.catalog": "எங்கள் WhatsApp catalogue திறக்கப்படுகிறது — அங்கே பொருட்களை கூடையில் சேர்த்து Send அழுத்தவும்",
+        "wa.title": "உங்கள் ஆர்டரை WhatsApp-ல் அனுப்புங்கள்",
+        "wa.steps": "ஒவ்வொரு பொருளுக்கும் <b>WhatsApp-ல் சேர்</b> அழுத்தவும் → அது எங்கள் WhatsApp catalogue-ல் திறக்கும் → இங்கே உள்ள எண்ணிக்கையை அமைத்து <b>Add to cart</b> அழுத்தவும். எல்லாம் சேர்த்த பின் WhatsApp கூடையைத் திறந்து <b>Send</b> அழுத்தவும்.",
+        "wa.add": "WhatsApp-ல் சேர்", "wa.find": "Catalogue-ல் தேடு", "wa.opened": "திறக்கப்பட்டது — மீண்டும்",
+        "wa.qty": "எண்ணிக்கை", "wa.total": "மொத்தம்", "wa.open": "WhatsApp catalogue திற",
         "list.empty": "கூடை காலியாக உள்ளது — விலைப்பட்டியலில் சேர்க்கவும்",
         "addProducts": "பட்டாசுகளைச் சேர்க்கவும்",
         "maxQty": "ஒரு பொருளுக்கு அதிகபட்சம் 9,999 — ஏற்கனவே கூடையில் உள்ளது",
@@ -299,6 +303,41 @@
         if (row) { row.classList.remove("bump"); void row.offsetWidth; row.classList.add("bump"); }
     });
 
+    // Backup shop: WhatsApp cannot be opened with a pre-filled cart, so list the customer's items, each opening that exact
+    // product in our WhatsApp catalogue (wa.me/p/<product id>/<number>, ids from shop-wa.js) where they tap "Add to cart";
+    // items not in the WhatsApp catalogue open the catalogue itself. They then send the WhatsApp cart from the chat.
+    function waCartPanel(ls, t, wa) {
+        var ids = window.SHOP_WA_PRODUCTS || {}, old = document.getElementById("waCartModal");
+        if (old) { var o = bootstrap.Modal.getInstance(old); if (o) o.dispose(); old.remove(); }
+        var rows = ls.map(function (l, i) {
+            var pid = ids[l.item.id], href = pid ? "https://wa.me/p/" + pid + "/" + wa : "https://wa.me/c/" + wa;
+            return '<li class="list-group-item d-flex align-items-center gap-2" data-wa-row>' +
+                '<span class="badge rounded-pill bg-light text-dark border">' + (i + 1) + '</span>' +
+                '<div class="flex-grow-1 min-w-0"><div class="fw-semibold text-truncate">' + esc(NM(l.item)) + '</div>' +
+                '<div class="small text-muted">' + T("wa.qty", "Quantity") + ': <b>' + l.qty + '</b> · ' + money(l.item.price * l.qty) + '</div></div>' +
+                '<a class="btn btn-sm ' + (pid ? 'btn-success' : 'btn-outline-success') + ' text-nowrap" target="_blank" rel="noopener" href="' + href + '" data-wa-add>' +
+                '<i class="bi bi-whatsapp"></i> ' + (pid ? T("wa.add", "Add on WhatsApp") : T("wa.find", "Find in catalogue")) + '</a></li>';
+        }).join("");
+        var m = document.createElement("div");
+        m.className = "modal fade"; m.id = "waCartModal"; m.tabIndex = -1;
+        m.innerHTML = '<div class="modal-dialog modal-dialog-scrollable"><div class="modal-content">' +
+            '<div class="modal-header"><h5 class="modal-title"><i class="bi bi-whatsapp text-success"></i> ' + T("wa.title", "Send your order on WhatsApp") + '</h5>' +
+            '<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>' +
+            '<div class="modal-body p-0"><div class="p-3 small bg-light border-bottom">' +
+            T("wa.steps", "Tap <b>Add on WhatsApp</b> for each item → it opens in our WhatsApp catalogue → set the quantity shown here and tap <b>Add to cart</b>. When every item is added, open the cart in WhatsApp and tap <b>Send</b>.") +
+            '</div><ul class="list-group list-group-flush">' + rows + '</ul></div>' +
+            '<div class="modal-footer justify-content-between"><div><div class="small text-muted">' + T("wa.total", "Total") + ' (' + t.units + ' ' + T(t.units === 1 ? "unit" : "units", t.units === 1 ? "unit" : "units") + ')</div><div class="fw-bold">' + money(t.total) + '</div></div>' +
+            '<a class="btn btn-success" target="_blank" rel="noopener" href="https://wa.me/c/' + wa + '"><i class="bi bi-cart-check"></i> ' + T("wa.open", "Open WhatsApp catalogue") + '</a></div>' +
+            '</div></div>';
+        document.body.appendChild(m);
+        m.addEventListener("click", function (e) {                 // tick the items already opened in WhatsApp
+            var a = e.target.closest("[data-wa-add]"); if (!a) return;
+            var r = a.closest("[data-wa-row]"); r.classList.add("list-group-item-success");
+            a.innerHTML = '<i class="bi bi-check2-circle"></i> ' + T("wa.opened", "Opened — add again");
+        });
+        bootstrap.Modal.getOrCreateInstance(m).show();
+    }
+
     // WhatsApp: send the cart as a ready-to-send order message (empty cart opens the WhatsApp catalogue)
     // Backup (static GitHub) shop: every order button opens our WhatsApp Business catalogue instead — the customer
     // adds the items there and sends a WhatsApp cart ("N items · estimated total · View sent cart"), not a typed list
@@ -307,7 +346,11 @@
         if (!b) return;
         e.preventDefault();
         var ls = lines(), t = totals(), wa = window.SHOP_WA || "919488127540";
-        if (window.SHOP_STATIC) { toast(T("wa.catalog", "Opening our WhatsApp catalogue — add your items to the cart there and tap Send")); window.open("https://wa.me/c/" + wa, "_blank", "noopener"); return; }
+        if (window.SHOP_STATIC) {
+            if (!ls.length) { toast(T("wa.catalog", "Opening our WhatsApp catalogue — add your items to the cart there and tap Send")); window.open("https://wa.me/c/" + wa, "_blank", "noopener"); return; }
+            waCartPanel(ls, t, wa);
+            return;
+        }
         if (!ls.length) { toast(T("wa.empty", "Your cart is empty — opening our WhatsApp catalogue")); window.open("https://wa.me/c/" + wa, "_blank", "noopener"); return; }
         var ta = lang() === "ta";
         var NL = "\n";

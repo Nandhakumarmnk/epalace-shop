@@ -1233,3 +1233,10 @@ html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #334155; backgro
 .vz-actions tr.vz-zero { opacity: .55; }
 .vz-actions td, .vz-feed td { vertical-align: middle; }
 .vz-vid { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: var(--surface-3); color: var(--ink-2, var(--ink)); }
+
+/* dashboard: 4 stats per row (2 rows) instead of one cramped row; hairlines drawn by box-shadow so empty cells stay plain */
+.stat-strip.dash-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.stat-strip.dash-strip .stat { border: 0; box-shadow: 1px 0 0 var(--line-2), 0 1px 0 var(--line-2); }
+.stat-strip.dash-strip a.stat:hover { background: var(--surface-2); }
+@media (max-width: 991.98px) { .stat-strip.dash-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.kpi-card .kpi-foot.kpi-foot-wrap { flex-wrap: wrap; column-gap: 12px; row-gap: 2px; }
