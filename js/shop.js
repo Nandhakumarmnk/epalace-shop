@@ -230,14 +230,19 @@
         var before = cart[id] || 0;
         cart[id] = Math.min(MAX_QTY, before + qty);
         qty = cart[id] - before;
-        save(cart); render();
+        save(cart); render(); cartChanged(id, before);
         if (qty > 0) toast(NM(items[id]) + " × " + qty + " " + T("added", "added to cart"));
         else toast(T("maxQty", "Maximum 9,999 per product is already in your cart"));
     }
+    // tells listeners (visitor insights) which product changed and by how much
+    function cartChanged(id, before) {
+        try { document.dispatchEvent(new CustomEvent("shop:cart", { detail: { id: id, item: items[id], before: before, after: cart[id] || 0 } })); } catch (e) { }
+    }
     function setQty(id, qty) {
         id = String(id); qty = parseInt(qty, 10) || 0;
+        var before = cart[id] || 0;
         if (qty <= 0) delete cart[id]; else cart[id] = Math.min(qty, 9999);
-        save(cart); render();
+        save(cart); render(); cartChanged(id, before);
     }
 
     // Catalogue buttons
@@ -448,12 +453,13 @@
                 var id = c.getAttribute("data-item"), nameEn = c.getAttribute("data-name") || "";
                 var nameHtml = (c.querySelector(".product-name") || {}).innerHTML || esc(nameEn);
                 var unitHtml = (c.querySelector(".unit") || {}).innerHTML || "";
+                var whatHtml = (c.querySelector(".product-what") || {}).innerHTML || "";
                 var photo = (c.querySelector("img.art-photo") || {}).getAttribute ? c.querySelector("img.art-photo").getAttribute("src") : "";
                 var offer = (c.querySelector(".price-offer") || {}).textContent || "", mrp = c.querySelector(".price-mrp"), rib = c.querySelector(".ribbon");
                 // gift boxes / family packs: the same "What's inside" button as the card (opens the #packBox popup)
                 var inside = c.querySelector(".pack-inside[data-pack-open]");
                 html.push('<tr data-item="' + id + '" data-name="' + esc(nameEn) + '" data-price="' + c.getAttribute("data-price") + '" data-cat="' + key + '" data-discount="' + c.getAttribute("data-discount") + '" data-search="' + esc(c.getAttribute("data-search") || "") + '">' +
-                    '<td><div class="pl-prod"><img src="' + esc(photo) + '" alt="" loading="lazy" role="button" tabindex="0" aria-label="View photo" /><div><div class="fw-700">' + nameHtml + "</div>" +
+                    '<td><div class="pl-prod"><img src="' + esc(photo) + '" alt="' + esc(nameEn) + '" loading="lazy" role="button" tabindex="0" aria-label="View photo" /><div><div class="fw-700">' + nameHtml + "</div>" + (whatHtml ? '<div class="pl-what">' + whatHtml + "</div>" : "") +
                     (rib ? '<span class="pl-off">' + esc(rib.textContent) + "</span>" : "") + '<div class="d-md-none fs-12 text-muted">' + unitHtml + "</div>" +
                     (inside ? inside.outerHTML.replace('class="pack-inside"', 'class="pack-inside pl-inside"') : "") + "</div></div></td>" +
                     '<td class="d-none d-md-table-cell text-muted fs-13">' + unitHtml + "</td>" +

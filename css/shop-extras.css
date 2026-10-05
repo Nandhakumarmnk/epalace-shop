@@ -864,3 +864,92 @@ body:has(.offcanvas.show) .call-float, body:has(.modal.show) .call-float { displ
     .faq-acc .accordion-body { padding: 2px 14px 14px; }
     .faq-help .faq-links .btn { flex: 1 1 100%; }
 }
+
+/* checkout: Cash on Delivery is the only payment option */
+.cod-card { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border-radius: 14px; border: 2px solid #16a34a; background: linear-gradient(135deg, #f0fdf4, #ecfdf5); }
+.cod-ico { width: 48px; height: 48px; flex: 0 0 48px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; background: #16a34a; color: #fff; font-size: 24px; box-shadow: 0 6px 16px rgba(22,163,74,.28); }
+.cod-body { flex: 1; min-width: 0; }
+.cod-title { font-weight: 800; font-size: 16px; color: #14532d; }
+.cod-text { font-size: 13px; color: #166534; margin-top: 3px; line-height: 1.45; }
+.cod-check { color: #16a34a; font-size: 22px; flex: 0 0 auto; }
+[data-theme="dark"] .cod-card { background: rgba(22,163,74,.12); }
+[data-theme="dark"] .cod-title { color: #bbf7d0; }
+[data-theme="dark"] .cod-text { color: #86efac; }
+
+/* desktop header (Oct 2026): the header row is at most 1200px wide whatever the screen size, so the links must fit
+   that row — WhatsApp / Instagram / phone are always round icon buttons, "Visit us" only shows on wide rows, and the
+   links never slide under the EN | தமிழ் switch */
+@media (min-width: 768px) {
+    .shop-nav .nav-lbl, .shop-nav .nav-num { display: none; }
+    .shop-nav a.nav-wa, .shop-nav a.nav-ig, .shop-nav a.nav-tel { width: 38px; height: 38px; padding: 0; justify-content: center; font-size: 17px; border-radius: 50%; background: rgba(255,255,255,.07); }
+    .shop-nav a.nav-faq .nav-lbl { display: inline; }
+    .shop-nav a.nav-faq { padding: 8px 10px; font-size: 13.5px; }
+    .shop-nav a.nav-dl { color: #ffd27a; }
+    .shop-nav { gap: 4px; overflow: hidden; }
+}
+@media (min-width: 768px) and (max-width: 1259.98px) { .shop-nav a.nav-opt { display: none; } }
+@media (min-width: 768px) { html[lang="ta"] .shop-nav a.nav-opt { display: none; } html[lang="ta"] .shop-nav a.nav-faq .nav-lbl { display: none; } }
+
+/* ---------------------------------------------------------------- Delivery locations page */
+.dn-main { max-width: 1200px; }
+.dn-hero { display: flex; gap: 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 28px; border-radius: 22px; margin: 8px 0 18px; color: #fff;
+    background: radial-gradient(600px 300px at 90% 0%, rgba(255,170,40,.3), transparent 60%), linear-gradient(135deg, #3b0a1e, #24061a 55%, #170823); box-shadow: 0 14px 36px rgba(36,6,26,.25); }
+.dn-hero-text { flex: 1 1 520px; min-width: 0; }
+.dn-eyebrow { font-size: 12.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #ffb547; }
+.dn-hero h1 { font-family: "Baloo 2", Inter, sans-serif; font-weight: 800; font-size: clamp(28px, 4.4vw, 44px); line-height: 1.05; margin: 6px 0 8px; color: #ffe3a8; }
+.dn-hero p { color: #f3d6e4; margin: 0 0 14px; max-width: 640px; }
+.dn-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.dn-badges > span { display: inline-flex; gap: 6px; align-items: center; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); font-weight: 700; font-size: 13px; }
+.dn-badges i { color: #ffd27a; }
+.dn-hero-actions { display: flex; flex-direction: column; gap: 10px; flex: 0 0 auto; }
+.dn-btn-gold { background: linear-gradient(135deg, #ffd27a, #ff9f1c); color: #2b0d1a; font-weight: 800; border-radius: 999px; padding: 11px 20px; border: 0; }
+.dn-btn-gold:hover { color: #2b0d1a; filter: brightness(1.05); }
+.dn-btn-ghost { color: #fff; border: 1px solid rgba(255,255,255,.4); border-radius: 999px; padding: 10px 20px; font-weight: 700; }
+.dn-btn-ghost:hover { color: #fff; background: rgba(255,255,255,.1); }
+.dn-jump { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; margin-bottom: 8px; scrollbar-width: thin; }
+.dn-jump a { flex: 0 0 auto; display: inline-flex; gap: 8px; align-items: center; padding: 8px 14px; border-radius: 999px; background: #fff; border: 1.5px solid var(--acc); color: var(--acc); font-weight: 800; font-size: 13.5px; text-decoration: none; }
+.dn-jump a span { background: var(--acc); color: #fff; border-radius: 999px; font-size: 11.5px; padding: 1px 8px; }
+.dn-grid { columns: 3 320px; column-gap: 16px; }
+.dn-card { break-inside: avoid; margin: 0 0 16px; border-radius: 18px; overflow: hidden; background: #fff; box-shadow: 0 8px 22px rgba(43,13,26,.08); border: 1px solid rgba(43,13,26,.08); scroll-margin-top: 90px; }
+.dn-card header { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 14px 16px; background: var(--acc); color: #fff; }
+.dn-card h2 { font-size: 20px; font-weight: 900; margin: 0; }
+.dn-sub { font-size: 12px; font-weight: 700; opacity: .85; }
+.dn-phone { display: inline-flex; gap: 6px; align-items: center; white-space: nowrap; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.18); color: #fff; font-weight: 800; font-size: 13.5px; text-decoration: none; }
+.dn-phone:hover { background: rgba(255,255,255,.28); color: #fff; }
+.dn-area { padding: 12px 16px 0; font-size: 11.5px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--acc); }
+.dn-places { list-style: none; margin: 0; padding: 10px 16px 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; }
+.dn-places li { display: flex; align-items: center; gap: 7px; font-weight: 600; font-size: 14px; color: #2b0d1a; }
+.dn-places li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--acc); flex: 0 0 6px; }
+.dn-help { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 20px 22px; border-radius: 18px; background: #fff7e6; border: 1px solid #ffd27a; margin: 4px 0 20px; }
+.dn-help-title { font-weight: 900; font-size: 17px; color: #7c2d12; }
+.dn-help p { margin: 4px 0 0; color: #7c4a1e; max-width: 720px; }
+.dn-phone.big { background: linear-gradient(135deg, #b91c1c, #e11d48); font-size: 15px; padding: 10px 18px; }
+.dn-poster { margin: 0 auto 24px; max-width: 560px; text-align: center; }
+.dn-poster img { width: 100%; height: auto; border-radius: 16px; box-shadow: 0 14px 36px rgba(0,0,0,.25); }
+.dn-poster figcaption { font-size: 13px; color: var(--muted, #6b7280); margin-top: 8px; }
+@media (max-width: 575.98px) { .dn-hero { padding: 20px 16px; } .dn-hero-actions { width: 100%; } .dn-places { grid-template-columns: 1fr 1fr; } }
+.hv-points li.hv-link > a { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; width: 100%; }
+.hv-points li.hv-link span { color: #ffd27a; font-weight: 700; }
+
+/* product identification (customer feedback Oct 2026): bigger pictures in the price list and a "what is it" line
+   under every name — tap the picture to see it full size */
+.product-what { font-size: 12px; color: #7a5a6b; line-height: 1.3; margin: 2px 0 6px; }
+.pl-what { font-size: 12px; color: #7a5a6b; line-height: 1.3; margin-top: 1px; max-width: 360px; }
+.pl-prod img { width: 72px; height: 72px; border-radius: 12px; }
+@media (min-width: 577px) { .pl-prod img { width: 92px; height: 92px; } }
+.pl-prod { gap: 12px; }
+.pl-prod img:hover { transform: scale(1.04); transition: transform .15s; }
+/* tablets (768–1099px): FAQ as an icon, Instagram stays in the footer, tighter links */
+@media (min-width: 768px) and (max-width: 1099.98px) {
+    .shop-nav a.nav-faq .nav-lbl { display: none; }
+    .shop-nav a.nav-faq { font-size: 16px; padding: 8px 9px; }
+    .shop-nav a.nav-ig { display: none; }
+    .shop-nav a { padding: 8px 7px; font-size: 12.5px; }
+    .shop-header .shop-brand .sub { display: none !important; }
+}
+/* small tablets (768–899px): too narrow for the links — use the phone menu button instead */
+@media (min-width: 768px) and (max-width: 899.98px) {
+    .shop-header .shop-nav { display: none !important; }
+    .shop-header .menu-hdr { display: inline-flex !important; }
+    .shop-header .lang-switch { margin-left: auto !important; }
+}
