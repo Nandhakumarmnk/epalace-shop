@@ -309,14 +309,17 @@
     function waCartPanel(ls, t, wa) {
         var ids = window.SHOP_WA_PRODUCTS || {}, old = document.getElementById("waCartModal");
         if (old) { var o = bootstrap.Modal.getInstance(old); if (o) o.dispose(); old.remove(); }
+        var DONE = "epalace-wa-opened", done = {};                 // {itemId: qty} already opened in WhatsApp this visit
+        try { done = JSON.parse(sessionStorage.getItem(DONE) || "{}") || {}; } catch (e) { }
+        var opened = '<i class="bi bi-check2-circle"></i> ' + T("wa.opened", "Opened — add again");
         var rows = ls.map(function (l, i) {
-            var pid = ids[l.item.id], href = pid ? "https://wa.me/p/" + pid + "/" + wa : "https://wa.me/c/" + wa;
-            return '<li class="list-group-item d-flex align-items-center gap-2" data-wa-row>' +
+            var pid = ids[l.item.id], href = pid ? "https://wa.me/p/" + pid + "/" + wa : "https://wa.me/c/" + wa, ok = done[l.item.id] === l.qty;
+            return '<li class="list-group-item d-flex align-items-center gap-2' + (ok ? ' list-group-item-success' : '') + '" data-wa-row data-id="' + l.item.id + '" data-qty="' + l.qty + '">' +
                 '<span class="badge rounded-pill bg-light text-dark border">' + (i + 1) + '</span>' +
                 '<div class="flex-grow-1 min-w-0"><div class="fw-semibold text-truncate">' + esc(NM(l.item)) + '</div>' +
                 '<div class="small text-muted">' + T("wa.qty", "Quantity") + ': <b>' + l.qty + '</b> · ' + money(l.item.price * l.qty) + '</div></div>' +
                 '<a class="btn btn-sm ' + (pid ? 'btn-success' : 'btn-outline-success') + ' text-nowrap" target="_blank" rel="noopener" href="' + href + '" data-wa-add>' +
-                '<i class="bi bi-whatsapp"></i> ' + (pid ? T("wa.add", "Add on WhatsApp") : T("wa.find", "Find in catalogue")) + '</a></li>';
+                (ok ? opened : '<i class="bi bi-whatsapp"></i> ' + (pid ? T("wa.add", "Add on WhatsApp") : T("wa.find", "Find in catalogue"))) + '</a></li>';
         }).join("");
         var m = document.createElement("div");
         m.className = "modal fade"; m.id = "waCartModal"; m.tabIndex = -1;
@@ -333,7 +336,9 @@
         m.addEventListener("click", function (e) {                 // tick the items already opened in WhatsApp
             var a = e.target.closest("[data-wa-add]"); if (!a) return;
             var r = a.closest("[data-wa-row]"); r.classList.add("list-group-item-success");
-            a.innerHTML = '<i class="bi bi-check2-circle"></i> ' + T("wa.opened", "Opened — add again");
+            a.innerHTML = opened;
+            done[r.getAttribute("data-id")] = +r.getAttribute("data-qty");   // a changed quantity shows the item as not added again
+            try { sessionStorage.setItem(DONE, JSON.stringify(done)); } catch (e) { }
         });
         bootstrap.Modal.getOrCreateInstance(m).show();
     }

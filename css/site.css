@@ -974,7 +974,8 @@ html[data-theme="dark"] .rank.r3 { background: rgba(251,146,60,.18); color: #fb9
    18. Motion
    --------------------------------------------------------------------- */
 @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-.content > * { animation: fadeUp .28s ease both; }
+/* "backwards", not "both": a finished animation must not keep a transform — it would trap fixed dropdown menus (Call queue WhatsApp menu) inside the card */
+.content > * { animation: fadeUp .28s ease backwards; }
 .page-enter { animation: fadeUp .3s ease; }
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -1240,3 +1241,19 @@ html[data-theme="dark"] ::-webkit-scrollbar-thumb { background: #334155; backgro
 .stat-strip.dash-strip a.stat:hover { background: var(--surface-2); }
 @media (max-width: 991.98px) { .stat-strip.dash-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .kpi-card .kpi-foot.kpi-foot-wrap { flex-wrap: wrap; column-gap: 12px; row-gap: 2px; }
+
+/* invoice numbers never break across lines; the breadcrumb keeps its page name instead of "Call …" */
+.cell-code { white-space: nowrap; }
+.crumbs { flex-shrink: 0; max-width: 46vw; }
+.topbar-left { flex: 1 1 auto; }
+.topbar .global-search { flex: 0 1 360px; min-width: 160px; }
+/* orders list filter: the search box is 280px wide on desktop and fills the row on phones (no sideways scroll) */
+.orders-search { min-width: 280px; }
+@media (max-width: 575.98px) { .orders-filter { width: 100%; } .orders-filter .form-select { max-width: none !important; flex: 1 1 100%; } .orders-search { min-width: 0; flex: 1 1 auto; } }
+
+/* Orders by location: India › state › district path */
+.loc-crumbs { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 14px; }
+.loc-crumbs a, .loc-crumbs span { padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--ink-2, var(--ink)); font-weight: 600; text-decoration: none; }
+.loc-crumbs .active { background: var(--brand); border-color: var(--brand); color: #fff; }
+.loc-crumbs > .bi { color: var(--muted-2); font-size: 12px; }
+.topbar-actions .btn { white-space: nowrap; }
