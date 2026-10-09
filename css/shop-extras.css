@@ -1026,3 +1026,17 @@ body:has(.offcanvas.show) .call-float, body:has(.modal.show) .call-float { displ
     .fest-card .price-row { justify-content: center; flex-direction: column; align-items: center; gap: 0; }
     .fest-card .btn-add { box-shadow: 0 4px 10px rgba(225, 29, 72, .25); }
 }
+
+/* ---- Phone spacing (2026-10-09): slim category bars, tight gaps between sections and inside cards ---- */
+@media (max-width: 576px) {
+    .cat-section { margin-bottom: 12px; }
+    .cat-head { min-height: 0; margin: 4px 0 8px; padding: 8px 12px; gap: 8px; border-radius: 12px; }
+    .cat-head .emo { font-size: 20px; }
+    .cat-head h3 { font-size: 17px; }
+    .cat-head .fs-12 { display: none; }
+    .cat-head .cnt { font-size: 11px; padding: 2px 8px; }
+    .fest-card .product-body { gap: 2px; padding: 5px 5px 6px; }
+    .fest-card .product-name { min-height: 0; }
+    .fest-card .price-row { margin-top: 0; }
+    .fest-card .add-row { margin-top: auto; padding-top: 4px; }
+}
