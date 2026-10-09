@@ -1106,3 +1106,15 @@ body:has(.offcanvas.show) .call-float, body:has(.modal.show) .call-float { displ
 /* ---- Photo popup for gift boxes / family packs: the tall contents ("What's inside") picture gets more room ---- */
 .photo-box.pb-inside .pb-media .pb-img { max-height: 72vh; }
 @media (max-width: 576px) { .photo-box.pb-inside .pb-media .pb-img { max-height: 66vh; } }
+
+/* ---- Phone banner buttons (2026-10-09): two equal buttons that always fit inside the banner (Android fonts run wider) ---- */
+@media (max-width: 576px) {
+    .hero-v2 .inner, .hero-v2 .hero-copy { min-width: 0; max-width: 100%; }
+    .hero-v2 .hero-cta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 2px; }
+    .hero-v2 .hero-cta .btn { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; min-width: 0; height: 40px;
+        padding: 0 8px; font-size: 13px; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .hero-v2 .hero-cta .btn .bi { flex: 0 0 auto; font-size: 15px; }
+    .fest-main { padding-top: 14px; }
+    .ft-tools .ft-select select { font-size: 12.5px; }
+}
+@media (max-width: 400px) { .hero-v2 .hero-cta .btn { font-size: 12px; padding: 0 6px; gap: 4px; } .hero-v2 .hero-cta .btn .bi { font-size: 14px; } }
