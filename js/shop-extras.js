@@ -155,6 +155,11 @@
         var big = img.getAttribute("src").replace(/-sm\.jpg(\?.*)?$/, ".jpg");
         var pi = box.querySelector("[data-pb-img]");
         pi.src = img.getAttribute("src"); pi.alt = it.name;
+        // gift boxes / family packs show their contents ("What's inside") picture instead of the box
+        var packArt = document.querySelector('.fest-card[data-item="' + id + '"] .fest-art[data-inside]'), inside = packArt && packArt.getAttribute("data-inside");
+        if (inside && window.SHOP_STATIC) inside = inside.replace(/^\//, "");
+        box.classList.toggle("pb-inside", !!inside);
+        if (inside) { big = inside; pi.alt = it.name + " — what's inside"; }
         if (big !== img.getAttribute("src")) { var pre = new Image(); pre.onload = function () { if (boxId === id) pi.src = big; }; pre.src = big; }
         box.querySelector("[data-pb-name]").textContent = cart.name ? cart.name(it) : it.name;
         // effect GIF next to the product picture (from the card, also when opened from the price list)

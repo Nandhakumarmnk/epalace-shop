@@ -1102,3 +1102,7 @@ body:has(.offcanvas.show) .call-float, body:has(.modal.show) .call-float { displ
     .aud-chip .aud-emo { width: 24px; height: 24px; font-size: 13px; }
     .cat-head .emo { width: 30px; height: 30px; font-size: 16px; }
 }
+
+/* ---- Photo popup for gift boxes / family packs: the tall contents ("What's inside") picture gets more room ---- */
+.photo-box.pb-inside .pb-media .pb-img { max-height: 72vh; }
+@media (max-width: 576px) { .photo-box.pb-inside .pb-media .pb-img { max-height: 66vh; } }
