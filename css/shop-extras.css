@@ -1081,3 +1081,24 @@ body:has(.offcanvas.show) .call-float, body:has(.modal.show) .call-float { displ
     .hero-v2 .hv-title .hv-emo { display: none; }
     .hero-v2 .hv-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 }
+
+/* ---- Icon badges (2026-10-09): emoji icons sit in coloured round badges so chips and bars look crafted on every phone ---- */
+.cat-chip .cc-emo { width: 30px; height: 30px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; font-size: 16px;
+    background: radial-gradient(circle at 30% 25%, #fff, hsl(var(--h) 95% 88%) 55%, hsl(var(--h) 85% 72%)); box-shadow: inset 0 0 0 1.5px hsl(var(--h) 80% 55% / .45), 0 3px 8px hsl(var(--h) 70% 40% / .25); }
+.cat-chip.active .cc-emo { background: radial-gradient(circle at 30% 25%, #fff, #fff4d6 60%, #ffd77a); box-shadow: 0 0 0 2px rgba(255, 255, 255, .6), 0 3px 8px rgba(0, 0, 0, .2); }
+.cat-chip { padding-left: 6px; }
+.aud-chip .aud-emo { width: 28px; height: 28px; flex: 0 0 auto; display: inline-grid; place-items: center; border-radius: 50%; font-size: 15px;
+    background: radial-gradient(circle at 30% 25%, #fff, #ffe9c7 55%, #ffc46b); box-shadow: inset 0 0 0 1.5px rgba(255, 122, 0, .35), 0 3px 8px rgba(255, 122, 0, .22); }
+.aud-chip.aud-kids .aud-emo { background: radial-gradient(circle at 30% 25%, #fff, #d9f7e8 55%, #7ee0b0); box-shadow: inset 0 0 0 1.5px rgba(16, 150, 90, .35), 0 3px 8px rgba(16, 150, 90, .2); }
+.aud-chip.aud-family .aud-emo { background: radial-gradient(circle at 30% 25%, #fff, #ffe0ec 55%, #ff9cc0); box-shadow: inset 0 0 0 1.5px rgba(225, 29, 100, .35), 0 3px 8px rgba(225, 29, 100, .2); }
+.aud-chip.aud-biz .aud-emo { background: radial-gradient(circle at 30% 25%, #fff, #dde8ff 55%, #94b4ff); box-shadow: inset 0 0 0 1.5px rgba(37, 99, 235, .35), 0 3px 8px rgba(37, 99, 235, .2); }
+.ft-chip.ft-hot .bi { width: 26px; height: 26px; display: inline-grid; place-items: center; border-radius: 50%; color: #fff; font-size: 13px; margin-left: -6px;
+    background: linear-gradient(135deg, #ffb020, #ff4d2e 60%, #e11d48); box-shadow: 0 3px 8px rgba(225, 29, 72, .35); }
+.btn-check:checked + .ft-chip.ft-hot .bi { background: #fff; color: #e11d48; }
+.cat-head .emo { width: 40px; height: 40px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; font-size: 22px;
+    background: radial-gradient(circle at 30% 25%, #fff8e1, var(--fest-gold) 60%, var(--fest-gold-2)); box-shadow: 0 0 0 2px rgba(255, 255, 255, .35), 0 4px 12px rgba(0, 0, 0, .35); }
+@media (max-width: 576px) {
+    .cat-chip .cc-emo { width: 26px; height: 26px; font-size: 14px; }
+    .aud-chip .aud-emo { width: 24px; height: 24px; font-size: 13px; }
+    .cat-head .emo { width: 30px; height: 30px; font-size: 16px; }
+}
