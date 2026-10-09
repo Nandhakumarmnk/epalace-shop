@@ -1014,3 +1014,15 @@ body:has(.offcanvas.show) .call-float, body:has(.modal.show) .call-float { displ
     .card-stepper .cs-mid .bi, .card-stepper .cs-lbl { display: none; }
     .card-stepper .cs-mid input, .fest-card .card-stepper .cs-mid input { font-size: 16px; height: 24px; }
 }
+
+/* ---- Phone cards polish (2026-10-09): clean white tile, name clamped to 2 lines so prices and buttons line up ---- */
+@media (max-width: 576px) {
+    .fest-card { background: #fff; border: 1px solid #f0e4ec; box-shadow: 0 4px 12px rgba(42, 11, 63, .07); }
+    .fest-card .fest-art.has-photo { box-shadow: none; border: 1px solid #f3e8ef; background: #fff; }
+    .fest-art.has-photo::after { display: none; }
+    .fest-art .unit { background: rgba(42, 11, 63, .72); color: #fff; }
+    .fest-card .product-body { text-align: center; }
+    .fest-card .product-name { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 2.5em; }
+    .fest-card .price-row { justify-content: center; flex-direction: column; align-items: center; gap: 0; }
+    .fest-card .btn-add { box-shadow: 0 4px 10px rgba(225, 29, 72, .25); }
+}
