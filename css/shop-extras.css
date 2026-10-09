@@ -988,3 +988,29 @@ body:has(.offcanvas.show) .call-float, body:has(.modal.show) .call-float { displ
     .pl-prod .fw-700 { font-size: 13.5px; line-height: 1.25; }
     .pl-off { font-size: 9.5px; padding: 0 6px; }
 }
+
+/* ---- Product rows (2026-10-09): 4 cards a row on computers, 3 on tablets and phones; compact phone cards for quick ordering ---- */
+.product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 991.98px) { .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; } }
+@media (max-width: 576px) {
+    .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+    .fest-card { border-radius: 12px; }
+    .fest-card .fest-art.has-photo { margin: 4px 4px 0; border-radius: 9px; }
+    .fest-art.has-photo, .fest-art.has-photo.is-shot { height: 88px; }
+    .fest-art.is-shot .art-photo { padding: 2px 2px 16px; }
+    .fest-art .price-tag, .fest-art .emo-badge, .fest-art .hot-tag { display: none; }
+    .fest-art .unit { right: 4px; bottom: 3px; font-size: 8.5px; letter-spacing: .02em; padding: 1px 5px; }
+    .fest-art.has-photo .ribbon { transform: none; top: 4px; right: 4px; left: auto; padding: 2px 6px; border-radius: 999px; font-size: 9px; }
+    .wish-btn { top: 4px; left: 4px; width: 26px; height: 26px; font-size: 13px; }
+    .fest-card .product-body { padding: 6px 6px 8px; gap: 4px; }
+    .fest-card .product-name { font-size: 12px; line-height: 1.25; }
+    .fest-card .price-row { gap: 0 4px; }
+    .fest-card .price-offer { font-size: 15px; }
+    .fest-card .price-mrp { font-size: 10.5px; }
+    .fest-card .btn-add { padding: 5px 4px; font-size: 13px; border-radius: 9px; }
+    .add-row .card-stepper, .fest-card .add-row .card-stepper { min-height: 34px; padding: 3px; gap: 2px; border-radius: 9px; }
+    .card-stepper button { width: 26px; height: 26px; }
+    .card-stepper button .bi { font-size: 14px; }
+    .card-stepper .cs-mid .bi, .card-stepper .cs-lbl { display: none; }
+    .card-stepper .cs-mid input, .fest-card .card-stepper .cs-mid input { font-size: 16px; height: 24px; }
+}
