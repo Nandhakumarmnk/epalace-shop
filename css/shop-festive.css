@@ -449,3 +449,46 @@ body[data-celebrate="true"] .order-success .icon { background: linear-gradient(1
 /* backup (GitHub) shop notice */
 .backup-notice { background: #25d366; color: #fff; text-align: center; font-weight: 700; font-size: 13.5px; padding: 7px 12px; }
 .backup-notice b { color: #073b1c; }
+
+/* ---------- card stepper: replaces "Add" once the product is in the cart (− [bag 2 in cart] +) ---------- */
+.add-row .card-stepper, .fest-card .add-row .card-stepper {
+    flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 6px; padding: 4px; min-height: 42px;
+    border: 0; border-radius: 12px; overflow: visible;
+    background: linear-gradient(135deg, var(--fest-saffron), var(--fest-red)); box-shadow: 0 8px 22px rgba(225, 29, 72, .32);
+}
+.card-stepper button {
+    flex: 0 0 auto; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; padding: 0;
+    background: #fff; color: var(--fest-red); font-size: 16px; font-weight: 900; border: 0;
+    box-shadow: 0 2px 6px rgba(20, 6, 31, .18); transition: transform .12s ease, background .15s ease;
+}
+.card-stepper button .bi { font-size: 18px; -webkit-text-stroke: .6px currentColor; }
+.card-stepper button:hover { background: var(--fest-gold); color: var(--fest-night); }
+.card-stepper button:active { transform: scale(.9); }
+.card-stepper .cs-mid { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 4px; margin: 0; color: #fff; font-weight: 800; font-size: 13px; cursor: text; white-space: nowrap; }
+.card-stepper .cs-mid .bi { font-size: 15px; color: var(--fest-gold); }
+.card-stepper .cs-mid input, .fest-card .card-stepper .cs-mid input {
+    flex: 0 0 auto; width: 3.2ch; min-width: 2ch; height: 28px; padding: 0; border: 0; border-radius: 6px;
+    background: transparent; color: #fff; font-size: 19px; font-weight: 900; text-align: center;
+}
+.card-stepper .cs-mid input:focus { outline: 2px solid var(--fest-gold); background: rgba(255, 255, 255, .15); }
+.card-stepper .cs-lbl { font-size: 12px; opacity: .92; overflow: hidden; text-overflow: ellipsis; }
+.card-stepper.bump .cs-mid { animation: cs-pop .35s ease; }
+@keyframes cs-pop { 40% { transform: scale(1.18); } }
+@media (max-width: 400px) { .card-stepper .cs-lbl { display: none; } }
+
+/* ---------- order bar: the total opens the cart; product-count badge on the cart button ---------- */
+.order-bar .ob-info { background: none; border: 0; padding: 4px 8px 4px 0; text-align: left; color: inherit; cursor: pointer; border-radius: 10px; }
+.order-bar .ob-info:hover .ob-view, .order-bar .ob-info:focus-visible .ob-view { background: rgba(255, 201, 77, .28); }
+.order-bar .ob-view {
+    display: inline-flex; align-items: center; gap: 2px; margin-left: 6px; padding: 3px 6px 3px 9px; border-radius: 999px; vertical-align: middle;
+    font-family: inherit; font-size: 11.5px; font-weight: 800; color: var(--fest-gold); background: rgba(255, 201, 77, .14); border: 1px solid rgba(255, 201, 77, .4);
+}
+.order-bar .ob-cart { position: relative; }
+.order-bar .ob-count {
+    position: absolute; top: -8px; right: -8px; min-width: 21px; height: 21px; padding: 0 5px; border-radius: 999px;
+    display: grid; place-items: center; font-size: 11.5px; font-weight: 900; line-height: 1;
+    background: var(--fest-gold); color: var(--fest-night); box-shadow: 0 0 0 2px var(--fest-maroon);
+}
+/* phones: just the chevron chip, so the total still reads as tappable */
+@media (max-width: 576px) { .order-bar .ob-view { font-size: 0; gap: 0; padding: 3px 5px; margin-left: 4px; } .order-bar .ob-view .bi { font-size: 12px; } }
+@media (prefers-reduced-motion: reduce) { .card-stepper.bump .cs-mid { animation: none; } }

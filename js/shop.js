@@ -153,6 +153,17 @@
             m.classList.toggle("d-none", q === 0);
             var s = m.querySelector("span"); if (s) s.textContent = String(q);
         });
+        // product cards: "Add" until the product is in the cart, then the − qty + stepper showing the cart quantity
+        document.querySelectorAll("[data-item] [data-card-stepper]").forEach(function (st) {
+            var card = st.closest("[data-item]"), q = cart[card.getAttribute("data-item")] || 0;
+            var btn = card.querySelector("[data-add]"), inp = st.querySelector("[data-qty]");
+            st.classList.toggle("d-none", q === 0);
+            if (btn) btn.classList.toggle("d-none", q > 0);
+            if (inp && document.activeElement !== inp && inp.value !== String(q)) {
+                inp.value = String(q);
+                if (q > 0) { st.classList.remove("bump"); void st.offsetWidth; st.classList.add("bump"); }   // pop on every change
+            }
+        });
         document.querySelectorAll("[data-list-qty]").forEach(function (inp) {
             var id = inp.getAttribute("data-list-qty"), q = cart[id] || 0;
             if (document.activeElement !== inp) inp.value = q > 0 ? String(q) : "";
@@ -255,9 +266,10 @@
         var addBtn = e.target.closest("[data-add]");
         if (addBtn) {
             var card = addBtn.closest("[data-item]");
-            var q = card ? card.querySelector("[data-qty]") : null;
-            add(addBtn.getAttribute("data-add"), q ? q.value : 1);
-            if (q) q.value = 1;
+            add(addBtn.getAttribute("data-add"), 1);
+            // the Add button is now hidden behind the stepper: keep the keyboard focus on its +
+            var plus = card && card.querySelector("[data-card-stepper] [data-inc]");
+            if (plus && addBtn.classList.contains("d-none")) plus.focus();
             return;
         }
         var line = e.target.closest(".cart-line");
@@ -269,20 +281,24 @@
             return;
         }
         var card2 = e.target.closest("[data-item]");
-        if (card2) {
-            var qi = card2.querySelector("[data-qty]");
-            if (e.target.closest("[data-inc]") && qi) qi.value = Math.min(9999, (parseInt(qi.value, 10) || 1) + 1);
-            if (e.target.closest("[data-dec]") && qi) qi.value = Math.max(1, (parseInt(qi.value, 10) || 1) - 1);
+        if (card2 && e.target.closest("[data-card-stepper]")) {
+            var cid = card2.getAttribute("data-item"), cq = cart[cid] || 0;
+            if (e.target.closest("[data-inc]")) setQty(cid, Math.min(MAX_QTY, cq + 1));
+            else if (e.target.closest("[data-dec]")) {
+                setQty(cid, cq - 1);   // below 1 removes it from the cart and the card shows "Add" again
+                var ab = card2.querySelector("[data-add]");
+                if (ab && !ab.classList.contains("d-none")) ab.focus();
+            }
         }
         if (e.target.closest("[data-cart-clear]")) { cart = {}; save(cart); render(); }
     });
     document.addEventListener("change", function (e) {
         var line = e.target.closest(".cart-line");
         if (line && e.target.matches("[data-qty]")) { setQty(line.getAttribute("data-id"), e.target.value); return; }
-        // card quantity boxes: keep what was typed within 1–9999
-        if (e.target.matches("[data-item] [data-qty]")) {
+        // card quantity boxes edit the cart line (0 or empty removes it)
+        if (e.target.matches("[data-item] [data-card-stepper] [data-qty]")) {
             var v = parseInt(e.target.value, 10);
-            e.target.value = String(Math.min(MAX_QTY, Math.max(1, isNaN(v) ? 1 : v)));
+            setQty(e.target.closest("[data-item]").getAttribute("data-item"), Math.min(MAX_QTY, Math.max(0, isNaN(v) ? 0 : v)));
         }
     });
     // Price list: typing a quantity puts it straight into the cart
@@ -291,7 +307,7 @@
         var v = parseInt(e.target.value, 10) || 0;
         setQty(e.target.getAttribute("data-list-qty"), Math.max(0, Math.min(v, 9999)));
     });
-    document.addEventListener("focusout", function (e) { if (e.target.matches && e.target.matches("[data-list-qty]")) render(); });
+    document.addEventListener("focusout", function (e) { if (e.target.matches && e.target.matches("[data-list-qty], [data-card-stepper] [data-qty]")) render(); });
     // Price list: − / + buttons (no typing needed)
     document.addEventListener("click", function (e) {
         var inc = e.target.closest("[data-list-inc]"), dec = e.target.closest("[data-list-dec]");
