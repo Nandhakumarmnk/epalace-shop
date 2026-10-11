@@ -113,3 +113,27 @@
 .ft-saved { display: flex; justify-content: space-between; align-items: baseline; margin: 0 -16px 8px; padding: 9px 16px; background: #dcfce7; color: #15803d; font-weight: 800; border-radius: 0 0 10px 10px; }
 .ft-saved span:last-child { font-size: 1.12em; }
 @media print { .ft-saved { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+
+/* WhatsApp order page (/order, js/shop-order.js): customer details form + the order in the invoice style */
+.oslip-main { padding-top: 18px; padding-bottom: 40px; }
+.oslip-form { max-width: 900px; margin: 0 auto 16px; background: #fff; border: 1px solid #f0dcc0; border-radius: 20px; padding: 18px 20px; box-shadow: 0 14px 34px rgba(42, 11, 63, .12); }
+.oslip-h { font-family: "Baloo 2", "Baloo Thambi 2", sans-serif; font-weight: 800; font-size: 22px; color: #2a0b3f; margin: 0 0 4px; }
+.oslip-sub { font-size: 13.5px; color: #6b5a78; margin-bottom: 12px; }
+.oslip-form .form-label { font-weight: 700; font-size: 13px; color: #4b3a58; margin-bottom: 3px; }
+.oslip-err { color: #b91c1c; font-weight: 700; font-size: 13.5px; margin-top: 8px; min-height: 1em; }
+.oslip-state { display: inline-block; margin-top: 8px; padding: 3px 12px; border-radius: 999px; font-size: 12px; font-weight: 800; }
+.oslip-state.sent { background: #25d366; color: #fff; }
+.oslip-state.draft { background: rgba(255, 255, 255, .16); color: #ffe7a3; border: 1px dashed rgba(255, 201, 77, .7); }
+.oslip-item { display: flex; align-items: center; gap: 10px; }
+.oslip-pic { width: 40px; height: 40px; flex: none; border-radius: 10px; object-fit: cover; background: #2a0b3f; border: 2px solid #ffd79a; }
+.oslip-emo { display: inline-grid; place-items: center; font-size: 20px; }
+.oslip-note { margin-top: 4px; color: #7a5a3a; }
+.oslip-parties { grid-template-columns: 1.4fr 1fr; }
+.oslip-empty { max-width: 520px; margin: 40px auto; text-align: center; }
+.oslip-empty-emo { font-size: 54px; }
+@media (max-width: 720px) {
+    .oslip-form { margin: 0 4px 14px; padding: 16px; }
+    .oslip-parties { grid-template-columns: 1fr; }
+    .oslip-pic { width: 34px; height: 34px; }
+}
+@media print { .oslip-pic { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
