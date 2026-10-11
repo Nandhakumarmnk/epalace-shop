@@ -116,6 +116,8 @@
         render(got, true);
         share.hidden = false;
         share.href = "https://wa.me/?text=" + encodeURIComponent((biz.name || "E-PALACE") + " order " + got.r + " — " + location.href);
+        var create = $("oslipCreate");   // signed-in staff: open the admin New order form prefilled from this link
+        if (create) { create.href = create.getAttribute("data-url") + "?o=" + m[1]; create.hidden = false; }
         document.title = "Order " + got.r + " – " + (biz.name || "E-PALACE");
         return;
     }
