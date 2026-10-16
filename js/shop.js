@@ -366,7 +366,7 @@
     var catSel = document.getElementById("shopCat");
     // "Shop for" chips: which categories each audience sees (business sees everything, in the price list)
     var AUDIENCE = {
-        kids: ["sparklers", "flower-pots", "chakkar", "fountain-items", "rope-candles", "stones"],
+        kids: ["gun-ring-caps", "sparklers", "flower-pots", "chakkar", "fountain-items", "rope-candles", "stones"],
         family: ["family-pack", "gift-box"]   // exactly what the chip says: family packs and ready gift boxes
     };
     // Sorting: "Sort: category" is the page as the server sent it (category by category). A price / discount / name sort

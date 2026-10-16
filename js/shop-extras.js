@@ -273,7 +273,7 @@
     try { history = JSON.parse(get("sessionStorage", HKEY) || "[]") || []; } catch (e) { history = []; }
     var lastQuestion = "";
 
-    var KIDS = ["sparklers", "flower-pots", "chakkar", "fountain-items", "rope-candles", "stones"];
+    var KIDS = ["gun-ring-caps", "sparklers", "flower-pots", "chakkar", "fountain-items", "rope-candles", "stones"];
     var CATS = window.SHOP_CATS || {};   // category key → { en, ta } names
     function isPack(i) { return i.cat === "family-pack" || i.cat === "gift-box"; }
     function daysLeft() { return ends ? left().d : null; }
