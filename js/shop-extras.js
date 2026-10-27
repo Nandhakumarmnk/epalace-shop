@@ -18,8 +18,9 @@
     // ---- page loader: hide once the page is usable; show again while moving to another shop page
     var loader = document.getElementById("shopLoader");
     function hideLoader() { if (loader) loader.classList.add("done"); }
-    if (document.readyState === "complete") hideLoader();
-    else { window.addEventListener("load", hideLoader); setTimeout(hideLoader, 2500); }
+    // the page can be used as soon as its HTML is in (product photos keep loading behind it): no waiting for every image
+    if (document.readyState !== "loading") hideLoader();
+    else { document.addEventListener("DOMContentLoaded", hideLoader); setTimeout(hideLoader, 1500); }
     window.addEventListener("pageshow", hideLoader); // back / forward cache
     document.addEventListener("click", function (e) {
         var a = e.target.closest("a[href]");

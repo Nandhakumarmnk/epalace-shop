@@ -1518,3 +1518,111 @@ html[data-theme="dark"] .pill-tab { background: var(--surface-2); }
 html[data-theme="dark"] .pill-tab.active { color: #0b1220; }
 html[data-theme="dark"] .quick-tile { background: var(--card); }
 html[data-theme="dark"] .quick-tile .qt-sub { color: var(--muted); }
+
+/* =====================================================================
+   Phones (Oct 2026): wide tables as cards, bigger tap targets
+   --------------------------------------------------------------------- */
+/* cards for wide tables: set by site.js on phones, and on touch tablets when a table does not fit */
+table.m-stack thead { display: none; }
+table.m-stack, table.m-stack tbody, table.m-stack tfoot, table.m-stack tr { display: block; width: 100%; }
+table.m-stack tr {
+    position: relative; width: auto; margin: 10px 10px 12px; padding: 6px 14px;
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 6px 16px -14px rgba(15,23,42,.5);
+}
+table.m-stack tbody tr:hover { background: var(--card); }
+table.m-stack td {
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%;
+    padding: 7px 0 !important; border: 0 !important; border-bottom: 1px dashed var(--line) !important;
+    text-align: right !important; max-width: none !important; white-space: normal;
+}
+table.m-stack td::before {
+    content: attr(data-label); flex: 0 0 auto; max-width: 42%; text-align: left;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted);
+}
+table.m-stack td > * { min-width: 0; }
+table.m-stack td > .m-val { display: block; min-width: 0; text-align: right; }
+table.m-stack td[data-label=""] > .m-val { text-align: left; }
+table.m-stack td > .m-val > div { justify-content: flex-end; }
+table.m-stack td[data-label=""] { justify-content: flex-start; text-align: left !important; }
+table.m-stack td[data-label=""]::before { display: none; }
+table.m-stack td:last-child, table.m-stack td.m-empty { border-bottom: 0 !important; }
+table.m-stack td.m-empty { display: none; }
+/* the row's checkbox sits in the card's corner */
+table.m-stack td.m-check { position: absolute; top: 10px; right: 12px; width: auto; padding: 0 !important; border: 0 !important; z-index: 1; }
+table.m-stack td.m-check::before { display: none; }
+table.m-stack tr:has(> td.m-check) > td:not(.m-check):first-of-type,
+table.m-stack tr:has(> td.m-check) > td.m-check + td { padding-right: 36px !important; }
+/* buttons along the bottom of the card */
+table.m-stack td.m-actions { justify-content: flex-end; flex-wrap: wrap; padding-top: 10px !important; border-bottom: 0 !important; }
+table.m-stack td.m-actions::before { display: none; }
+table.m-stack td .truncate { max-width: 100% !important; }
+table.m-stack td .cell-with-avatar, table.m-stack td .d-flex { justify-content: flex-end; text-align: right; }
+table.m-stack td[data-label=""] .cell-with-avatar, table.m-stack td[data-label=""] .d-flex { justify-content: flex-start; text-align: left; }
+table.m-stack tfoot tr { background: var(--surface-2); }
+table.m-stack tfoot td.m-empty { display: none; }
+.table-responsive:has(> table.m-stack) { overflow: visible; }
+@media (min-width: 576px) {
+    /* tablets: a grid of cards, two or three a row */
+    table.m-stack tbody { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; padding: 12px; }
+    table.m-stack tbody tr { margin: 0; }
+    table.m-stack tfoot tr { margin: 0 12px 12px; }
+}
+@media (max-width: 575.98px) {
+
+    /* the stat strip keeps its labels whole */
+    .stat-strip .stat-label { white-space: normal; line-height: 1.2; }
+    .stat-strip .stat { padding: 12px; gap: 10px; }
+
+}
+@media (max-width: 1199.98px) {
+    /* item-wise report (phones and tablets): tick box and item name stay in view while the numbers scroll */
+    .it-table th:first-child, .it-table td:first-child { position: sticky; left: 0; z-index: 2; background: var(--card); width: 40px; min-width: 40px; max-width: 40px; padding-left: 10px; padding-right: 4px; }
+    .it-table th:nth-child(2), .it-table td:nth-child(2) { position: sticky; left: 40px; z-index: 1; background: var(--card); box-shadow: 6px 0 8px -8px rgba(15,23,42,.35); min-width: 140px; }
+    .it-table td:nth-child(2) .cell-primary { white-space: normal; }
+}
+
+/* touch screens: buttons, checkboxes and chips big enough for a finger */
+@media (pointer: coarse) {
+    .btn-sm, .btn-group-sm > .btn { min-height: 38px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .row-actions .btn-act { width: 38px; height: 38px; }
+    .form-check-input { width: 1.3em; height: 1.3em; }
+    .form-check-input[role="switch"] { width: 2.4em; }
+    .chip, .pill-tab, .card-tab { min-height: 36px; }
+    .page-link { min-width: 38px; min-height: 38px; display: inline-flex; align-items: center; justify-content: center; }
+    .btn-xs { min-height: 32px; padding: 4px 12px; }
+}
+
+/* dashboard quick tiles: the red count badge never covers the title; three a row on tablets */
+.quick-tile:has(.qt-badge) .qt-text { padding-right: 20px; }
+@media (min-width: 576px) and (max-width: 991.98px) { .quick-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* =====================================================================
+   Desktop (Oct 2026): tables fit laptop screens; a table that still has to
+   scroll keeps its row buttons pinned at the right edge
+   --------------------------------------------------------------------- */
+@media (min-width: 1200px) and (max-width: 1599.98px) {
+    .table > :not(caption) > * > * { padding-left: 10px; padding-right: 10px; }
+    .table thead th { letter-spacing: .04em; }
+}
+.table-responsive.has-scroll { position: relative; }
+.table-responsive.has-scroll > table tr > :last-child:has(.row-actions, .btn-act),
+.table-responsive.has-scroll > table:has(tbody tr > :last-child .row-actions, tbody tr > :last-child .btn-act) thead tr > :last-child {
+    position: sticky; right: 0; z-index: 1; background: var(--card);
+    box-shadow: -10px 0 12px -12px rgba(15,23,42,.45);
+}
+.table-responsive.has-scroll > table:has(tbody tr > :last-child .row-actions, tbody tr > :last-child .btn-act) thead tr > :last-child { background: var(--surface-2); }
+.table-responsive.has-scroll > table tbody tr:hover > :last-child:has(.row-actions, .btn-act) { background: var(--surface-2); }
+/* a hint that more columns are to the right */
+.table-responsive.has-scroll::-webkit-scrollbar { height: 10px; }
+.table-responsive.has-scroll::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+
+/* scrolling tables without row buttons: the row name stays at the left edge */
+.table-responsive.pin-first > table tr > :first-child,
+.table-responsive.pin-two > table tr > :nth-child(-n+2) { position: sticky; z-index: 1; background: var(--card); }
+.table-responsive.pin-first > table tr > :first-child { left: 0; box-shadow: 10px 0 12px -12px rgba(15,23,42,.45); }
+.table-responsive.pin-two > table tr > :first-child { left: 0; width: 44px; min-width: 44px; max-width: 44px; }
+.table-responsive.pin-two > table tr > :nth-child(2) { left: 44px; box-shadow: 10px 0 12px -12px rgba(15,23,42,.45); }
+.table-responsive.pin-first > table thead tr > :first-child,
+.table-responsive.pin-two > table thead tr > :nth-child(-n+2) { background: var(--surface-2); z-index: 2; }
+.table-responsive.pin-first > table tbody tr:hover > :first-child,
+.table-responsive.pin-two > table tbody tr:hover > :nth-child(-n+2) { background: var(--surface-2); }

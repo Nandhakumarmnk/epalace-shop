@@ -1138,3 +1138,16 @@ body:has(.offcanvas.show) .call-float, body:has(.modal.show) .call-float { displ
 @media (max-width: 576px) { .hero-v2 .hero-cta .btn { height: 42px; padding: 0 6px 0 4px; } .hero-v2 .hero-cta .btn .bi { width: 26px; height: 26px; font-size: 14px; } }
 @media (max-width: 400px) { .hero-v2 .hero-cta .btn .bi { width: 22px; height: 22px; font-size: 12px; } }
 @media (max-width: 352px) { .hero-v2 .hero-cta .btn { font-size: 11.5px; gap: 3px; } .hero-v2 .hero-cta .btn .bi { width: 20px; height: 20px; font-size: 11px; } }
+
+/* ---- Touch + readability touch-ups (2026-10-27): bigger tap areas, slightly larger small print; the look stays the same ---- */
+/* the ♡ on each price-list row: an invisible 44px tap area around the 26px heart */
+.pl-prod .wish-btn.wish-sm::after { content: ""; position: absolute; inset: -9px; border-radius: 50%; }
+@media (pointer: coarse) {
+    .lang-switch button { padding-top: 8px; padding-bottom: 8px; }
+    .shop-header .cart-btn { min-height: 36px; }
+    .shop-header .menu-hdr, .shop-header .wish-hdr { min-height: 36px; min-width: 38px; }
+}
+@media (max-width: 575.98px) {
+    .pl-off { font-size: 10.5px; }
+    .hero-v2 .hk-cd .cd-u span { font-size: 9.5px; }
+}
