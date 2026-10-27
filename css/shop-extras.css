@@ -1151,3 +1151,15 @@ body:has(.offcanvas.show) .call-float, body:has(.modal.show) .call-float { displ
     .pl-off { font-size: 10.5px; }
     .hero-v2 .hk-cd .cd-u span { font-size: 9.5px; }
 }
+
+/* ---- Checkout touch-ups (2026-10-27) ---- */
+/* iPhones zoom the page into any field under 16px: keep every checkout field at 16px on phones / tablets */
+@media (max-width: 991.98px) {
+    .checkout-grid .form-control, .checkout-grid .form-select { font-size: 16px; }
+    /* while a field is being typed in, the floating chat / WhatsApp / call buttons step aside (they covered the field) */
+    body:has(.checkout-grid :is(input, select, textarea):focus) :is(.chat-fab, .wa-float, .call-float, .to-top) { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+/* the State picker matches the other fields (it was 13.5px, which also made iPads zoom in) */
+.checkout-grid .form-select { font-size: 16px; min-height: 48px; }
+/* "still needed" list: each line jumps to its field — make it a comfortable tap */
+[data-co-check] li > button, [data-co-check] li > a { min-height: 34px; display: inline-flex; align-items: center; gap: 6px; padding: 4px 6px; }
